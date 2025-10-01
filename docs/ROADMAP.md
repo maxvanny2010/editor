@@ -200,3 +200,21 @@
 - [ ] Regression tests for fixed bugs  
   🔀 Branch: `test/fix-regression`  
   📝 Commit: `test(fix): add regression tests`
+
+---
+
+### 🔑 Branch Naming Rules
+- [ ] `feature/...` → new feature
+- [ ] `fix/...` → bug fix
+- [ ] `chore/...` → maintenance / config / docs
+- [ ] `test/...` → tests
+- [ ] `perf/...` → performance optimization
+- [ ] `ci/...` → CI/CD tasks
+
+### 📝 Commit Style (Conventional Commits)
+- [ ] `feat(scope): ...` — new feature
+- [ ] `fix(scope): ...` — bug fix
+- [ ] `chore(scope): ...` — maintenance
+- [ ] `test(scope): ...` — tests
+- [ ] `perf(scope): ...` — performance improvement
+- [ ] `ci(scope): ...` — CI/CD
