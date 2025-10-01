@@ -1,0 +1,50 @@
+name: "✨ Feature Request"
+description: "Suggest a new feature for the project"
+title: "feat: [scope] short description"
+labels: ["feature"]
+assignees: []
+
+body:
+  - type: input
+    id: scope
+    attributes:
+      label: Scope
+      description: "Example: editor, projects, tools"
+      placeholder: "editor"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: "Describe the feature"
+      placeholder: |
+        Example:
+          Add a 'Brush' tool that allows drawing freeform lines on the canvas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: "Define the criteria for completion"
+      placeholder: |
+        - User can select 'Brush' tool
+        - Can draw lines with chosen color and thickness
+        - Cursor changes to brush icon
+
+  - type: input
+    id: branch
+    attributes:
+      label: Branch name
+      description: "Use format: feature/[scope]-[short-name]"
+      placeholder: "feature/editor-brush"
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit style
+      description: "Follow Conventional Commits"
+      placeholder: "feat(editor): implement brush tool"
