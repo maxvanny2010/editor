@@ -18,6 +18,7 @@
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(project): create GitHub Kanban board`
 
+
 ---
 
 #### ✅ MVP (Minimum Viable Product)
