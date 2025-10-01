@@ -2,22 +2,19 @@
 
 #### ⚡ Initial Setup
 
-- [ ] Create `ROADMAP.md` file in the repo  
+- [x] Create `ROADMAP.md` file in the repo  
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(roadmap): add initial ROADMAP.md`
 
-
-- [ ] Add GitHub Issue templates (`feature.md`, `bug.md`, `fix.md`, `chore.md`)  
+- [x] Add GitHub Issue templates (`feature.md`, `bug.md`, `fix.md`, `chore.md`)  
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(templates): add issue templates`
 
-
-- [ ] Add Pull Request template (`pull_request_template.md`)  
+- [x] Add Pull Request template (`pull_request_template.md`)  
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(pr-template): add pull request template`
 
-
-- [ ] Create GitHub Project / Kanban board with columns: Backlog, In Progress, In Review, Done  
+- [x] Create GitHub Project / Kanban board with columns: Backlog, In Progress, In Review, Done  
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(project): create GitHub Kanban board`
 
