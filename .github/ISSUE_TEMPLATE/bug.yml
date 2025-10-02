@@ -1,65 +1,65 @@
-name: "🐛 Bug Report"
-description: "Report an issue or bug"
-title: "fix: [scope] short description"
-labels: ["bug"]
+name: '🐛 Bug Report'
+description: 'Report an issue or bug'
+title: 'fix: [scope] short description'
+labels: ['bug']
 assignees: []
 
 body:
-  - type: input
-    id: scope
-    attributes:
-      label: Scope
-      description: "Example: editor, projects, tools"
-      placeholder: "editor"
-    validations:
-      required: true   # <- вот тут правильно вложено
+    - type: input
+      id: scope
+      attributes:
+          label: Scope
+          description: 'Example: editor, projects, tools'
+          placeholder: 'editor'
+      validations:
+          required: true # <- вот тут правильно вложено
 
-  - type: textarea
-    id: description
-    attributes:
-      label: Bug Description
-      description: "What is broken?"
-      placeholder: |
-        Example:
-          The 'Line' tool does not draw when thickness is set to 10px.
-    validations:
-      required: true
+    - type: textarea
+      id: description
+      attributes:
+          label: Bug Description
+          description: 'What is broken?'
+          placeholder: |
+              Example:
+                The 'Line' tool does not draw when thickness is set to 10px.
+      validations:
+          required: true
 
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to Reproduce
-      description: "How to reproduce the bug"
-      placeholder: |
-        1. Open project
-        2. Select 'Line' tool
-        3. Draw a line
-        4. Line is not visible
+    - type: textarea
+      id: steps
+      attributes:
+          label: Steps to Reproduce
+          description: 'How to reproduce the bug'
+          placeholder: |
+              1. Open project
+              2. Select 'Line' tool
+              3. Draw a line
+              4. Line is not visible
 
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected Behavior
-      description: "What should have happened?"
-      placeholder: "Line should be drawn with chosen color and thickness."
+    - type: textarea
+      id: expected
+      attributes:
+          label: Expected Behavior
+          description: 'What should have happened?'
+          placeholder: 'Line should be drawn with chosen color and thickness.'
 
-  - type: textarea
-    id: actual
-    attributes:
-      label: Actual Behavior
-      description: "What actually happened?"
-      placeholder: "Line does not appear."
+    - type: textarea
+      id: actual
+      attributes:
+          label: Actual Behavior
+          description: 'What actually happened?'
+          placeholder: 'Line does not appear.'
 
-  - type: input
-    id: branch
-    attributes:
-      label: Branch name
-      description: "Use format: fix/[scope]-[short-name]"
-      placeholder: "fix/editor-line-tool"
+    - type: input
+      id: branch
+      attributes:
+          label: Branch name
+          description: 'Use format: fix/[scope]-[short-name]'
+          placeholder: 'fix/editor-line-tool'
 
-  - type: input
-    id: commit
-    attributes:
-      label: Commit style
-      description: "Follow Conventional Commits"
-      placeholder: "fix(editor): line tool not rendering"
+    - type: input
+      id: commit
+      attributes:
+          label: Commit style
+          description: 'Follow Conventional Commits'
+          placeholder: 'fix(editor): line tool not rendering'
