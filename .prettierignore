@@ -1,0 +1,19 @@
+# build outputs
+dist
+build
+coverage
+
+# dependencies
+node_modules
+
+# lockfiles
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# logs
+*.log
+
+# IDE configs
+.vscode
+.idea
