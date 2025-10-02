@@ -21,6 +21,7 @@
 - [x] Add manual CHANGELOG.md template  
   🔀 Branch: `chore/init-setup`  
   📝 Commit: `chore(docs): add manual CHANGELOG.md template`
+
 ---
 
 #### ✅ MVP (Minimum Viable Product)
