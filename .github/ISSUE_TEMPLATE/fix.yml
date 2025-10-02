@@ -1,46 +1,46 @@
-name: "🛠️ Fix Task"
-description: "Task for fixing a known bug"
-title: "fix: [scope] short description"
-labels: ["fix"]
+name: '🛠️ Fix Task'
+description: 'Task for fixing a known bug'
+title: 'fix: [scope] short description'
+labels: ['fix']
 assignees: []
 
 body:
-  - type: input
-    id: scope
-    attributes:
-      label: Scope
-      description: "Example: editor, projects, tools"
-      placeholder: "editor"
-    validations:
-      required: true
+    - type: input
+      id: scope
+      attributes:
+          label: Scope
+          description: 'Example: editor, projects, tools'
+          placeholder: 'editor'
+      validations:
+          required: true
 
-  - type: textarea
-    id: bugref
-    attributes:
-      label: Related Bug
-      description: "Reference to the bug issue"
-      placeholder: "See #42 (bug report for 'Line tool not working')"
+    - type: textarea
+      id: bugref
+      attributes:
+          label: Related Bug
+          description: 'Reference to the bug issue'
+          placeholder: "See #42 (bug report for 'Line tool not working')"
 
-  - type: textarea
-    id: solution
-    attributes:
-      label: Proposed Fix
-      description: "How will this bug be fixed?"
-      placeholder: |
-        - Add missing draw call
-        - Update canvas rendering logic
-        - Write regression test
+    - type: textarea
+      id: solution
+      attributes:
+          label: Proposed Fix
+          description: 'How will this bug be fixed?'
+          placeholder: |
+              - Add missing draw call
+              - Update canvas rendering logic
+              - Write regression test
 
-  - type: input
-    id: branch
-    attributes:
-      label: Branch name
-      description: "Use format: fix/[scope]-[short-name]"
-      placeholder: "fix/editor-line-tool"
+    - type: input
+      id: branch
+      attributes:
+          label: Branch name
+          description: 'Use format: fix/[scope]-[short-name]'
+          placeholder: 'fix/editor-line-tool'
 
-  - type: input
-    id: commit
-    attributes:
-      label: Commit style
-      description: "Follow Conventional Commits"
-      placeholder: "fix(editor): line tool not rendering"
+    - type: input
+      id: commit
+      attributes:
+          label: Commit style
+          description: 'Follow Conventional Commits'
+          placeholder: 'fix(editor): line tool not rendering'

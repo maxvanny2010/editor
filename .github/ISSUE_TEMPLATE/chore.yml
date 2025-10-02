@@ -1,48 +1,48 @@
-name: "⚙️ Chore / Tech Task"
-description: "Technical task, not directly user-facing"
-title: "chore: [scope] short description"
-labels: ["chore"]
+name: '⚙️ Chore / Tech Task'
+description: 'Technical task, not directly user-facing'
+title: 'chore: [scope] short description'
+labels: ['chore']
 assignees: []
 
 body:
-  - type: input
-    id: scope
-    attributes:
-      label: Scope
-      description: "Example: config, build, tests"
-      placeholder: "config"
-    validations:
-      required: true
+    - type: input
+      id: scope
+      attributes:
+          label: Scope
+          description: 'Example: config, build, tests'
+          placeholder: 'config'
+      validations:
+          required: true
 
-  - type: textarea
-    id: description
-    attributes:
-      label: Task Description
-      description: "What needs to be done?"
-      placeholder: |
-        Example:
-          Add ESLint + Prettier and configure Husky hooks.
-    validations:
-      required: true
+    - type: textarea
+      id: description
+      attributes:
+          label: Task Description
+          description: 'What needs to be done?'
+          placeholder: |
+              Example:
+                Add ESLint + Prettier and configure Husky hooks.
+      validations:
+          required: true
 
-  - type: textarea
-    id: rationale
-    attributes:
-      label: Rationale
-      description: "Why is this needed?"
-      placeholder: |
-        To ensure code consistency and enforce pre-commit checks.
+    - type: textarea
+      id: rationale
+      attributes:
+          label: Rationale
+          description: 'Why is this needed?'
+          placeholder: |
+              To ensure code consistency and enforce pre-commit checks.
 
-  - type: input
-    id: branch
-    attributes:
-      label: Branch name
-      description: "Use format: chore/[scope]-[short-name]"
-      placeholder: "chore/config-eslint"
+    - type: input
+      id: branch
+      attributes:
+          label: Branch name
+          description: 'Use format: chore/[scope]-[short-name]'
+          placeholder: 'chore/config-eslint'
 
-  - type: input
-    id: commit
-    attributes:
-      label: Commit style
-      description: "Follow Conventional Commits"
-      placeholder: "chore(config): add eslint + prettier"
+    - type: input
+      id: commit
+      attributes:
+          label: Commit style
+          description: 'Follow Conventional Commits'
+          placeholder: 'chore(config): add eslint + prettier'
