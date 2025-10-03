@@ -28,23 +28,23 @@
 
 #### M1 — Project Initialization
 
-- [ ] Set up Vite + React + TypeScript
+- [x] Set up Vite + React + TypeScript
       🔀 Branch: `feature/init-vite-ts`
       📝 Commit: `feat(init): add vite + react + typescript`
 
-- [ ] Set up ESLint, Prettier, Husky
+- [x] Set up ESLint, Prettier, Husky
       🔀 Branch: `chore/setup-linting`
       📝 Commit: `chore(lint): add eslint + prettier + husky`
 
-- [ ] Set up GitHub Actions (lint, test, build)
+- [x] Set up GitHub Actions (lint, test, build)
       🔀 Branch: `ci/github-actions`
       📝 Commit: `ci(actions): add lint + type-check + build`
 
-- [ ] Set up Redux Toolkit
+- [x] Set up Redux Toolkit
       🔀 Branch: `feature/state-manager`
       📝 Commit: `feat(state): add redux toolkit setup`
 
-- [ ] Set up Tailwind CSS for styling
+- [x] Set up Tailwind CSS for styling
       🔀 Branch: `chore/setup-tailwind`
       📝 Commit: `chore(styles): add tailwind css setup`
 
