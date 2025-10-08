@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { createProjectThunk } from '@/entities/project/model/thunks';
-import { clearProjectsError } from '@/entities/project/model/slice';
+import { projectsActions } from '@/entities/project/model/slice.ts';
 
 export const CreateProjectModal = ({ onClose }: { onClose: () => void }) => {
 	const [name, setName] = useState('');
@@ -18,7 +18,7 @@ export const CreateProjectModal = ({ onClose }: { onClose: () => void }) => {
 	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (error) dispatch(clearProjectsError());
+		if (error) dispatch(dispatch(projectsActions.clearError()));
 		setName(e.target.value);
 	};
 

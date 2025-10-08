@@ -1,4 +1,4 @@
-// src/entities/project/model/projectsSlice.ts
+// src/entities/project/model/slice.ts
 
 import { createAsyncEntitySlice } from '@/shared/lib/store/createAsyncEntitySlice';
 import { projectService } from './project.service';

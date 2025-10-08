@@ -68,6 +68,10 @@
   🔀 Branch: `db/chore/store-provider`
   📝 Commit: `chore(store): add store provider wrapper`
 
+---
+
+#### M1.6 - Tests: Local DB Infrastructure (Dexie + Redux)
+
 - [ ] **Tests: Local DB + Redux Integration**
   🔀 Branch: test/m1.5-db-integration
   📝 Commit: test(db): add dexie + redux integration tests

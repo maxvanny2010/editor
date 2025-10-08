@@ -1,3 +1,10 @@
 #!/bin/sh
+echo "🧹 Running lint-staged..."
 npx lint-staged
+
+echo "🔍 Type-checking..."
+npx tsc --noEmit
+
+echo "🧪 Running tests..."
+npx vitest run --passWithNoTests
 

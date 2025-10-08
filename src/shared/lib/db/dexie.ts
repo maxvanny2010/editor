@@ -1,24 +1,22 @@
-// src/shared/lib/db/dexie.ts
-
 import Dexie, { type Table } from 'dexie';
 import type { Project } from '@/shared/types';
 
 /**
- * EditorDB — локальная база данных приложения.
- * Хранит проекты. Позже можно расширить для layers и history.
+ * Dexie database setup.
+ * This class defines the database schema and tables.
+ * The `Project` type is declared globally in `src/types.d.ts`.
  */
-export class EditorDB extends Dexie {
-	projects!: Table<Project, string>;
+class ProjectDatabase extends Dexie {
+	public projects!: Table<Project, string>;
 
-	constructor() {
-		super('EditorDB');
-
-		// Версия 1: таблица проектов
+	public constructor() {
+		super('ProjectDatabase'); // Database name
 		this.version(1).stores({
 			projects: 'id, name, createdAt, updatedAt',
 		});
+		this.projects = this.table('projects');
 	}
 }
 
-// Экспорт одного инстанса для всего приложения
-export const db = new EditorDB();
+// Export a singleton instance of the database
+export const db = new ProjectDatabase();
