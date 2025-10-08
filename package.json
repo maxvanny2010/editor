@@ -12,9 +12,11 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "2.9.0",
+		"dexie": "^4.2.1",
+		"nanoid": "^5.1.6",
 		"react": "19.1.1",
 		"react-dom": "19.1.1",
-		"react-redux": "9.2.0",
+		"react-redux": "^9.2.0",
 		"redux-logger": "3.0.6"
 	},
 	"devDependencies": {
