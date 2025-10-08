@@ -1,22 +1,28 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { projectService } from '../project.service';
 import { db } from '@/shared/lib/db/dexie.ts';
+import { projectRepository } from '@/entities/project/api/project.repository.ts';
+import { PROJECT_MESSAGES } from '@/shared/constants/projectMessages';
 
 describe('projectService', () => {
 	beforeEach(async () => {
 		await db.projects.clear();
 	});
 
-	it('createProject: throws an error on empty name', async () => {
-		await expect(projectService.createProject({ name: '   ' })).rejects.toThrow();
+	it('should throw an error if name is empty', async () => {
+		await expect(projectService.createProject({ name: '   ' })).rejects.toThrow(
+			PROJECT_MESSAGES.EMPTY_NAME,
+		);
 	});
 
-	it('createProject: throws an error on duplicate name', async () => {
+	it('should throw an error if project name already exists', async () => {
 		await projectService.createProject({ name: 'Same' });
-		await expect(projectService.createProject({ name: 'same' })).rejects.toThrow();
+		await expect(projectService.createProject({ name: 'same' })).rejects.toThrow(
+			PROJECT_MESSAGES.DUPLICATE_NAME,
+		);
 	});
 
-	it('createProject: returns a valid Project on success', async () => {
+	it('should return a valid Project on success', async () => {
 		const p = await projectService.createProject({ name: 'Alpha' });
 		expect(p.id).toBeTruthy();
 		expect(p.name).toBe('Alpha');
@@ -24,10 +30,8 @@ describe('projectService', () => {
 		expect(typeof p.updatedAt).toBe('number');
 	});
 
-	it('updateProject: returns the updated object and changes updatedAt', async () => {
+	it('should return updated project and change updatedAt', async () => {
 		const p = await projectService.createProject({ name: 'Old' });
-
-		// A small delay to ensure the timestamp will be different
 		await new Promise((r) => setTimeout(r, 2));
 
 		const upd = await projectService.updateProject({
@@ -38,5 +42,18 @@ describe('projectService', () => {
 		expect(upd.id).toBe(p.id);
 		expect(upd.name).toBe('New');
 		expect(upd.updatedAt).toBeGreaterThanOrEqual(p.updatedAt);
+	});
+
+	it('should throw if project not found after update', async () => {
+		const p = await projectService.createProject({ name: 'Lost' });
+		const spy = vi
+			.spyOn(projectRepository, 'getById')
+			.mockResolvedValueOnce(undefined as never);
+
+		await expect(
+			projectService.updateProject({ id: p.id, changes: { name: 'Ghost' } }),
+		).rejects.toThrow(PROJECT_MESSAGES.NOT_FOUND_AFTER_UPDATE);
+
+		spy.mockRestore();
 	});
 });
