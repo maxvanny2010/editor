@@ -46,7 +46,7 @@ describe('createAsyncEntitySlice', () => {
 			loading: 'failed' as const,
 			error: 'Oops',
 		};
-		const action = slice.actions.clearError();
+		const action = { type: slice.actions.clearError.type };
 		const newState = reducer(erroredState, action);
 		expect(newState.error).toBeNull();
 	});
