@@ -89,7 +89,7 @@
 
   🔀 Branch: `db/chore/db-schema`
 
-  📝 Commit: `chore(db): define table for projects`
+  📝 Commit: `c define table for projects and resolve alias @ ./src`
 
 - [x] Dexie + Redux Integration
 
