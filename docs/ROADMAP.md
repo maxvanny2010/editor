@@ -95,7 +95,7 @@
 
   🔀 Branch: `db/feature/db-redux-integration`
 
-  📝 Commit: `feat(db): connect dexie to redux thunks`
+  📝 Commit: `feat(db): connect dexie to redux thunks\slice\service\repository`
 
 - [x] Store Provider
 
