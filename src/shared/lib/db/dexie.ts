@@ -4,13 +4,12 @@ import type { Project } from '@/shared/types';
 export class EditorDB extends Dexie {
 	projects!: Table<Project, string>;
 
-	constructor() {
+	public constructor() {
 		super('EditorDB');
-
-		// Version 1: the table of projects
 		this.version(1).stores({
 			projects: 'id, name, createdAt, updatedAt',
 		});
+		this.projects = this.table('projects');
 	}
 }
 
