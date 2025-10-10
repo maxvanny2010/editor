@@ -106,7 +106,7 @@ Use `vi.mock` to stub projectService methods and validate parameters.
 
 #### 🧩 Project Slice
 
-**Scope:** projectsSlice
+**Scope:** project.slice
 
 **Description:**
 Test Redux slice reducers and selectors (`selectAll`, `selectById`, `selectByName`).
