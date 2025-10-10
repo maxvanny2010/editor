@@ -107,9 +107,45 @@
 
 - [x] Tests: Local DB + Redux Integration
 
-  🔀 Branch: `test/m1.5-db-integration`
+  🔀 Branch: `test/db-integration`
 
-  📝 Commit: `test(db): add dexie + redux integration tests`
+  📝 Commit: `test(db): add dexie + redux integration`
+
+- [x] Tests: Repository
+
+  🔀 Branch: `test/project-repository`
+
+  📝 Commit: `test(repo): add unit tests for project.repository`
+
+- [x] Tests: Service
+
+  🔀 Branch: `test/project-service`
+
+  📝 Commit: `test(service): add validation and update tests for project.service`
+
+- [x] Tests: Slice
+
+  🔀 Branch: `test/project-slice`
+
+  📝 Commit: `test(slice): add CRUD and selector tests for projects.slices`
+
+- [x] Tests: Thunks
+
+  🔀 Branch: `test/project-thunks`
+
+  📝 Commit: `test(thunks): verify async thunk calls for project.service`
+
+- [x] Tests: Provider
+
+  🔀 Branch: `test/store-provider`
+
+  📝 Commit: `test(integration): add StoreProvider integration test for UI updates`
+
+- [x] Tests: CI & Coverage
+
+  🔀 Branch: `ci/test-coverage`
+
+  📝 Commit: `ci(vitest): enable coverage reporting in GitHub Actions`
 
 ---
 
