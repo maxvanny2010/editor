@@ -2,13 +2,14 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useSelector } from 'react-redux';
 import { db } from '@/shared/lib/db/dexie';
-import { createProject, makeSelectors } from '@/entities/project/model/slice';
-import { TestStoreProvider } from '@/test-utils';
-import { useAppDispatch } from '@/store/hooks';
-import { store } from '@/store';
+import type { Project } from '@/shared/types';
+import { makeSelectors } from '@/shared/lib/store';
+import { makeTestStore } from '@/test-utils/testStore';
+import { createProject } from '@/entities/project/model';
+import { TestStoreProvider, useTestDispatch } from '@/test-utils';
 
-type TestState = ReturnType<typeof store.getState>;
-const selectors = makeSelectors<TestState>((s) => s.projects);
+type RootState = ReturnType<ReturnType<typeof makeTestStore>['getState']>;
+const selectors = makeSelectors<RootState, Project>((s) => s.projects); // 👈 исправлено
 
 function ProjectsList() {
 	const items = useSelector(selectors.selectAll);
@@ -22,7 +23,7 @@ function ProjectsList() {
 }
 
 function CreateButton() {
-	const dispatch = useAppDispatch();
+	const dispatch = useTestDispatch();
 	return (
 		<button onClick={() => dispatch(createProject({ name: 'UI-Demo' }))}>
 			create
@@ -30,7 +31,7 @@ function CreateButton() {
 	);
 }
 
-describe('TestStoreProvider integration', () => {
+describe('Integration: Redux + Dexie + React', () => {
 	beforeEach(async () => {
 		await db.projects.clear();
 	});
@@ -56,7 +57,7 @@ describe('TestStoreProvider integration', () => {
 		expect(await screen.findByText('UI-Demo')).toBeInTheDocument();
 	});
 
-	it('store state updates after dispatch', async () => {
+	it('state updates reflect immediately in the DOM', async () => {
 		render(
 			<TestStoreProvider>
 				<CreateButton />

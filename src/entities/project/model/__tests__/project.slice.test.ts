@@ -4,24 +4,22 @@ import {
 	createProject,
 	deleteProject,
 	fetchProjects,
-	makeSelectors,
 	projectsReducer,
 	updateProject,
 } from '../slice';
-import { projectRepository } from '../../api/project.repository';
 import { nanoid } from 'nanoid';
+import { db } from '@/shared/lib/db';
+import type { RootState } from '@/store';
 import type { Project } from '@/shared/types';
-import { db } from '@/shared/lib/db/dexie.ts';
-
-type Root = ReturnType<ReturnType<typeof storeFactory>['getState']>;
+import { makeSelectors } from '@/shared/lib/store';
+import { projectRepository } from '@/entities/project/api';
 
 const storeFactory = () =>
 	configureStore({
 		reducer: { projects: projectsReducer },
 	});
 
-const selectorsFactory = () => makeSelectors<Root>((s) => s.projects);
-
+const selectors = makeSelectors<RootState, Project>((s) => s.projects);
 describe('projectsSlice + thunks', () => {
 	beforeEach(async () => {
 		await db.projects.clear();
@@ -36,7 +34,6 @@ describe('projectsSlice + thunks', () => {
 		for (const r of records) await projectRepository.add(r);
 
 		const store = storeFactory();
-		const selectors = selectorsFactory();
 
 		await store.dispatch(fetchProjects());
 		const all = selectors.selectAll(store.getState());
@@ -46,7 +43,6 @@ describe('projectsSlice + thunks', () => {
 
 	it('createProject adds a project to the state', async () => {
 		const store = storeFactory();
-		const selectors = selectorsFactory();
 
 		await store.dispatch(createProject({ name: 'Demo' }));
 
@@ -57,7 +53,6 @@ describe('projectsSlice + thunks', () => {
 
 	it('updateProject updates a project', async () => {
 		const store = storeFactory();
-		const selectors = selectorsFactory();
 
 		const createRes = await store.dispatch(createProject({ name: 'X' })).unwrap();
 		await store.dispatch(updateProject({ id: createRes.id, changes: { name: 'Y' } }));
@@ -68,7 +63,6 @@ describe('projectsSlice + thunks', () => {
 
 	it('deleteProject removes a project', async () => {
 		const store = storeFactory();
-		const selectors = selectorsFactory();
 
 		const p = await store.dispatch(createProject({ name: 'ToDelete' })).unwrap();
 		await store.dispatch(deleteProject(p.id));
@@ -79,7 +73,6 @@ describe('projectsSlice + thunks', () => {
 
 	it('selectByName filters by name, case-insensitively', async () => {
 		const store = storeFactory();
-		const selectors = selectorsFactory();
 
 		await store.dispatch(createProject({ name: 'My Project' }));
 		await store.dispatch(createProject({ name: 'Another' }));
