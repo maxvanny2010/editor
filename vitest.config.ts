@@ -13,6 +13,23 @@ export default defineConfig({
 			provider: 'v8',
 			reporter: ['text', 'lcov', 'html'],
 			reportsDirectory: './coverage',
+			exclude: [
+				'**/index.*',
+				'**/*.d.ts',
+				'**/config.*',
+				'**/vite.config.*',
+				'**/vitest.config.*',
+				'**/postcss.config.*',
+				'**/eslint.config.*',
+				'**/setupTests.*',
+				'**/ci-trigger.*',
+				'**/main.tsx',
+				'**/App.tsx',
+				'**/router.tsx',
+				'**/StoreProvider.tsx',
+				'**/selectors.*',
+				'**/makeSelectors.ts',
+			],
 		},
 		server: {
 			deps: {
