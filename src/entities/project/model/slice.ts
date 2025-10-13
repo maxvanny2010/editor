@@ -1,6 +1,6 @@
 import { createAsyncEntitySlice } from '@/shared/lib/store/createAsyncEntitySlice';
 import { projectService } from './project.service';
-import type { RootState } from '@/app/store';
+import type { RootState } from '@/store';
 import type { Project } from '@/shared/types';
 
 export const {

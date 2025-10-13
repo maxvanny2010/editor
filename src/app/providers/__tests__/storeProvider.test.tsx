@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { db } from '@/shared/lib/db/dexie';
 import { createProject, makeSelectors } from '@/entities/project/model/slice';
 import { TestStoreProvider } from '@/test-utils';
-import { useAppDispatch } from '@/app/hooks';
-import { store } from '@/app/store';
+import { useAppDispatch } from '@/store/hooks';
+import { store } from '@/store';
 
 type TestState = ReturnType<typeof store.getState>;
 const selectors = makeSelectors<TestState>((s) => s.projects);
