@@ -1,18 +1,17 @@
 import { createAsyncEntitySlice } from '@/shared/lib/store/createAsyncEntitySlice';
 import { projectService } from './project.service';
-import type { RootState } from '@/store';
 import type { Project } from '@/shared/types';
 
 export const {
 	reducer: projectsReducer,
 	actions: projectsActions,
+	adapter: projectsAdapter,
 	thunks: {
 		fetchAllThunk: fetchProjects,
 		createOneThunk: createProject,
 		updateOneThunk: updateProject,
 		deleteOneThunk: deleteProject,
 	},
-	makeSelectors,
 } = createAsyncEntitySlice<
 	Project,
 	{ name: string },
@@ -25,5 +24,3 @@ export const {
 	deleteOne: projectService.deleteProject,
 	sortComparer: (a, b) => b.updatedAt - a.updatedAt,
 });
-
-export const projectsSelectors = makeSelectors<RootState>((s) => s.projects);

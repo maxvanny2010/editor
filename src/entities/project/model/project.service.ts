@@ -1,7 +1,7 @@
 import type { Project } from '@/shared/types';
 import { nanoid } from 'nanoid';
-import { projectRepository } from '../api/project.repository';
-import { PROJECT_MESSAGES } from '@/shared/constants/projectMessages';
+import { projectRepository } from '../api';
+import { PROJECT_MESSAGES } from '@/shared/constants';
 
 export const projectService = {
 	async getProjects(): Promise<Project[]> {

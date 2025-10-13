@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { projectService } from '../project.service';
 import { db } from '@/shared/lib/db/dexie.ts';
-import { projectRepository } from '@/entities/project/api/project.repository.ts';
 import { PROJECT_MESSAGES } from '@/shared/constants/projectMessages';
+import { projectRepository } from '@/entities/project/api/project.repository.ts';
+import { projectService } from '@/entities/project/model';
 
 describe('projectService', () => {
 	beforeEach(async () => {
