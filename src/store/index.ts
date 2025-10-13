@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { projectsReducer } from '@/entities/project/model/slice.ts';
+import { projectsReducer } from '@/entities/project/model/slice';
 import logger from 'redux-logger';
 
 export const store = configureStore({
