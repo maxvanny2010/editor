@@ -7,7 +7,7 @@ import { projectTable } from './project.db';
  */
 export const projectRepository = {
 	async getAll(): Promise<Project[]> {
-		return projectTable.toArray();
+		return projectTable.orderBy('updatedAt').reverse().toArray();
 	},
 
 	async getById(id: string): Promise<Project | undefined> {
