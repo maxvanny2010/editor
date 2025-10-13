@@ -1,1 +1,3 @@
-export * from './TestStoreProvider.tsx';
+export * from './testStore';
+export * from './testStoreProvider.tsx';
+export * from './testStoreHooks.ts';

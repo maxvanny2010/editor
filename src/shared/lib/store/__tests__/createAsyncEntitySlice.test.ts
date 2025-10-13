@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createAsyncEntitySlice } from '../createAsyncEntitySlice';
-import { PROJECT_MESSAGES } from '@/shared/constants/projectMessages.ts';
+import { PROJECT_MESSAGES } from '@/shared/constants';
+import { createAsyncEntitySlice } from '@/shared/lib/store';
 
 describe('createAsyncEntitySlice', () => {
 	const fetchAll = vi.fn(async () => [{ id: '1', name: 'Alpha' }]);

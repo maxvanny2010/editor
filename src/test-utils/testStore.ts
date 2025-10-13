@@ -4,10 +4,12 @@ import { projectsReducer } from '@/entities/project/model/slice';
 /**
  * Creates a fresh, isolated Redux store for testing purposes.
  */
-export const makeTestStore = () =>
+type ProjectsState = ReturnType<typeof projectsReducer>;
+
+export const makeTestStore = (preloadedState?: { projects?: ProjectsState }) =>
 	configureStore({
 		reducer: { projects: projectsReducer },
-		// Disable middleware and devtools for clean unit testing
+		preloadedState: preloadedState as { projects: ProjectsState },
 		middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
 		devTools: false,
 	});
