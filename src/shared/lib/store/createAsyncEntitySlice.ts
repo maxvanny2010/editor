@@ -75,14 +75,17 @@ export function createAsyncEntitySlice<
 				})
 				.addCase(createOneThunk.fulfilled, (state, action: PayloadAction<T>) => {
 					adapter.addOne(state, action.payload);
+					state.loading = 'succeeded';
 				})
 				.addCase(updateOneThunk.fulfilled, (state, action: PayloadAction<T>) => {
 					adapter.upsertOne(state, action.payload);
+					state.loading = 'succeeded';
 				})
 				.addCase(
 					deleteOneThunk.fulfilled,
 					(state, action: PayloadAction<string>) => {
 						adapter.removeOne(state, action.payload);
+						state.loading = 'succeeded';
 					},
 				)
 				.addMatcher(

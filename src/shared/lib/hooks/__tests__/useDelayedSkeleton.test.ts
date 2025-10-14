@@ -1,21 +1,27 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useDelayedSkeleton } from '@/shared/lib/hooks';
 
 describe('useDelayedSkeleton', () => {
-	it('returns true immediately when loading is true', () => {
+	beforeEach(() => {
+		vi.useFakeTimers();
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it('should immediately return true when isLoading is true', () => {
 		const { result } = renderHook(() => useDelayedSkeleton(true));
 		expect(result.current).toBe(true);
 	});
 
-	it('returns false immediately when loading is false', () => {
+	it('should immediately return false when isLoading is false', () => {
 		const { result } = renderHook(() => useDelayedSkeleton(false));
 		expect(result.current).toBe(false);
 	});
 
-	it('keeps skeleton visible for delay after loading turns false', () => {
-		vi.useFakeTimers();
-
+	it('should remain visible for the delay duration after isLoading becomes false', () => {
 		const { result, rerender } = renderHook(
 			({ isLoading }) => useDelayedSkeleton(isLoading, 300),
 			{ initialProps: { isLoading: true } },
@@ -35,27 +41,33 @@ describe('useDelayedSkeleton', () => {
 			vi.advanceTimersByTime(1);
 		});
 		expect(result.current).toBe(false);
-
-		vi.useRealTimers();
 	});
 
-	it('shows skeleton again when loading returns to true', () => {
-		vi.useFakeTimers();
-
+	it('should show the skeleton again when isLoading returns to true', () => {
 		const { result, rerender } = renderHook(
 			({ isLoading }) => useDelayedSkeleton(isLoading, 200),
 			{ initialProps: { isLoading: true } },
 		);
 
 		rerender({ isLoading: false });
+
 		act(() => {
-			vi.advanceTimersByTime(250);
+			vi.runAllTimers();
 		});
 		expect(result.current).toBe(false);
 
 		rerender({ isLoading: true });
 		expect(result.current).toBe(true);
+	});
 
-		vi.useRealTimers();
+	it('should clear the timer on unmount', () => {
+		const { unmount } = renderHook(() => useDelayedSkeleton(false, 500));
+		const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+		unmount();
+
+		expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
+
+		clearTimeoutSpy.mockRestore();
 	});
 });
