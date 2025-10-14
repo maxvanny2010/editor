@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"types": [
 			"node"
-		]
+		],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true
 	},
 	"references": [
 		{
