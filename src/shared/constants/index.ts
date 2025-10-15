@@ -1,2 +1,2 @@
-export * from './projectStates.ts';
-export * from './projectMessages.ts';
+export * from './projectStates';
+export * from './projectMessages';

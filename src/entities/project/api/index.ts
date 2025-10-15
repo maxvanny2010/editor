@@ -1,2 +1,2 @@
-export * from './project.repository.ts';
-export * from './project.db.ts';
+export * from './project.repository';
+export * from './project.db';

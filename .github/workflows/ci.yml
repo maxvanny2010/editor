@@ -26,10 +26,12 @@ jobs:
                 uses: actions/setup-node@v4
                 with:
                     node-version: ${{ matrix.node-version }}
-                    cache: 'npm'
+                    cache: npm
 
-            -   name: Clear Vitest cache
-                run: rm -rf node_modules/.vitest node_modules/.vite coverage
+            -   name: Clear old caches
+                run: |
+                    echo "Cleaning old caches..."
+                    rm -rf node_modules/.vitest node_modules/.vite coverage
 
             -   name: Install dependencies
                 run: npm ci
@@ -37,23 +39,25 @@ jobs:
             -   name: Run ESLint
                 run: npm run lint
 
-            -   name: Run TypeScript check
+            -   name: TypeScript type check
                 run: npx tsc --noEmit
 
             -   name: Build project
                 run: npm run build
 
             -   name: Run Vitest with coverage
-                run: npx vitest run --coverage
+                env:
+                    NODE_OPTIONS: --experimental-vm-modules
+                    VITE_ENV: test
+                run: npm run test:ci
 
             -   name: Set safe artifact name
                 id: artifact_name
                 run: |
-                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-' )
+                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
                     echo "safe_ref_name=$SAFE_REF_NAME" >> $GITHUB_OUTPUT
 
-            # Upload coverage only for Node 22
-            -   name: Upload coverage artifact
+            -   name: Upload coverage artifact (Node 22 only)
                 if: matrix.node-version == 22
                 uses: actions/upload-artifact@v4
                 with:
@@ -83,10 +87,10 @@ jobs:
             -   name: Checkout repository
                 uses: actions/checkout@v4
 
-            -   name: Set safe artifact name
+            -   name: 🏷 Set safe artifact name
                 id: artifact_name
                 run: |
-                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-' )
+                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
                     echo "safe_ref_name=$SAFE_REF_NAME" >> $GITHUB_OUTPUT
 
             -   name: Download coverage artifact
@@ -99,10 +103,10 @@ jobs:
                 id: publish
                 run: |
                     if [[ "${GITHUB_REF}" == refs/pull/* ]]; then
-                        PR_NUMBER=$(echo "${GITHUB_REF}" | cut -d'/' -f3)
-                        SAFE_BRANCH_NAME="pr-${PR_NUMBER}"
+                      PR_NUMBER=$(echo "${GITHUB_REF}" | cut -d'/' -f3)
+                      SAFE_BRANCH_NAME="pr-${PR_NUMBER}"
                     else
-                        SAFE_BRANCH_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-' )
+                      SAFE_BRANCH_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
                     fi
                     echo "safe_branch_name=$SAFE_BRANCH_NAME" >> $GITHUB_OUTPUT
                     echo "Publishing as: $SAFE_BRANCH_NAME"
@@ -112,7 +116,6 @@ jobs:
                     mkdir -p "publish/${{ steps.publish.outputs.safe_branch_name }}"
                     mv coverage/lcov-report/* "publish/${{ steps.publish.outputs.safe_branch_name }}/"
                     echo "Report will be published at /${{ steps.publish.outputs.safe_branch_name }}/"
-
 
             -   name: Upload Pages artifact
                 uses: actions/upload-pages-artifact@v3
