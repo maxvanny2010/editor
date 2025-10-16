@@ -1,2 +1,2 @@
-export * from './makeSelectors.ts';
-export * from './createAsyncEntitySlice.ts';
+export * from './makeSelectors';
+export * from './createAsyncEntitySlice';

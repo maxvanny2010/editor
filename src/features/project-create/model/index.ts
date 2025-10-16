@@ -1,1 +1,1 @@
-export * from '../ui/CreateProjectModal.tsx';
+export * from '../ui/CreateProjectModal';

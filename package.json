@@ -11,7 +11,7 @@
 		"preview": "vite preview",
 		"test": "vitest",
 		"test:ui": "vitest --ui",
-		"test:ci": "vitest run --coverage",
+		"test:ci": "vitest run --coverage --mode test",
 		"typecheck": "tsc --noEmit",
 		"typecheck:test": "tsc -p tsconfig.test.json --noEmit",
 		"prepare": "husky"
@@ -40,6 +40,7 @@
 		"@typescript-eslint/eslint-plugin": "8.45.0",
 		"@typescript-eslint/parser": "8.45.0",
 		"@vitejs/plugin-react-swc": "4.1.0",
+		"@vitest/coverage-istanbul": "^3.2.4",
 		"@vitest/coverage-v8": "^3.2.4",
 		"@vitest/ui": "3.2.4",
 		"eslint": "9.36.0",

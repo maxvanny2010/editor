@@ -14,8 +14,26 @@ html, body, #root {
 	}
 }
 
-.animate-shimmer {
-	animation: shimmer 1.5s infinite linear;
-	background-size: 200% 100%;
-	opacity: 0.4;
+@keyframes energy {
+	0%, 100% {
+		transform: scale(1) translateY(0);
+		opacity: 0.4;
+		filter: blur(14px) brightness(1);
+	}
+	25% {
+		transform: scale(1.05) translateY(-1px);
+		opacity: 0.6;
+		filter: blur(16px) brightness(1.2);
+	}
+	50% {
+		transform: scale(1.1) translateY(-2px);
+		opacity: 0.75;
+		filter: blur(18px) brightness(1.4);
+	}
+	75% {
+		transform: scale(1.05) translateY(1px);
+		opacity: 0.6;
+		filter: blur(15px) brightness(1.1);
+	}
 }
+

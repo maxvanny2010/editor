@@ -1,2 +1,2 @@
-export * from './ProjectEmptyState.tsx';
-export * from './ProjectCard.tsx';
+export * from './ProjectEmptyState';
+export * from './ProjectCard';

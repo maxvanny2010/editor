@@ -1,23 +1,26 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
-import { makeTestStore, type TestRootState } from './testStore';
-
-interface RenderWithStoreOptions {
-	initialState?: Partial<TestRootState>;
-}
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
+import { makeTestStore } from '@/test-utils/testStore';
+import type { RootState } from '@/store';
 
 /**
- * Renders a React component wrapped with a Redux Provider using a fresh test store.
+ * Renders a React component inside Redux + Router context.
+ * Returns both the store and testing-library utilities.
  *
- * @example
- * const { store } = renderWithStore(<MyComponent />, { initialState: { projects: { ... } } });
+ * If DOM stays empty (e.g., modal didn't render), it logs a snapshot automatically.
  */
-export const renderWithStore = (
+export function renderWithStore<S extends Partial<RootState> = Partial<RootState>>(
 	ui: React.ReactElement,
-	options: RenderWithStoreOptions = {},
-) => {
-	const store = makeTestStore(options.initialState);
-	const utils = render(<Provider store={store}>{ui}</Provider>);
+	{ initialState }: { initialState?: S } = {},
+) {
+	const store = makeTestStore(initialState);
+	const utils = render(
+		<Provider store={store}>
+			<MemoryRouter>{ui}</MemoryRouter>
+		</Provider>,
+	);
+
 	return { store, ...utils };
-};
+}

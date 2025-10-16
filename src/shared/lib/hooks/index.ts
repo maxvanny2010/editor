@@ -1,1 +1,1 @@
-export * from './useDelayedSkeleton.ts';
+export * from './useDelayedSkeleton';
