@@ -2,13 +2,13 @@ vi.mock('@/entities/project/ui/_shared', () => ({
 	ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
 }));
 
-import { vi } from 'vitest';
-import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { vi } from 'vitest';
 import type { Observable, Store } from '@reduxjs/toolkit';
 import type { RootState } from '@/store';
+import { DeleteProjectModal } from '@/features/project-delete/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
-import { UpdateProjectModal } from '@/features/project-update/model';
 
 const mockObservable: Observable<RootState> = {
 	subscribe: vi.fn(),
@@ -25,15 +25,15 @@ const fakeStore: Store<RootState> = {
 	[Symbol.observable]: () => mockObservable,
 };
 
-describe('UpdateProjectModal', () => {
+describe('DeleteProjectModal', () => {
 	it('renders ProjectModalBase with correct props', () => {
 		const onClose = vi.fn();
 
 		render(
 			<Provider store={fakeStore}>
-				<UpdateProjectModal
-					projectId="1"
-					initialName="Old Name"
+				<DeleteProjectModal
+					projectId="42"
+					projectName="Test Project"
 					onClose={onClose}
 				/>
 			</Provider>,
@@ -41,12 +41,13 @@ describe('UpdateProjectModal', () => {
 
 		expect(ProjectModalBase).toHaveBeenCalledWith(
 			expect.objectContaining({
-				title: 'Update project name',
-				buttonLabel: 'Update',
-				initialValue: 'Old Name',
+				title: 'Delete project',
+				buttonLabel: 'Delete',
 				onClose,
 				buildArgs: expect.any(Function),
 				onSubmitAction: expect.any(Function),
+				showInput: false,
+				customContent: expect.any(Object),
 			}),
 			undefined,
 		);

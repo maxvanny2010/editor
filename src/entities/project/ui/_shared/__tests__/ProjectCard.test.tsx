@@ -1,8 +1,8 @@
-import { fireEvent, screen, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { ProjectCard, type ProjectCardData } from '@/entities/project/ui';
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import React from 'react'; // Added explicit import for context
+import React from 'react';
 
 describe('ProjectCard', () => {
 	const baseProject: ProjectCardData = {
