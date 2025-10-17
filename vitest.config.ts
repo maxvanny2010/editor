@@ -20,7 +20,7 @@ export default defineConfig({
 		pool: 'forks',
 		poolOptions: { threads: { singleThread: true } },
 		slowTestThreshold: 1000,
-		setupFiles: ['./src/setupTests.tsx'],
+		setupFiles: ['./src/setup.tests.tsx'],
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'lcov', 'html'],

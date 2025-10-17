@@ -8,6 +8,10 @@ vi.mock('framer-motion', async () => {
 	);
 	return { ...actual };
 });
+// ─── MOCK BASE MODAL ────────────────────────────────
+vi.mock('@/entities/project/ui/_shared', () => ({
+	ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
+}));
 
 // ─── CRYPTO POLYFILL ────────────────────────────────
 if (!globalThis.crypto) {

@@ -1,4 +1,3 @@
-// src/features/project-delete/model/DeleteProjectModal.tsx
 import { deleteProject } from '@/entities/project/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
 

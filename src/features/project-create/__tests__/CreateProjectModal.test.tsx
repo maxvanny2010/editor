@@ -1,6 +1,3 @@
-vi.mock('@/entities/project/ui/_shared', () => ({
-	ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
-}));
 import { render } from '@testing-library/react';
 import { CreateProjectModal } from '@/features/project-create/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';

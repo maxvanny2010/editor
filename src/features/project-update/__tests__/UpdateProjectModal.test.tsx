@@ -1,7 +1,3 @@
-vi.mock('@/entities/project/ui/_shared', () => ({
-	ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
-}));
-
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
