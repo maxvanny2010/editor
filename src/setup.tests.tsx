@@ -9,9 +9,13 @@ vi.mock('framer-motion', async () => {
 	return { ...actual };
 });
 // ─── MOCK BASE MODAL ────────────────────────────────
-vi.mock('@/entities/project/ui/_shared', () => ({
-	ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
-}));
+vi.mock('@/entities/project/ui/_shared', async (importOriginal) => {
+	const actual = (await importOriginal()) as Record<string, unknown>;
+	return {
+		...actual,
+		ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
+	};
+});
 
 // ─── CRYPTO POLYFILL ────────────────────────────────
 if (!globalThis.crypto) {
