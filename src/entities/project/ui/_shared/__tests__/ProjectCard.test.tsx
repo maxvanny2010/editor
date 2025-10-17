@@ -1,8 +1,8 @@
-import { fireEvent, screen, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { ProjectCard, type ProjectCardData } from '@/entities/project/ui';
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import React from 'react'; // Added explicit import for context
+import React from 'react';
 
 describe('ProjectCard', () => {
 	const baseProject: ProjectCardData = {
@@ -21,64 +21,50 @@ describe('ProjectCard', () => {
 
 		expect(screen.getByTestId('project-card')).toBeInTheDocument();
 		expect(screen.getByText(/Alpha/i)).toBeInTheDocument();
-		expect(screen.getAllByText(/Oct 26, 2023/i).length).toBe(2);
+		expect(screen.getAllByText(/Oct 26, 2023/i)).toHaveLength(2);
 	});
 
-	it('calls onEditClick when edit button is clicked', () => {
+	it('calls onEditClick when Update button is clicked', () => {
 		const onEditClick = vi.fn();
 		renderWithInlineContext(
 			<ProjectCard project={baseProject} onEditClick={onEditClick} />,
 		);
 
-		const editButton = screen.getByRole('button', { name: /update/i });
-		fireEvent.click(editButton);
-
+		fireEvent.click(screen.getByRole('button', { name: /update/i }));
 		expect(onEditClick).toHaveBeenCalledWith(baseProject);
 	});
 
-	it('handles hover state visually', () => {
+	it('calls onDeleteClick when Delete button is clicked', () => {
+		const onDeleteClick = vi.fn();
+		renderWithInlineContext(
+			<ProjectCard project={baseProject} onDeleteClick={onDeleteClick} />,
+		);
+
+		fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+		expect(onDeleteClick).toHaveBeenCalledWith(baseProject);
+	});
+
+	it('renders buttons even without click handlers', () => {
+		renderWithInlineContext(<ProjectCard project={baseProject} />);
+
+		expect(screen.getByRole('button', { name: /update/i })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+
+		expect(() =>
+			fireEvent.click(screen.getByRole('button', { name: /update/i })),
+		).not.toThrow();
+		expect(() =>
+			fireEvent.click(screen.getByRole('button', { name: /delete/i })),
+		).not.toThrow();
+	});
+
+	it('handles hover states correctly', () => {
 		renderWithInlineContext(<ProjectCard project={baseProject} />);
 
 		const card = screen.getByTestId('project-card');
 		fireEvent.mouseEnter(card);
-		expect(card).toBeInTheDocument();
-
 		fireEvent.mouseLeave(card);
+
 		expect(card).toBeInTheDocument();
-	});
-
-	it('renders with Update button when onEditClick provided', () => {
-		const onEditClick = vi.fn();
-		renderWithInlineContext(
-			<ProjectCard project={baseProject} onEditClick={onEditClick} />,
-		);
-
-		const button = screen.getByRole('button', { name: /update/i });
-		expect(button).toBeInTheDocument();
-
-		fireEvent.click(button);
-		expect(onEditClick).toHaveBeenCalled();
-	});
-
-	it('renders Update button even without onEditClick but does nothing on click', () => {
-		renderWithInlineContext(<ProjectCard project={baseProject} />);
-
-		const button = screen.getByRole('button', { name: /update/i });
-		expect(button).toBeInTheDocument();
-
-		expect(() => fireEvent.click(button)).not.toThrow();
-	});
-
-	it('handles hover state of edit button', () => {
-		const onEditClick = vi.fn();
-		renderWithInlineContext(
-			<ProjectCard project={baseProject} onEditClick={onEditClick} />,
-		);
-
-		const button = screen.getByRole('button', { name: /update/i });
-		fireEvent.mouseEnter(button);
-		fireEvent.mouseLeave(button);
-
-		expect(button).toBeInTheDocument();
 	});
 });

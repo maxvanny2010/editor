@@ -7,6 +7,7 @@ interface Props {
 
 export const CreateProjectModal = ({ onClose }: Props) => (
 	<ProjectModalBase
+		data-testid="create-modal"
 		title="Create new project"
 		buttonLabel="Create"
 		onClose={onClose}

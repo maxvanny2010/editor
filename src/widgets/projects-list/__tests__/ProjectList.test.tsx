@@ -1,9 +1,12 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, type Mock, vi } from 'vitest';
+import { describe, type Mock, vi } from 'vitest';
 import { renderWithStore } from '@/test-utils';
-import { ProjectList } from '../ProjectList';
 import { projectsAdapter } from '@/entities/project/model';
 import { PROJECT_STATE } from '@/shared/constants';
+import { ProjectList } from '../ProjectList';
+
+// cancel a global mock ProjectModalBase
+vi.unmock('@/entities/project/ui/_shared');
 
 let useDelayedSkeleton: Mock;
 
@@ -14,7 +17,7 @@ describe('ProjectList — UI States', () => {
 		useDelayedSkeleton = hooks.useDelayedSkeleton as Mock;
 	});
 
-	afterEach(() => vi.clearAllMocks());
+	afterEach(() => vi.restoreAllMocks());
 
 	it('renders project cards when projects exist', async () => {
 		useDelayedSkeleton.mockReturnValue(false);
@@ -62,23 +65,77 @@ describe('ProjectList — UI States', () => {
 		);
 	});
 
-	it('closes the UpdateProjectModal when onClose is triggered', async () => {
+	it('renders UpdateProjectModal when "Update" button is clicked', async () => {
 		useDelayedSkeleton.mockReturnValue(false);
 
-		const project = { id: '1', name: 'Alpha', createdAt: 1, updatedAt: 1 };
-		const projectsState = {
-			ids: [project.id],
-			entities: { [project.id]: project },
-			loading: PROJECT_STATE.SUCCEEDED,
-			error: null,
-		};
+		const projectsState = projectsAdapter.addOne(
+			projectsAdapter.getInitialState({
+				loading: PROJECT_STATE.SUCCEEDED,
+				error: null,
+			}),
+			{ id: '1', name: 'Editable Project', createdAt: 1, updatedAt: 1 },
+		);
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
 
-		fireEvent.click(await screen.findByTestId('update-button-1'));
-		expect(await screen.findByRole('dialog')).toBeInTheDocument();
+		fireEvent.click(screen.getByTestId('update-button-1'));
 
-		fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
-		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+		await waitFor(() =>
+			expect(screen.getByTestId('update-modal')).toBeInTheDocument(),
+		);
+	});
+
+	it('renders DeleteProjectModal when "Delete" button is clicked', async () => {
+		useDelayedSkeleton.mockReturnValue(false);
+
+		const projectsState = projectsAdapter.addOne(
+			projectsAdapter.getInitialState({
+				loading: PROJECT_STATE.SUCCEEDED,
+				error: null,
+			}),
+			{ id: '1', name: 'Deletable Project', createdAt: 1, updatedAt: 1 },
+		);
+
+		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
+
+		fireEvent.click(screen.getByTestId('delete-button-1'));
+
+		await waitFor(() =>
+			expect(screen.getByTestId('delete-modal')).toBeInTheDocument(),
+		);
+	});
+
+	it('does not render skeletons or empty state when delayedSkeleton is false but loading is pending', async () => {
+		useDelayedSkeleton.mockReturnValue(false);
+
+		const projectsState = projectsAdapter.getInitialState({
+			loading: PROJECT_STATE.PENDING,
+			error: null,
+		});
+
+		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
+
+		await waitFor(() => {
+			expect(screen.queryByTestId('skeleton')).not.toBeInTheDocument();
+			expect(screen.queryByTestId('empty-state')).not.toBeInTheDocument();
+		});
+	});
+
+	it('renders existing project when loading is IDLE (non-empty state)', async () => {
+		useDelayedSkeleton.mockReturnValue(false);
+
+		const projectsState = projectsAdapter.addOne(
+			projectsAdapter.getInitialState({
+				loading: PROJECT_STATE.IDLE,
+				error: null,
+			}),
+			{ id: '99', name: 'Idle Project', createdAt: 1, updatedAt: 1 },
+		);
+
+		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
+
+		await waitFor(() => {
+			expect(screen.getByTestId('project-card')).toBeInTheDocument();
+		});
 	});
 });

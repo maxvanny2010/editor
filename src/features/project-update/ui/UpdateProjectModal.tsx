@@ -9,6 +9,7 @@ interface Props {
 
 export const UpdateProjectModal = ({ projectId, initialName, onClose }: Props) => (
 	<ProjectModalBase
+		data-testid="update-modal"
 		title="Update project name"
 		buttonLabel="Update"
 		onClose={onClose}

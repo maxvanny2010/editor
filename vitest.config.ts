@@ -5,31 +5,27 @@ import path from 'path';
 
 export default defineConfig({
 	plugins: [react(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, './src'),
-			'framer-motion': path.resolve(__dirname, './src/__mocks__/framer-motion.tsx'),
-		},
-	},
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		isolate: false,
+		isolate: true,
 		mockReset: true,
+		restoreMocks: true,
+		clearMocks: true,
 		css: false,
 		pool: 'forks',
 		poolOptions: { threads: { singleThread: true } },
 		slowTestThreshold: 1000,
-		setupFiles: ['./src/setupTests.tsx'],
+		setupFiles: [path.resolve(__dirname, './src/setup.tests.tsx')],
 		coverage: {
-			provider: 'v8',
+			provider: 'istanbul',
 			reporter: ['text', 'lcov', 'html'],
 			reportsDirectory: './coverage',
 			clean: true,
 			exclude: [
 				'**/__tests__/**',
-				'**/index.*',
 				'**/*.d.ts',
+				'**/index.*',
 				'**/config.*',
 				'**/vite.config.*',
 				'**/vitest.config.*',
@@ -49,9 +45,7 @@ export default defineConfig({
 			],
 		},
 		server: {
-			deps: {
-				inline: [/vitest/],
-			},
+			deps: { inline: [/vitest/] },
 		},
 	},
 });

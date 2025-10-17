@@ -1,3 +1,4 @@
+// src/entities/project/ui/_shared/ProjectModalBase.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PROJECT_MESSAGES } from '@/shared/constants';
@@ -14,8 +15,10 @@ interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	initialValue?: string;
 	buildArgs: (name: string) => TArgs;
 	disableAutoClose?: boolean;
+	showInput?: boolean;
+	customContent?: React.ReactNode;
+	'data-testid'?: string;
 }
-
 /**
  * Base modal layout for project operations (Create / Update / Delete)
  * Handles validation, async dispatching, error feedback and visuals.
@@ -27,6 +30,9 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	onSubmitAction,
 	initialValue = '',
 	buildArgs,
+	showInput = true,
+	customContent,
+	'data-testid': testId,
 }: ProjectModalBaseProps<TArgs>) {
 	const dispatch = useAppDispatch();
 	const [name, setName] = useState(initialValue);
@@ -37,7 +43,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		e.preventDefault();
 		setError(null);
 
-		if (!name.trim()) {
+		if (showInput && !name.trim()) {
 			setError(PROJECT_MESSAGES.EMPTY_NAME);
 			return;
 		}
@@ -62,6 +68,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		<div
 			role="dialog"
 			aria-modal="true"
+			data-testid={testId}
 			className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
 		>
 			{/* ───────── MODAL CONTAINER ───────── */}
@@ -83,30 +90,34 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 				</div>
 
 				{/* ───────── INPUT FIELD ───────── */}
-				<div className="space-y-2">
-					<label
-						htmlFor="project-name"
-						className="block text-sm font-medium text-gray-600"
-					>
-						Project name
-					</label>
-					<input
-						id="project-name"
-						type="text"
-						value={name}
-						data-testid="project-input"
-						placeholder="Enter project name"
-						onChange={(e) => setName(e.target.value)}
-						className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
-								   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
-								   outline-none transition"
-					/>
-					{error && (
-						<p role="alert" className="text-red-500 text-sm mt-1">
-							{error}
-						</p>
-					)}
-				</div>
+				{showInput ? (
+					<div className="space-y-2">
+						<label
+							htmlFor="project-name"
+							className="block text-sm font-medium text-gray-600"
+						>
+							Project name
+						</label>
+						<input
+							id="project-name"
+							type="text"
+							value={name}
+							data-testid="project-input"
+							placeholder="Enter project name"
+							onChange={(e) => setName(e.target.value)}
+							className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
+									   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
+									   outline-none transition"
+						/>
+						{error && (
+							<p role="alert" className="text-red-500 text-sm mt-1">
+								{error}
+							</p>
+						)}
+					</div>
+				) : (
+					<div className="text-gray-700 text-sm">{customContent}</div>
+				)}
 
 				{/* ───────── ACTION BUTTONS ───────── */}
 				<div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
@@ -130,10 +141,11 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 						whileHover={{ y: -1 }}
 						whileTap={{ scale: 0.97 }}
 						disabled={loading}
-						className="rounded-full px-5 py-1.5 text-sm font-semibold text-white
-								   bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800
-								   transition-all shadow-sm hover:shadow focus:outline-none
-								   focus:ring-2 focus:ring-indigo-400 disabled:opacity-70"
+						className={`rounded-full px-5 py-1.5 text-sm font-semibold text-white transition-all shadow-sm focus:outline-none ${
+							showInput
+								? 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
+								: 'bg-rose-600 hover:bg-rose-700 active:bg-rose-800'
+						} focus:ring-2 focus:ring-indigo-400 disabled:opacity-70`}
 					>
 						{loading ? `${buttonLabel}ing...` : buttonLabel}
 					</motion.button>

@@ -3,10 +3,9 @@ import 'fake-indexeddb/auto';
 import { webcrypto } from 'crypto';
 
 vi.mock('framer-motion', async () => {
-	const actual = await vi.importActual<typeof import('./__mocks__/framer-motion')>(
-		'./__mocks__/framer-motion',
-	);
-	return { ...actual };
+	const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');
+	const mock = await import('@/__mocks__/framer-motion');
+	return { ...actual, ...mock };
 });
 
 // ─── CRYPTO POLYFILL ────────────────────────────────
