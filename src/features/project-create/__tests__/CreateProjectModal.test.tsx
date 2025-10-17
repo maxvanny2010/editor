@@ -16,6 +16,7 @@ describe('CreateProjectModal', () => {
 				onClose,
 				buildArgs: expect.any(Function),
 				onSubmitAction: expect.any(Function),
+				'data-testid': 'create-modal',
 			}),
 			undefined,
 		);

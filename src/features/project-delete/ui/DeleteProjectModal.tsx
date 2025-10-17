@@ -9,6 +9,7 @@ interface Props {
 
 export const DeleteProjectModal = ({ projectId, projectName, onClose }: Props) => (
 	<ProjectModalBase
+		data-testid="delete-modal"
 		title="Delete project"
 		buttonLabel="Delete"
 		onClose={onClose}

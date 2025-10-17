@@ -17,6 +17,7 @@ interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	disableAutoClose?: boolean;
 	showInput?: boolean;
 	customContent?: React.ReactNode;
+	'data-testid'?: string;
 }
 /**
  * Base modal layout for project operations (Create / Update / Delete)
@@ -31,6 +32,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	buildArgs,
 	showInput = true,
 	customContent,
+	'data-testid': testId,
 }: ProjectModalBaseProps<TArgs>) {
 	const dispatch = useAppDispatch();
 	const [name, setName] = useState(initialValue);
@@ -66,6 +68,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		<div
 			role="dialog"
 			aria-modal="true"
+			data-testid={testId}
 			className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
 		>
 			{/* ───────── MODAL CONTAINER ───────── */}

@@ -43,6 +43,7 @@ describe('UpdateProjectModal', () => {
 				onClose,
 				buildArgs: expect.any(Function),
 				onSubmitAction: expect.any(Function),
+				'data-testid': 'update-modal',
 			}),
 			undefined,
 		);

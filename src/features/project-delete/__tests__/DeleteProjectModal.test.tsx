@@ -44,6 +44,7 @@ describe('DeleteProjectModal', () => {
 				onSubmitAction: expect.any(Function),
 				showInput: false,
 				customContent: expect.any(Object),
+				'data-testid': 'delete-modal',
 			}),
 			undefined,
 		);
