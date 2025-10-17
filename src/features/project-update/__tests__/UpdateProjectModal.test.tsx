@@ -1,10 +1,18 @@
-import { vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
-import type { Observable, Store } from '@reduxjs/toolkit';
+import type { Store, Observable } from '@reduxjs/toolkit';
 import type { RootState } from '@/store';
-import { ProjectModalBase } from '@/entities/project/ui/_shared';
+
+vi.mock('@/entities/project/ui/_shared', async (importOriginal) => {
+	const actual = (await importOriginal()) as Record<string, unknown>;
+	return {
+		...actual,
+		ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
+	};
+});
+
 import { UpdateProjectModal } from '@/features/project-update/model';
+import { ProjectModalBase } from '@/entities/project/ui/_shared';
 
 const mockObservable: Observable<RootState> = {
 	subscribe: vi.fn(),
@@ -24,14 +32,9 @@ const fakeStore: Store<RootState> = {
 describe('UpdateProjectModal', () => {
 	it('renders ProjectModalBase with correct props', () => {
 		const onClose = vi.fn();
-
 		render(
 			<Provider store={fakeStore}>
-				<UpdateProjectModal
-					projectId="1"
-					initialName="Old Name"
-					onClose={onClose}
-				/>
+				<UpdateProjectModal projectId="1" initialName="Old" onClose={onClose} />
 			</Provider>,
 		);
 
@@ -39,8 +42,8 @@ describe('UpdateProjectModal', () => {
 			expect.objectContaining({
 				title: 'Update project name',
 				buttonLabel: 'Update',
-				initialValue: 'Old Name',
 				onClose,
+				initialValue: 'Old',
 				buildArgs: expect.any(Function),
 				onSubmitAction: expect.any(Function),
 				'data-testid': 'update-modal',

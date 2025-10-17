@@ -1,7 +1,14 @@
 import { render } from '@testing-library/react';
+
+vi.mock('@/entities/project/ui/_shared', async (importOriginal) => {
+	const actual = (await importOriginal()) as Record<string, unknown>;
+	return {
+		...actual,
+		ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
+	};
+});
 import { CreateProjectModal } from '@/features/project-create/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
-import { vi } from 'vitest';
 
 describe('CreateProjectModal', () => {
 	it('renders ProjectModalBase with correct props', () => {

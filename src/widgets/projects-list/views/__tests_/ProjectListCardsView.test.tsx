@@ -2,10 +2,6 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithStore } from '@/test-utils';
 import { ProjectListCardsView } from '../ProjectListCardsView';
 
-beforeAll(() => {
-	vi.unmock('@/entities/project/ui/_shared');
-});
-
 describe('ProjectListCardsView', () => {
 	const mockProjects = [{ id: '1', name: 'Alpha', createdAt: 1, updatedAt: 1 }];
 

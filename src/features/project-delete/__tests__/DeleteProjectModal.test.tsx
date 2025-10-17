@@ -1,8 +1,16 @@
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { vi } from 'vitest';
 import type { Observable, Store } from '@reduxjs/toolkit';
 import type { RootState } from '@/store';
+
+vi.mock('@/entities/project/ui/_shared', async (importOriginal) => {
+	const actual = (await importOriginal()) as Record<string, unknown>;
+	return {
+		...actual,
+		ProjectModalBase: vi.fn(() => <div data-testid="modal-base" />),
+	};
+});
+
 import { DeleteProjectModal } from '@/features/project-delete/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
 
