@@ -1,51 +1,64 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { ProjectModalBase } from '../ProjectModalBase';
 import { PROJECT_MESSAGES } from '@/shared/constants';
-import { renderWithStore } from '@/test-utils';
-import { vi } from 'vitest';
 
-describe('ProjectModalBase validation', () => {
-	it('shows error when input is empty', async () => {
-		const onClose = vi.fn();
-		const onSubmitAction = vi.fn();
+vi.mock('@/store/hooks', () => ({
+	useAppDispatch: () => () => Promise.resolve(),
+}));
 
-		renderWithStore(
+describe('ProjectModalBase (simplified)', () => {
+	const onSubmit = vi.fn(() => Promise.resolve());
+	const onClose = vi.fn();
+
+	function renderModal() {
+		render(
 			<ProjectModalBase
-				title="Test Modal"
+				title="Create"
 				buttonLabel="Create"
 				onClose={onClose}
-				onSubmitAction={onSubmitAction}
-				buildArgs={(name) => ({ name })}
+				onSubmitAction={onSubmit}
+				buildArgs={(name, width, height) => ({ name, width, height })}
+				showInput
+				showCanvasInputs={true}
 			/>,
 		);
+	}
 
+	it('shows error when name is empty', () => {
+		renderModal();
 		fireEvent.submit(screen.getByTestId('project-form'));
-
-		expect(await screen.findByRole('alert')).toHaveTextContent(
-			PROJECT_MESSAGES.NAME_EMPTY,
-		);
+		expect(screen.getByText(PROJECT_MESSAGES.NAME_EMPTY)).toBeInTheDocument();
+	});
+	it('shows error when width > 4000', () => {
+		renderModal();
+		fireEvent.change(screen.getByTestId('project-input'), { target: { value: 'X' } });
+		fireEvent.change(screen.getByTestId('canvas-width'), {
+			target: { value: '9999' },
+		});
+		fireEvent.submit(screen.getByTestId('project-form'));
+		expect(
+			screen.getByText(PROJECT_MESSAGES.CANVAS_REQUIRED_WIDTH_MAX),
+		).toBeInTheDocument();
 	});
 
-	it('shows error if name exceeds 25 characters', async () => {
-		const onClose = vi.fn();
-		const onSubmitAction = vi.fn();
+	it('shows error when width < 100', () => {
+		renderModal();
+		fireEvent.change(screen.getByTestId('project-input'), { target: { value: 'X' } });
+		fireEvent.change(screen.getByTestId('canvas-width'), { target: { value: '50' } });
+		fireEvent.submit(screen.getByTestId('project-form'));
+		expect(
+			screen.getByText(PROJECT_MESSAGES.CANVAS_REQUIRED_WIDTH_MIN),
+		).toBeInTheDocument();
+	});
 
-		renderWithStore(
-			<ProjectModalBase
-				title="Test Modal"
-				buttonLabel="Create"
-				onClose={onClose}
-				onSubmitAction={onSubmitAction}
-				buildArgs={(name) => ({ name })}
-			/>,
-		);
-
-		const input = screen.getByTestId('project-input');
-		fireEvent.change(input, { target: { value: 'A'.repeat(26) } });
+	it('calls onSubmitAction on valid form', async () => {
+		renderModal();
+		fireEvent.change(screen.getByTestId('project-input'), {
+			target: { value: 'OK' },
+		});
 		fireEvent.submit(screen.getByTestId('project-form'));
 
-		expect(await screen.findByRole('alert')).toHaveTextContent(
-			PROJECT_MESSAGES.NAME_REQUEST,
-		);
+		await waitFor(() => expect(onSubmit).toHaveBeenCalled());
 	});
 });

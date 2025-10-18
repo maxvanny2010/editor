@@ -24,8 +24,8 @@ export const DeleteProjectModal = ({ projectId, projectName, onClose }: Props) =
 			</div>
 		}
 		buildArgs={() => ({ id: projectId })}
-		onSubmitAction={async (dispatch) => {
-			await dispatch(deleteProject(projectId)).unwrap();
+		onSubmitAction={async (dispatch, args) => {
+			await dispatch(deleteProject(args.id)).unwrap();
 		}}
 	/>
 );

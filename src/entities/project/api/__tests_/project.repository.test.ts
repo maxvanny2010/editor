@@ -12,8 +12,10 @@ describe('projectRepository', () => {
 	it('add creates a record, and getById returns it', async () => {
 		const now = Date.now();
 		const project: Project = {
-			id: nanoid(),
-			name: 'Test Project',
+			id: '1',
+			name: 'Alpha',
+			width: 800,
+			height: 600,
 			createdAt: now,
 			updatedAt: now,
 		};
@@ -29,6 +31,8 @@ describe('projectRepository', () => {
 		const project: Project = {
 			id: nanoid(),
 			name: 'Case Test',
+			width: 800,
+			height: 600,
 			createdAt: now,
 			updatedAt: now,
 		};
@@ -45,12 +49,16 @@ describe('projectRepository', () => {
 		const projectA: Project = {
 			id: nanoid(),
 			name: 'A',
+			width: 800,
+			height: 600,
 			createdAt: now - 10,
 			updatedAt: now - 10,
 		};
 		const projectB: Project = {
 			id: nanoid(),
 			name: 'B',
+			width: 800,
+			height: 600,
 			createdAt: now,
 			updatedAt: now,
 		};
@@ -68,6 +76,8 @@ describe('projectRepository', () => {
 		const project: Project = {
 			id: nanoid(),
 			name: 'Old Name',
+			width: 800,
+			height: 600,
 			createdAt: now,
 			updatedAt: now,
 		};
@@ -89,6 +99,8 @@ describe('projectRepository', () => {
 		const project: Project = {
 			id: nanoid(),
 			name: 'To Delete',
+			width: 800,
+			height: 600,
 			createdAt: now,
 			updatedAt: now,
 		};

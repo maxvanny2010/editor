@@ -27,7 +27,14 @@ describe('ProjectList — UI States', () => {
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
 			}),
-			{ id: '1', name: 'Test Project', createdAt: 1, updatedAt: 1 },
+			{
+				id: '1',
+				name: 'Test Project',
+				width: 800,
+				height: 600,
+				createdAt: 1,
+				updatedAt: 1,
+			},
 		);
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -73,7 +80,14 @@ describe('ProjectList — UI States', () => {
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
 			}),
-			{ id: '1', name: 'Editable Project', createdAt: 1, updatedAt: 1 },
+			{
+				id: '1',
+				name: 'Editable Project',
+				width: 1024,
+				height: 768,
+				createdAt: 1,
+				updatedAt: 1,
+			},
 		);
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -93,7 +107,14 @@ describe('ProjectList — UI States', () => {
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
 			}),
-			{ id: '1', name: 'Deletable Project', createdAt: 1, updatedAt: 1 },
+			{
+				id: '1',
+				name: 'Deletable Project',
+				width: 1200,
+				height: 800,
+				createdAt: 1,
+				updatedAt: 1,
+			},
 		);
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -129,7 +150,14 @@ describe('ProjectList — UI States', () => {
 				loading: PROJECT_STATE.IDLE,
 				error: null,
 			}),
-			{ id: '99', name: 'Idle Project', createdAt: 1, updatedAt: 1 },
+			{
+				id: '99',
+				name: 'Idle Project',
+				width: 640,
+				height: 480,
+				createdAt: 1,
+				updatedAt: 1,
+			},
 		);
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });

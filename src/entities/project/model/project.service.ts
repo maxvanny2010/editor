@@ -8,16 +8,22 @@ export const projectService = {
 		return projectRepository.getAll();
 	},
 
-	async createProject(data: { name: string }): Promise<Project> {
+	async createProject(data: {
+		name: string;
+		width?: number;
+		height?: number;
+	}): Promise<Project> {
 		const name = data.name.trim();
 		if (!name) throw new Error(PROJECT_MESSAGES.NAME_EMPTY);
 
 		const exists = await projectRepository.findByName(name);
-		if (exists) throw new Error(PROJECT_MESSAGES.DUPLICATE_NAME);
+		if (exists) throw new Error(PROJECT_MESSAGES.NAME_DUPLICATE);
 
 		const newProject: Project = {
 			id: nanoid(),
 			name,
+			width: data.width ?? 800,
+			height: data.height ?? 600,
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
 		};

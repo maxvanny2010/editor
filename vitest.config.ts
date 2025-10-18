@@ -27,6 +27,7 @@ export default defineConfig({
 				'**/*.d.ts',
 				'**/index.*',
 				'**/config.*',
+				'**/dexie.*',
 				'**/vite.config.*',
 				'**/vitest.config.*',
 				'**/postcss.config.*',

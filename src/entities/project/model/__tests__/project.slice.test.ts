@@ -28,15 +28,31 @@ describe('projectsSlice + thunks', () => {
 	it('fetchProjects populates state from IndexedDB', async () => {
 		const now = Date.now();
 		const records: Project[] = [
-			{ id: nanoid(), name: 'A', createdAt: now - 2, updatedAt: now - 2 },
-			{ id: nanoid(), name: 'B', createdAt: now - 1, updatedAt: now - 1 },
+			{
+				id: nanoid(),
+				name: 'A',
+				width: 800,
+				height: 600,
+				createdAt: now - 2,
+				updatedAt: now - 2,
+			},
+			{
+				id: nanoid(),
+				name: 'B',
+				width: 800,
+				height: 600,
+				createdAt: now - 1,
+				updatedAt: now - 1,
+			},
 		];
+
 		for (const r of records) await projectRepository.add(r);
 
 		const store = storeFactory();
 
 		await store.dispatch(fetchProjects());
 		const all = selectors.selectAll(store.getState());
+
 		expect(all.length).toBe(2);
 		expect(all.map((x) => x.name)).toEqual(['B', 'A']);
 	});
