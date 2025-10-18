@@ -1,7 +1,7 @@
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { renderWithStore } from '@/test-utils';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { ProjectModalBase } from '../ProjectModalBase';
 import { PROJECT_MESSAGES } from '@/shared/constants';
+import { renderWithStore } from '@/test-utils';
 import { vi } from 'vitest';
 
 describe('ProjectModalBase', () => {
@@ -27,7 +27,7 @@ describe('ProjectModalBase', () => {
 	it('shows validation error when input is empty', async () => {
 		await renderModal();
 		fireEvent.click(await screen.findByTestId('project-submit'));
-		expect(await screen.findByText(PROJECT_MESSAGES.EMPTY_NAME)).toBeInTheDocument();
+		expect(await screen.findByText(PROJECT_MESSAGES.NAME_EMPTY)).toBeInTheDocument();
 	});
 
 	it('handles successful submit', async () => {

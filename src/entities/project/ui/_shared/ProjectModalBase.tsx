@@ -1,8 +1,9 @@
-// src/entities/project/ui/_shared/ProjectModalBase.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PROJECT_MESSAGES } from '@/shared/constants';
 import { useAppDispatch } from '@/store/hooks';
+import { projectNameSchema } from '@/shared/schema';
+import { ZodError } from 'zod';
 
 interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	title: string;
@@ -43,16 +44,22 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		e.preventDefault();
 		setError(null);
 
-		if (showInput && !name.trim()) {
-			setError(PROJECT_MESSAGES.EMPTY_NAME);
-			return;
-		}
-
 		try {
+			if (showInput) {
+				projectNameSchema.parse(name);
+			}
+
 			setLoading(true);
 			await onSubmitAction(dispatch, buildArgs(name));
 			onClose();
 		} catch (err) {
+			if (err instanceof ZodError) {
+				setError(
+					err.issues[0]?.message ?? PROJECT_MESSAGES.UNEXPECTED_SERVER_ERROR,
+				);
+				return;
+			}
+
 			const message = (err as Error).message;
 			setError(
 				message.includes('exists')
@@ -103,7 +110,8 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 							type="text"
 							value={name}
 							data-testid="project-input"
-							placeholder="Enter project name"
+							maxLength={25}
+							placeholder="Enter project name (max 25 chars)"
 							onChange={(e) => setName(e.target.value)}
 							className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
 									   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
