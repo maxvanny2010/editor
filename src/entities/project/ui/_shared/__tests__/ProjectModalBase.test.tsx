@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { renderWithStore } from '@/test-utils';
 import { ProjectModalBase } from '../ProjectModalBase';
 import { PROJECT_MESSAGES } from '@/shared/constants';
-import { renderWithStore } from '@/test-utils';
 import { vi } from 'vitest';
 
 describe('ProjectModalBase', () => {
@@ -51,7 +51,7 @@ describe('ProjectModalBase', () => {
 		fireEvent.click(await screen.findByTestId('project-submit'));
 
 		expect(
-			await screen.findByText(PROJECT_MESSAGES.DUPLICATE_NAME),
+			await screen.findByText(PROJECT_MESSAGES.NAME_DUPLICATE),
 		).toBeInTheDocument();
 	});
 

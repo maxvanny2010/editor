@@ -11,7 +11,8 @@ export const CreateProjectModal = ({ onClose }: Props) => (
 		title="Create new project"
 		buttonLabel="Create"
 		onClose={onClose}
-		buildArgs={(name) => ({ name })}
+		showCanvasInputs={true}
+		buildArgs={(name, width, height) => ({ name, width, height })}
 		onSubmitAction={async (dispatch, args) => {
 			await dispatch(createProject(args)).unwrap();
 		}}

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PROJECT_MESSAGES } from '@/shared/constants';
 import { useAppDispatch } from '@/store/hooks';
-import { projectNameSchema } from '@/shared/schema';
-import { ZodError } from 'zod';
+import { projectSchema } from '@/shared/schema';
 
 interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	title: string;
@@ -14,9 +13,10 @@ interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 		args: TArgs,
 	) => Promise<void>;
 	initialValue?: string;
-	buildArgs: (name: string) => TArgs;
+	buildArgs: (name: string, width: number, height: number) => TArgs;
 	disableAutoClose?: boolean;
 	showInput?: boolean;
+	showCanvasInputs?: boolean;
 	customContent?: React.ReactNode;
 	'data-testid'?: string;
 }
@@ -32,38 +32,44 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	initialValue = '',
 	buildArgs,
 	showInput = true,
+	showCanvasInputs = false,
 	customContent,
 	'data-testid': testId,
 }: ProjectModalBaseProps<TArgs>) {
 	const dispatch = useAppDispatch();
+
 	const [name, setName] = useState(initialValue);
+	const [width, setWidth] = useState(800);
+	const [height, setHeight] = useState(600);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const MAX_WIDTH = 4000;
+	const MAX_HEIGHT = 4000;
+	const MIN_WIDTH = 100;
+	const MIN_HEIGHT = 100;
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setError(null);
 
-		try {
-			if (showInput) {
-				projectNameSchema.parse(name);
-			}
-
-			setLoading(true);
-			await onSubmitAction(dispatch, buildArgs(name));
-			onClose();
-		} catch (err) {
-			if (err instanceof ZodError) {
-				setError(
-					err.issues[0]?.message ?? PROJECT_MESSAGES.UNEXPECTED_SERVER_ERROR,
-				);
+		if (showInput || showCanvasInputs) {
+			const validation = projectSchema.safeParse({ name, width, height });
+			if (!validation.success) {
+				setError(validation.error.issues[0]?.message ?? 'Validation failed');
 				return;
 			}
+		}
 
+		try {
+			setLoading(true);
+			await onSubmitAction(dispatch, buildArgs(name, width, height));
+			onClose();
+		} catch (err) {
 			const message = (err as Error).message;
 			setError(
 				message.includes('exists')
-					? PROJECT_MESSAGES.DUPLICATE_NAME
+					? PROJECT_MESSAGES.NAME_DUPLICATE
 					: PROJECT_MESSAGES.UNEXPECTED_SERVER_ERROR,
 			);
 		} finally {
@@ -98,25 +104,69 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 
 				{/* ───────── INPUT FIELD ───────── */}
 				{showInput ? (
-					<div className="space-y-2">
-						<label
-							htmlFor="project-name"
-							className="block text-sm font-medium text-gray-600"
-						>
-							Project name
-						</label>
-						<input
-							id="project-name"
-							type="text"
-							value={name}
-							data-testid="project-input"
-							maxLength={25}
-							placeholder="Enter project name (max 25 chars)"
-							onChange={(e) => setName(e.target.value)}
-							className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
-									   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
-									   outline-none transition"
-						/>
+					<div className="space-y-4">
+						{/* Project name */}
+						<div className="space-y-2">
+							<label
+								htmlFor="project-name"
+								className="block text-sm font-medium text-gray-600"
+							>
+								Project name
+							</label>
+							<input
+								id="project-name"
+								type="text"
+								value={name}
+								data-testid="project-input"
+								placeholder="Enter project name"
+								onChange={(e) => setName(e.target.value)}
+								className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
+										   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
+										   outline-none transition"
+							/>
+						</div>
+
+						{/* Size Canvas */}
+						{showCanvasInputs && (
+							<div className="flex gap-4">
+								<div className="flex-1">
+									<label className="block text-sm font-medium text-gray-600">
+										Width (px)
+									</label>
+									<input
+										type="number"
+										min={MIN_WIDTH}
+										max={MAX_WIDTH}
+										value={width}
+										onKeyDown={(e) =>
+											e.key === 'Enter' && e.preventDefault()
+										}
+										onChange={(e) => setWidth(Number(e.target.value))}
+										data-testid="canvas-width"
+										className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
+									/>
+								</div>
+								<div className="flex-1">
+									<label className="block text-sm font-medium text-gray-600">
+										Height (px)
+									</label>
+									<input
+										type="number"
+										min={MIN_HEIGHT}
+										max={MAX_HEIGHT}
+										onKeyDown={(e) =>
+											e.key === 'Enter' && e.preventDefault()
+										}
+										value={height}
+										onChange={(e) =>
+											setHeight(Number(e.target.value))
+										}
+										data-testid="canvas-height"
+										className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
+									/>
+								</div>
+							</div>
+						)}
 						{error && (
 							<p role="alert" className="text-red-500 text-sm mt-1">
 								{error}

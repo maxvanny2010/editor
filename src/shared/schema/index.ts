@@ -1,1 +1,1 @@
-export * from './projectNameSchema.ts';
+export * from './projectSchema.ts';

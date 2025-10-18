@@ -18,7 +18,7 @@ describe('projectService', () => {
 	it('should throw an error if project name already exists', async () => {
 		await projectService.createProject({ name: 'Same' });
 		await expect(projectService.createProject({ name: 'same' })).rejects.toThrow(
-			PROJECT_MESSAGES.DUPLICATE_NAME,
+			PROJECT_MESSAGES.NAME_DUPLICATE,
 		);
 	});
 
