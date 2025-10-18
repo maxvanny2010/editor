@@ -44,11 +44,6 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const MAX_WIDTH = 4000;
-	const MAX_HEIGHT = 4000;
-	const MIN_WIDTH = 100;
-	const MIN_HEIGHT = 100;
-
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setError(null);
@@ -86,6 +81,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		>
 			{/* ───────── MODAL CONTAINER ───────── */}
 			<motion.form
+				noValidate
 				data-testid="project-form"
 				initial={{ opacity: 0, scale: 0.92, y: 15 }}
 				animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -135,8 +131,6 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 									</label>
 									<input
 										type="number"
-										min={MIN_WIDTH}
-										max={MAX_WIDTH}
 										value={width}
 										onKeyDown={(e) =>
 											e.key === 'Enter' && e.preventDefault()
@@ -152,8 +146,6 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 									</label>
 									<input
 										type="number"
-										min={MIN_HEIGHT}
-										max={MAX_HEIGHT}
 										onKeyDown={(e) =>
 											e.key === 'Enter' && e.preventDefault()
 										}
