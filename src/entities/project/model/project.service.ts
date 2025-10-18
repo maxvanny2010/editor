@@ -10,7 +10,7 @@ export const projectService = {
 
 	async createProject(data: { name: string }): Promise<Project> {
 		const name = data.name.trim();
-		if (!name) throw new Error(PROJECT_MESSAGES.EMPTY_NAME);
+		if (!name) throw new Error(PROJECT_MESSAGES.NAME_EMPTY);
 
 		const exists = await projectRepository.findByName(name);
 		if (exists) throw new Error(PROJECT_MESSAGES.DUPLICATE_NAME);

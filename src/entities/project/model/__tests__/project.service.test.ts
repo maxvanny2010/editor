@@ -11,7 +11,7 @@ describe('projectService', () => {
 
 	it('should throw an error if name is empty', async () => {
 		await expect(projectService.createProject({ name: '   ' })).rejects.toThrow(
-			PROJECT_MESSAGES.EMPTY_NAME,
+			PROJECT_MESSAGES.NAME_EMPTY,
 		);
 	});
 

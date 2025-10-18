@@ -25,7 +25,8 @@
 		"react-dom": "19.1.1",
 		"react-redux": "9.2.0",
 		"react-router-dom": "7.9.4",
-		"redux-logger": "3.0.6"
+		"redux-logger": "3.0.6",
+		"zod": "4.1.12"
 	},
 	"devDependencies": {
 		"@eslint/js": "9.36.0",
