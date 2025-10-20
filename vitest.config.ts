@@ -44,6 +44,7 @@ export default defineConfig({
 				'src/test-utils/**',
 				'**/HomeLayout.tsx',
 				'src/shared/schema',
+				'src/shared/constants',
 			],
 		},
 		server: {

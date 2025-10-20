@@ -1,9 +1,13 @@
-import { AppRouter } from '@/app/router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { PROJECT_PATHS } from '@/shared/constants';
+import { EditorPage } from '@/pages/model';
+import HomePage from '@/pages/home';
 
-export default function App() {
-	return (
-		<div className="min-h-screen w-full bg-gray-100">
-			<AppRouter />
-		</div>
-	);
-}
+export const App = () => (
+	<BrowserRouter>
+		<Routes>
+			<Route path={PROJECT_PATHS.HOME} element={<HomePage />} />
+			<Route path={`${PROJECT_PATHS.EDITOR}/:id`} element={<EditorPage />} />
+		</Routes>
+	</BrowserRouter>
+);
