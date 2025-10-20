@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ProjectCard, type ProjectCardData } from '@/entities/project/ui';
 import { UpdateProjectModal } from '@/features/project-update/model';
 import { DeleteProjectModal } from '@/features/project-delete/model';
+import { ProjectCard, type ProjectCardData } from '@/entities/project/ui/_shared';
 
 interface Props {
 	projects: ProjectCardData[];
