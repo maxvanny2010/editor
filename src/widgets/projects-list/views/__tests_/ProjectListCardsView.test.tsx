@@ -41,4 +41,11 @@ describe('ProjectListCardsView', () => {
 			expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument(),
 		);
 	});
+	it('uses project.name as key when id is missing', () => {
+		const mockProjects = [{ id: '1', name: 'Alpha', createdAt: 1, updatedAt: 1 }];
+
+		renderWithStore(<ProjectListCardsView projects={mockProjects} />);
+
+		expect(screen.getByTestId('project-card')).toBeInTheDocument();
+	});
 });

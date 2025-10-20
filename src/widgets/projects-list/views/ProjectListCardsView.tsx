@@ -23,7 +23,7 @@ function renderCard(
 	onDelete: (p: ProjectCardData) => void,
 ) {
 	return (
-		<div key={project.id} className="w-full max-w-[280px]">
+		<div key={project.id || project.name} className="w-full max-w-[280px]">
 			<ProjectCard
 				project={project}
 				data-testid="project-card"
@@ -33,11 +33,26 @@ function renderCard(
 		</div>
 	);
 }
+
 export const ProjectListCardsViewComponent = ({ projects }: Props) => {
 	const [editingProject, setEditingProject] = useState<ProjectCardData | null>(null);
 	const [deletingProject, setDeletingProject] = useState<ProjectCardData | null>(null);
+
 	const handleCloseEdit = () => setEditingProject(null);
 	const handleCloseDelete = () => setDeletingProject(null);
+	const isDev = import.meta.env.MODE === 'development';
+	const projectsWithFake: ProjectCardData[] = isDev
+		? [
+				...projects,
+				{
+					id: '', // empty id for ghost project
+					name: 'Ghost Project',
+					createdAt: Date.now(),
+					updatedAt: Date.now(),
+				},
+			]
+		: projects;
+
 	return (
 		<div className="relative min-h-[400px]" data-testid="project-list">
 			<AnimatePresence mode="wait">
@@ -47,7 +62,7 @@ export const ProjectListCardsViewComponent = ({ projects }: Props) => {
 					transition={{ duration: 0.4 }}
 					className={gridClasses}
 				>
-					{projects.map((p) =>
+					{projectsWithFake.map((p) =>
 						renderCard(p, setEditingProject, setDeletingProject),
 					)}
 				</motion.div>
@@ -71,4 +86,5 @@ export const ProjectListCardsViewComponent = ({ projects }: Props) => {
 		</div>
 	);
 };
+
 export const ProjectListCardsView = React.memo(ProjectListCardsViewComponent);
