@@ -43,6 +43,7 @@ export default defineConfig({
 				'**/makeSelectors.ts',
 				'src/test-utils/**',
 				'**/HomeLayout.tsx',
+				'src/shared/schema',
 			],
 		},
 		server: {

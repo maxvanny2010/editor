@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { PROJECT_MESSAGES } from '@/shared/constants';
 import { useAppDispatch } from '@/store/hooks';
 import { projectSchema } from '@/shared/schema';
+import { PROJECT_MESSAGES } from '@/shared/constants';
+import {
+	ModalActions,
+	ModalContainer,
+	ModalForm,
+	ModalInputs,
+} from '@/entities/project/ui/modal';
 
 interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	title: string;
@@ -51,7 +56,10 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 		if (showInput || showCanvasInputs) {
 			const validation = projectSchema.safeParse({ name, width, height });
 			if (!validation.success) {
-				setError(validation.error.issues[0]?.message ?? 'Validation failed');
+				setError(
+					validation.error.issues[0]?.message ??
+						PROJECT_MESSAGES.ERROR_VALIDATION,
+				);
 				return;
 			}
 		}
@@ -73,134 +81,27 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	}
 
 	return (
-		<div
-			role="dialog"
-			aria-modal="true"
-			data-testid={testId}
-			className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-		>
-			{/* ───────── MODAL CONTAINER ───────── */}
-			<motion.form
-				noValidate
-				data-testid="project-form"
-				initial={{ opacity: 0, scale: 0.92, y: 15 }}
-				animate={{ opacity: 1, scale: 1, y: 0 }}
-				exit={{ opacity: 0, scale: 0.9, y: 15 }}
-				transition={{ duration: 0.25, ease: 'easeOut' }}
-				onSubmit={handleSubmit}
-				className="relative bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-2xl p-8 shadow-xl w-[420px] space-y-6"
-			>
-				{/* ───────── HEADER ───────── */}
-				<div className="flex flex-col items-start">
-					<h2 className="text-[22px] font-semibold text-gray-900 tracking-tight">
-						{title}
-					</h2>
-					<div className="w-10 border-t-2 border-indigo-500 mt-2" />
-				</div>
-
-				{/* ───────── INPUT FIELD ───────── */}
-				{showInput ? (
-					<div className="space-y-4">
-						{/* Project name */}
-						<div className="space-y-2">
-							<label
-								htmlFor="project-name"
-								className="block text-sm font-medium text-gray-600"
-							>
-								Project name
-							</label>
-							<input
-								id="project-name"
-								type="text"
-								value={name}
-								data-testid="project-input"
-								placeholder="Enter project name"
-								onChange={(e) => setName(e.target.value)}
-								className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
-										   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
-										   outline-none transition"
-							/>
-						</div>
-
-						{/* Size Canvas */}
-						{showCanvasInputs && (
-							<div className="flex gap-4">
-								<div className="flex-1">
-									<label className="block text-sm font-medium text-gray-600">
-										Width (px)
-									</label>
-									<input
-										type="number"
-										value={width}
-										onKeyDown={(e) =>
-											e.key === 'Enter' && e.preventDefault()
-										}
-										onChange={(e) => setWidth(Number(e.target.value))}
-										data-testid="canvas-width"
-										className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-									/>
-								</div>
-								<div className="flex-1">
-									<label className="block text-sm font-medium text-gray-600">
-										Height (px)
-									</label>
-									<input
-										type="number"
-										onKeyDown={(e) =>
-											e.key === 'Enter' && e.preventDefault()
-										}
-										value={height}
-										onChange={(e) =>
-											setHeight(Number(e.target.value))
-										}
-										data-testid="canvas-height"
-										className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-									/>
-								</div>
-							</div>
-						)}
-						{error && (
-							<p role="alert" className="text-red-500 text-sm mt-1">
-								{error}
-							</p>
-						)}
-					</div>
-				) : (
-					<div className="text-gray-700 text-sm">{customContent}</div>
-				)}
-
-				{/* ───────── ACTION BUTTONS ───────── */}
-				<div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
-					{/* Cancel button */}
-					<motion.button
-						type="button"
-						whileHover={{ y: -1 }}
-						whileTap={{ scale: 0.97 }}
-						onClick={onClose}
-						className="rounded-full px-4 py-1.5 text-sm font-medium text-gray-600
-								   hover:text-gray-800 hover:bg-gray-100
-								   transition focus:outline-none"
-					>
-						Cancel
-					</motion.button>
-
-					{/* Primary action button */}
-					<motion.button
-						type="submit"
-						data-testid="project-submit"
-						whileHover={{ y: -1 }}
-						whileTap={{ scale: 0.97 }}
-						disabled={loading}
-						className={`rounded-full px-5 py-1.5 text-sm font-semibold text-white transition-all shadow-sm focus:outline-none ${
-							showInput
-								? 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
-								: 'bg-rose-600 hover:bg-rose-700 active:bg-rose-800'
-						} focus:ring-2 focus:ring-indigo-400 disabled:opacity-70`}
-					>
-						{loading ? `${buttonLabel}ing...` : buttonLabel}
-					</motion.button>
-				</div>
-			</motion.form>
-		</div>
+		<ModalContainer data-testid={testId}>
+			<ModalForm onSubmit={handleSubmit} data-testid="project-form" title={title}>
+				<ModalInputs
+					showInput={showInput}
+					showCanvasInputs={showCanvasInputs}
+					customContent={customContent}
+					name={name}
+					width={width}
+					height={height}
+					error={error}
+					setName={setName}
+					setWidth={setWidth}
+					setHeight={setHeight}
+				/>
+				<ModalActions
+					onClose={onClose}
+					buttonLabel={buttonLabel}
+					loading={loading}
+					showInput={showInput}
+				/>
+			</ModalForm>
+		</ModalContainer>
 	);
 }
