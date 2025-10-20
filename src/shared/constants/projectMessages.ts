@@ -1,5 +1,6 @@
 export const PROJECT_MESSAGES = {
 	ERROR_ACTION: 'Error during an action',
+	ERROR_VALIDATION: 'Validation failed',
 	NAME_EMPTY: 'Project name is required',
 	NAME_REQUEST: 'Project name must be 25 characters or less',
 	NAME_DUPLICATE: 'A project with this name already exists',
