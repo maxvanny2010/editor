@@ -1,179 +1,513 @@
 ### 📌 Roadmap: Graphic Editor (with branches and commit style)
 
-#### ⚡ Initial Setup
+#### 📦 M0 — Initial Setup
 
-- [x] Create `ROADMAP.md` file in the repo
+Goal: Initialize the repository,
+set up the foundational project structure,
+and create documentation and templates
+for further development stages.
 
-  🔀 Branch: `chore/init-setup`
+📅 Development period: September → October 2025
 
-  📝 Commit: `chore(roadmap): add initial ROADMAP.md`
+🔖 Final version: v0.1.0 (Alpha)
 
+📄 Documentation & Project Setup
 
-- [x] Add GitHub Issue templates (`feature.md`, `bug.md`, `fix.md`, `chore.md`)
+#### Create and add ROADMAP.md
 
-  🔀 Branch: `chore/init-setup`
+🔀 Branch: chore/init-setup
 
-  📝 Commit: `chore(templates): add issue templates`
+📝 Commit: chore(roadmap): add initial ROADMAP.md
 
+🧩 Version: 0.1.0-alpha.1
 
-- [x] Add Pull Request template (`pull_request_template.md`)
+📄 Create and add a ROADMAP.md file containing the initial roadmap for the project.
 
-  🔀 Branch: `chore/init-setup`
+#### Add GitHub Issue templates
 
-  📝 Commit: `chore(pr-template): add pull request template`
+🔀 Branch: chore/init-setup
 
+📝 Commit: chore(templates): add issue templates
 
-- [x] Create GitHub Project / Kanban board with columns: Backlog, In Progress, In Review, Done
+🧩 Version: 0.1.0-alpha.2
 
-  🔀 Branch: `chore/init-setup`
+📄 Add standardized GitHub Issue templates for feature, bug, fix, and chore, along with a pull_request_template.md.
 
-  📝 Commit: `chore(project): create GitHub Kanban board`
+#### Set up GitHub Project board (Kanban)
 
+🔀 Branch: chore/init-setup
 
-- [x] Add manual CHANGELOG.md template
+📝 Commit: docs(project): document GitHub Kanban board setup
 
-  🔀 Branch: `chore/init-setup`
+🧩 Version: 0.1.0-alpha.3
 
-  📝 Commit: `chore(docs): add manual CHANGELOG.md template`
+📄 Create a GitHub Project Kanban board with columns: Backlog, In Progress, In Review, Done. Link repository issues to
+the board.
+
+#### Mark completed tasks in README.md
+
+🔀 Branch: chore/init-setup
+
+📝 Commit: chore(readme): mark completed tasks
+
+🧩 Version: 0.1.0-alpha.4
+
+📄 Update the checklist in README.md by marking already completed setup items with checkmarks.
+
+#### Add manual CHANGELOG.md template
+
+🔀 Branch: chore/init-setup
+
+📝 Commit: chore(docs): add manual CHANGELOG.md template
+
+🧩 Version: 0.1.0-alpha.5
+
+📄 Add a manual CHANGELOG.md file and describe the
+changelog automation process using standard-version.
+
+#### 🏁 Epic Summary
+
+📦 Epic: M0 — Initial Setup
+
+🧩 Version: v0.1.0 (Alpha)
 
 ---
 
 #### ✅ MVP (Minimum Viable Product)
 
-#### M1 — Project Initialization
+#### 📦 M1 — Project Initialization
 
-- [x] Set up Vite + React + TypeScript
+Goal: establish the technical foundation of
+the project — build setup, linting, formatting,
+styling, state management, and CI/CD pipelines.
 
-  🔀 Branch: `feature/init-vite-ts`
+📅 Development period: October 2025
 
-  📝 Commit: `feat(init): add vite + react + typescript`
+🔖 Final version: v0.3.6 (Pre-Release)
 
+#### ⚙️ Core Setup
 
-- [x] Set up ESLint, Prettier, Husky
+#### Set up Vite + React + TypeScript
 
-  🔀 Branch: `chore/setup-linting`
+🔀 Branch: setup/feature/init-vite-ts
 
-  📝 Commit: `chore(lint): add eslint + prettier + husky`
+📝 Commit: feat(init): add vite + react + typescript
 
+🧩 Version: 0.2.0
 
-- [x] Set up GitHub Actions (lint, test, build)
+📄 Initialize the project using Vite with React and TypeScript configuration.
 
-  🔀 Branch: `ci/github-actions`
+#### Set up ESLint, Prettier, and Husky
 
-  📝 Commit: `ci(actions): add lint + type-check + build`
+🔀 Branch: setup/chore/linting
 
-- [x] Set up Redux Toolkit
+📝 Commit: chore(lint): add eslint + prettier + husky
 
-  🔀 Branch: `feature/state-manager`
+🧩 Version: 0.2.1
 
-  📝 Commit: `feat(state): add redux toolkit setup`
+📄 Configure code linting, formatting, and pre-commit hooks to maintain consistent code quality.
 
-- [x] Set up Tailwind CSS for styling
+#### Run Prettier across the codebase
 
-  🔀 Branch: `chore/setup-tailwind`
+🔀 Branch: setup/chore/format-code
 
-  📝 Commit: `chore(styles): add tailwind css setup`
+📝 Commit: chore(format): reformat codebase with prettier
+
+🧩 Version: 0.3.2
+
+📄 Apply consistent code formatting across all files using Prettier.
+
+🧱 State & Styling
+
+#### Set up Redux Toolkit
+
+🔀 Branch: feature/state-manager
+
+📝 Commit: feat(state): add redux toolkit setup
+
+🧩 Version: 0.3.0
+
+📄 Integrate Redux Toolkit for state management and create the initial store structure.
+
+#### Set up Tailwind CSS
+
+🔀 Branch: chore/setup-tailwind
+
+📝 Commit: chore(styles): add tailwind css set up
+
+🧩 Version: 0.3.1
+
+📄 Configure Tailwind CSS for styling components with a utility-first approach.
+
+#### ⚙️ Continuous Integration
+
+#### Set up GitHub Actions (lint, type-check, build)
+
+🔀 Branch: setup/ci/github-actions
+
+📝 Commit: ci(actions): add lint + type-check + build
+
+🧩 Version: 0.2.2
+
+📄 Add CI workflow to run linting, type checking, and build verification on every push and pull request.
+
+#### Update CI job all-check-passed
+
+🔀 Branch: setup/ci/github-action
+
+📝 Commit: ci(actions): update ci.yml job all-check-passed
+
+🧩 Version: 0.3.3
+
+📄 Improve CI pipeline to include an aggregate job verifying that all prior jobs have passed.
+
+🧾 Documentation
+
+#### Add BRANCH_RULES.md
+
+🔀 Branch: setup/ci/github-actions
+
+📝 Commit: chore(docs): BRANCH_RULES.md
+
+🧩 Version: 0.3.4
+
+📄 Document branching and naming conventions for features, fixes, and chore branches.
+
+#### Update roadmap and mark completed tasks
+
+🔀 Branch: setup/chore/update-roadmap
+
+📝 Commit: chore(docs): update a roadmap
+
+🧩 Version: 0.3.5
+
+📄 Update the project roadmap and mark all setup-related tasks as completed.
+
+#### 🏁 Epic Summary
+
+📦 Epic: M1 — Project Initialization
+
+🧩 Version: v0.3.6 (Pre-Release)
 
 ---
 
 #### M1.5 - DB Setup
 
-- [x] Dexie Setup
+#### 📦 M1.5 — Local Database Infrastructure (Dexie + Redux Integration)
 
-  🔀 Branch: `db/chore/db-setup`
+Goal: set up a local IndexedDB storage layer
+using Dexie and integrate it seamlessly with
+Redux Toolkit to enable offline project management.
 
-  📝 Commit: `chore(db): setup dexie with indexeddb schema`
+📅 Development period: October 2025
 
+🔖 Final version: v0.5.5 (Pre-Release)
 
-- [x] Define Database Schema
+🧩 Database Setup
 
-  🔀 Branch: `db/chore/db-schema`
+#### Install Dexie and configure IndexedDB schema
 
-  📝 Commit: `c define table for projects and resolve alias @ ./src`
+🔀 Branch: db/chore/db-setup
 
-- [x] Dexie + Redux Integration
+📝 Commit: chore(db): setup dexie with indexeddb schema
 
-  🔀 Branch: `db/feature/db-redux-integration`
+🧩 Version: 0.5.0-alpha
 
-  📝 Commit: `feat(db): connect dexie to redux thunks\slice\service\repository`
+📄 Install Dexie and configure the IndexedDB instance for managing local project data.
 
-- [x] Store Provider
+#### Define Project table and schema types
 
-  🔀 Branch: `db/chore/store-provider`
+🔀 Branch: db/chore/db-schema
 
-  📝 Commit: `chore(store): add store provider wrapper`
+📝 Commit: chore(db): define table for projects and resolve alias @ ./src
+
+🧩 Version: 0.5.1
+
+📄 Define and type the projects table with fields: id, name, createdAt, updatedAt.
+
+#### Add migration notes for future schema upgrades.
+
+🔗 Integration with Redux Toolkit
+
+#### Connect Dexie to Redux via repository, service, and thunks
+
+🔀 Branch: db/feature/db-redux-integration
+
+📝 Commit: feat(db): connect dexie to redux thunks/slice/service/repository
+
+🧩 Version: 0.5.3
+
+#### 📄 Implement layered integration:
+
+Repository → direct IndexedDB CRUD
+
+Service → business logic (validation, duplication check, id generation)
+
+Thunks → async logic for CRUD operations
+
+Ensure real-time sync between UI and IndexedDB state.
+
+#### ⚙️ Store Provider
+
+#### Add StoreProvider component and typed hooks
+
+🔀 Branch: db/chore/store-provider
+
+📝 Commit: chore(store): add store provider wrapper
+
+🧩 Version: 0.5.4
+
+📄 Create a global StoreProvider that wraps the entire app with the Redux store.
+
+Export typed hooks useAppDispatch and useAppSelector for consistent store access across all modules.
+
+#### 🏁 Epic Summary
+
+📦 Epic: M1.5 — Local Database Infrastructure (Dexie + Redux Integration)
+
+🧩 Version: v0.5.5 (Pre-Release)
+
+---
 
 #### M1.6 - Tests: Local DB Infrastructure (Dexie + Redux)
 
-- [x] Tests: Local DB + Redux Integration
+#### 📦 M1.6 — Tests & Local DB Integration Coverage
 
-  🔀 Branch: `test/db-integration`
+Goal: implement full test coverage for the
+local Dexie + Redux integration, ensuring repository,
+service, slice, thunk, and UI layers behave correctly and remain in sync.
 
-  📝 Commit: `test(db): add dexie + redux integration`
+📅 Development period: October 2025
 
-- [x] Tests: Repository
+🔖 Final version: v0.7.0 (Pre-Release)
 
-  🔀 Branch: `test/project-repository`
+🧩 Repository Layer
 
-  📝 Commit: `test(repo): add unit tests for project.repository`
+#### Unit tests for project.repository
 
-- [x] Tests: Service
+🔀 Branch: test/project-repository
 
-  🔀 Branch: `test/project-service`
+📝 Commit: test(repo): add unit tests for project.repository
 
-  📝 Commit: `test(service): add validation and update tests for project.service`
+🧩 Version: 0.6.0
 
-- [x] Tests: Slice
+📄 Added unit tests for repository methods using fake-indexeddb to simulate Dexie operations. Validated record creation,
+retrieval, updates, sorting, and deletion.
 
-  🔀 Branch: `test/project-slice`
+🔗 Thunks & Async Logic
 
-  📝 Commit: `test(slice): add CRUD and selector tests for projects.slices`
+#### Test async thunks integration
 
-- [x] Tests: Thunks
+🔀 Branch: test/project-thunks
 
-  🔀 Branch: `test/project-thunks`
+📝 Commit: test(thunks): verify async thunk calls for project.service
 
-  📝 Commit: `test(thunks): verify async thunk calls for project.service`
+🧩 Version: 0.6.1
 
-- [x] Tests: Provider
+📄 Verified that Redux async thunks correctly call service methods with the expected parameters and payloads using
+vi.mock.
 
-  🔀 Branch: `test/store-provider`
+⚙️ Service Layer
 
-  📝 Commit: `test(integration): add StoreProvider integration test for UI updates`
+#### Service validation and CRUD tests
 
-- [x] Tests: CI & Coverage
+🔀 Branch: test/project-service
 
-  🔀 Branch: `ci/test-coverage`
+📝 Commit: test(service): add validation and update tests for project.service
 
-  📝 Commit: `ci(vitest): enable coverage reporting in GitHub Actions`
+🧩 Version: 0.6.2
+
+📄 Added tests for validation, duplication checks, and timestamp updates in createProject and updateProject service
+methods.
+
+🧱 Redux Slice Layer
+
+#### Reducers and selectors tests
+
+🔀 Branch: test/project-slice
+
+📝 Commit: test(slice): add CRUD and selector tests for projects.slices
+
+🧩 Version: 0.6.3
+
+📄 Tested reducers, state transitions, CRUD flows, and custom selectors to ensure correct Redux state management
+behavior.
+
+🧩 Integration & Store Layer
+
+#### StoreProvider integration test
+
+🔀 Branch: test/store-provider
+
+📝 Commit: test(integration): add StoreProvider integration test for UI updates
+
+🧩 Version: 0.6.4
+
+📄 Added an integration test verifying UI reactivity through Redux store updates and DOM synchronization.
+
+#### Dexie + Redux integration tests
+
+🔀 Branch: test/db-integration
+
+📝 Commit: test(db): verify dexie + redux integration
+
+🧩 Version: 0.6.6
+
+📄 Verified real-world interaction between Dexie’s repository layer and Redux thunks, ensuring persistence consistency
+across UI and state.
+
+🧾 Coverage & CI
+
+#### Enable coverage reporting in CI
+
+🔀 Branch: ci/test-coverage
+
+📝 Commit: ci(vitest): enable coverage reporting in GitHub Actions
+
+🧩 Version: 0.6.5
+
+📄 Integrated Vitest coverage reports into GitHub Actions, including repository, service, slice, and UI test metrics.
+
+#### 🏁 Epic Summary
+
+📦 Epic: M1.6 — Tests & Local DB Integration Coverage
+
+🧩 Version: v0.7.0 (Pre-Release)
 
 ---
 
 #### M2 — Home Page
 
-- [ ] Display project list
+#### ⚙️ Infrastructure & Setup
 
-  🔀 Branch: `feature/projects-list`
+#### Update store structure
 
-  📝 Commit: `feat(projects): show projects list`
+🔀 Branch: home/chore/update-structure
 
-- [ ] “Create Project” modal
+📝 Commit: chore(project): update structure store
 
-  🔀 Branch: `feature/new-project-modal`
+🧩 Version: 0.8.0
 
-  📝 Commit: `feat(projects): add new project modal`
+📄 Move hooks.ts and store.ts into store/, rename store.ts to index.ts.
 
-- [ ] “Delete Project” button
+#### Refactor tests and utilities
 
-  🔀 Branch: `feature/delete-project`
+🔀 Branch: home/test/update-test
 
-  📝 Commit: `feat(projects): delete project`
+📝 Commit: chore(test): update test structure
 
-- [ ] “Open Project” button → navigate to editor
+🧩 Version: 0.8.1
 
-  🔀 Branch: `feature/open-project`
+📄 Refactor test utils, add index.ts barrels and typed test hooks (useTestDispatch, useTestSelector).
 
-  📝 Commit: `feat(projects): open project editor`
+🧱 Core Features
+
+#### Display project list
+
+🔀 Branch: home/feature/projects-list
+
+📝 Commit: feat(projects): show projects list
+
+🧩 Version: 0.9.0-beta.0
+
+📄 Render list of saved projects from IndexedDB with empty state “No projects yet”.
+
+#### Create Project modal
+
+🔀 Branch: home/feature/new-project-modal
+
+📝 Commit: feat(projects): add new project modal
+
+🧩 Version: 0.9.0-beta.1
+
+📄 Modal for creating projects with custom name and preset canvas size.
+
+#### Update Project modal
+
+🔀 Branch: home/feature/update-project
+
+📝 Commit: feat(projects): update project
+
+🧩 Version: 0.9.0-beta.2
+
+📄 Add edit button with confirmation dialog and instant update.
+
+#### Add “+” button for creating new project
+
+🔀 Branch: home/feature/button-add
+
+📝 Commit: feat(projects): add + to button add a new project
+
+🧩 Version: 0.9.0-beta.3
+
+📄 Add UI button for quick project creation.
+
+#### Delete Project
+
+🔀 Branch: home/feature/delete-project
+
+📝 Commit: feat(projects): delete project
+
+🧩 Version: 0.9.0-beta.4
+
+📄 Add delete button with confirmation and Dexie removal.
+
+#### Open Project → navigate to editor
+
+🔀 Branch: home/feature/open-project
+
+📝 Commit: feat(projects): open project editor
+
+🧩 Version: 0.9.5-rc.3
+
+📄 Navigate to /editor/:id; if project not found → flip card and show “Project not found”.
+
+🧩 Fixes & Enhancements
+
+#### Add validation (Zod)
+
+🔀 Branch: home/fix/project-modal-input-length
+
+📝 Commit: fix(projects): set length of input create/update modal to 25 symbols / zod
+
+🧩 Version: 0.9.1-beta
+
+📄 Limit input length to 25 symbols and add Zod validation.
+
+#### Add canvas size inputs
+
+🔀 Branch: home/fix/create-project-modal-input-canvas
+
+📝 Commit: fix(projects): add two inputs in a create modal for size of canvas
+
+🧩 Version: 0.9.2-beta
+
+📄 Add width and height fields to create modal.
+
+#### Separate base modal
+
+🔀 Branch: home/fix/modal-base-separate
+
+📝 Commit: fix(projects): separate a base modal to individual components
+
+🧩 Version: 0.9.3-rc.1
+
+📄 Extract Base Modal as independent component.
+
+#### Separate Project Card
+
+🔀 Branch: home/fix/project-card-separate
+
+📝 Commit: fix(project): separate a project card component to individual components
+
+🧩 Version: 0.9.4-rc.2
+
+📄 Split ProjectCard for cleaner architecture and testing.
+
+#### 🏁 Epic Summary
+
+📦 Epic: M2 — CRUD Projects Page Done
+🧩 Версия: v1.0.0 (Stable)
 
 ---
 
