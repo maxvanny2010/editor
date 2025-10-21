@@ -41,6 +41,7 @@
 				"successComment": false,
 				"failComment": false
 			}
-		]
+		],
+		"./.github/scripts/safe-release.js"
 	]
 }
