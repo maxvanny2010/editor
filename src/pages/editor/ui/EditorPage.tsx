@@ -1,14 +1,23 @@
-import { useParams } from 'react-router-dom';
+import { EditorCanvas } from '@/widgets/canvas/model';
 
 export const EditorPage = () => {
-	const { id } = useParams<{ id: string }>();
-
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-			<h1 className="text-3xl font-bold text-gray-800 mb-2">Editor Page</h1>
-			<p className="text-gray-600">
-				Project ID: <span className="font-mono">{id}</span>
-			</p>
+		<div className="h-screen w-screen bg-gradient-to-b from-gray-50 to-gray-100">
+			<div className="h-full w-full">
+				<EditorCanvas
+					width={1200}
+					height={800}
+					padding={32}
+					autoResize
+					onReady={(ctx) => {
+						ctx.save();
+						ctx.globalAlpha = 0.75;
+						ctx.fillStyle = '#22c55e';
+						ctx.fillRect(20, 20, 120, 60);
+						ctx.restore();
+					}}
+				/>
+			</div>
 		</div>
 	);
 };
