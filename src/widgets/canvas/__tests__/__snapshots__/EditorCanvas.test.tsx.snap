@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EditorCanvas > renders and applies CSS dimensions correctly 1`] = `
+<div>
+  <div
+    style="width: 1000px; height: 800px;"
+  >
+    <div
+      class="relative h-full w-full overflow-hidden "
+      data-testid="editor-canvas-host"
+    >
+      <div
+        class="absolute inset-0 flex items-center justify-center"
+        style="padding: 24px;"
+      >
+        <div
+          class="relative rounded-md shadow-sm outline-1 outline-black/5 dark:outline-white/10"
+        >
+          <div
+            aria-label="canvas-scale-holder"
+            style="transform-origin: top left; scale: 1;"
+          >
+            <canvas
+              class="block rounded-md"
+              data-testid="editor-canvas"
+              height="600"
+              style="background: transparent; width: 1000px; height: 600px;"
+              width="1000"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
