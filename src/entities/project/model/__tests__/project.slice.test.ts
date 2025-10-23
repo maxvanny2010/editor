@@ -9,7 +9,6 @@ import {
 } from '../slice';
 import { nanoid } from 'nanoid';
 import { db } from '@/shared/lib/db';
-import type { RootState } from '@/store';
 import type { Project } from '@/shared/types';
 import { makeSelectors } from '@/shared/lib/store';
 import { projectRepository } from '@/entities/project/api';
@@ -19,7 +18,10 @@ const storeFactory = () =>
 		reducer: { projects: projectsReducer },
 	});
 
-const selectors = makeSelectors<RootState, Project>((s) => s.projects);
+type TestRootState = ReturnType<ReturnType<typeof storeFactory>['getState']>;
+
+const selectors = makeSelectors<TestRootState, Project>((s) => s.projects);
+
 describe('projectsSlice + thunks', () => {
 	beforeEach(async () => {
 		await db.projects.clear();

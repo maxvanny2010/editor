@@ -26,6 +26,7 @@ describe('ProjectList — UI States', () => {
 			projectsAdapter.getInitialState({
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
+				activeId: null,
 			}),
 			{
 				id: '1',
@@ -50,6 +51,7 @@ describe('ProjectList — UI States', () => {
 		const projectsState = projectsAdapter.getInitialState({
 			loading: PROJECT_STATE.PENDING,
 			error: null,
+			activeId: null,
 		});
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -63,6 +65,7 @@ describe('ProjectList — UI States', () => {
 		const projectsState = projectsAdapter.getInitialState({
 			loading: PROJECT_STATE.IDLE,
 			error: null,
+			activeId: null,
 		});
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -79,6 +82,7 @@ describe('ProjectList — UI States', () => {
 			projectsAdapter.getInitialState({
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
+				activeId: null,
 			}),
 			{
 				id: '1',
@@ -106,6 +110,7 @@ describe('ProjectList — UI States', () => {
 			projectsAdapter.getInitialState({
 				loading: PROJECT_STATE.SUCCEEDED,
 				error: null,
+				activeId: null,
 			}),
 			{
 				id: '1',
@@ -132,6 +137,7 @@ describe('ProjectList — UI States', () => {
 		const projectsState = projectsAdapter.getInitialState({
 			loading: PROJECT_STATE.PENDING,
 			error: null,
+			activeId: null,
 		});
 
 		renderWithStore(<ProjectList />, { initialState: { projects: projectsState } });
@@ -149,6 +155,7 @@ describe('ProjectList — UI States', () => {
 			projectsAdapter.getInitialState({
 				loading: PROJECT_STATE.IDLE,
 				error: null,
+				activeId: null,
 			}),
 			{
 				id: '99',

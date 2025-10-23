@@ -40,6 +40,7 @@ export default defineConfig({
 				'**/router.tsx',
 				'**/StoreProvider.tsx',
 				'**/selectors.*',
+				'**/safe-release.js*',
 				'**/makeSelectors.ts',
 				'src/test-utils/**',
 				'**/HomeLayout.tsx',

@@ -519,6 +519,12 @@ across UI and state.
 
   📝 Commit: `feat(editor): add base canvas`
 
+- [ ] Display canvas + viewport
+
+  🔀 Branch: `feature/editor-canvas-viewport`
+
+  📝 Commit: `feat(editor): add base canvas viewport`
+
 - [ ] Brush tool (color + 6 thickness options)
 
   🔀 Branch: `feature/tool-brush`
