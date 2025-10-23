@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/store/hooks';
 import type { Project } from '@/shared/types';
+import { PROJECT_PATHS } from '@/shared/constants';
+import { setActiveProjectId } from '@/entities/project/model/slice';
 import { ProjectCardButton, ProjectCardDates } from '@/entities/project/ui/project-card';
-import { PROJECT_PATHS } from '@/shared/constants/projectPaths.ts';
 
 export type ProjectCardData = Pick<Project, 'id' | 'name' | 'createdAt' | 'updatedAt'> & {
 	createdAt: number | string | Date;
@@ -22,6 +24,8 @@ export function ProjectCard({
 	'data-testid'?: string;
 }) {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
+
 	const [flipped, setFlipped] = useState(false);
 	const [shake, setShake] = useState(false);
 	const [showBack, setShowBack] = useState(false);
@@ -40,6 +44,9 @@ export function ProjectCard({
 			triggerShakeAndFlip();
 			return;
 		}
+
+		dispatch(setActiveProjectId(project.id));
+
 		navigate(PROJECT_PATHS.EDITOR_BY_ID(project.id));
 	};
 
@@ -83,6 +90,7 @@ export function ProjectCard({
 					</div>
 
 					<div className="flex justify-between items-center mt-5">
+						{/* OPEN BUTTON */}
 						<ProjectCardButton
 							label="Open"
 							testId={`open-button-${project?.id ?? 'unknown'}`}
@@ -167,7 +175,7 @@ export function ProjectCard({
 				</div>
 			</motion.div>
 
-			{/* BACK SIDE (теперь рендерится только когда нужна) */}
+			{/* BACK SIDE */}
 			{showBack && (
 				<motion.div
 					initial={{ rotateY: 180 }}

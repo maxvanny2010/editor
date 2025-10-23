@@ -14,17 +14,17 @@ exports[`EditorCanvas > renders and applies CSS dimensions correctly 1`] = `
         style="padding: 24px;"
       >
         <div
-          class="relative rounded-md shadow-sm outline-1 outline-black/5 dark:outline-white/10"
+          class="relative bg-gray-100 dark:bg-gray-800 rounded-md shadow-md p-1"
         >
           <div
             aria-label="canvas-scale-holder"
             style="transform-origin: top left; scale: 1;"
           >
             <canvas
-              class="block rounded-md"
+              class="block"
               data-testid="editor-canvas"
               height="600"
-              style="background: transparent; width: 1000px; height: 600px;"
+              style="background: rgb(255, 255, 255); border-radius: 0.25rem; border: 1px solid rgba(0, 0, 0, 0.1); width: 1000px; height: 600px;"
               width="1000"
             />
           </div>

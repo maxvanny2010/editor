@@ -1,7 +1,21 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
 import { ProjectCard, type ProjectCardData } from '@/entities/project/ui/_shared';
+import { projectsReducer } from '@/entities/project/model/slice';
+
+function renderWithProviders(ui: React.ReactElement) {
+	const store = configureStore({
+		reducer: { projects: projectsReducer },
+	});
+	return render(
+		<Provider store={store}>
+			<MemoryRouter>{ui}</MemoryRouter>
+		</Provider>,
+	);
+}
 
 describe('ProjectCard', () => {
 	const baseProject: ProjectCardData = {
@@ -11,12 +25,8 @@ describe('ProjectCard', () => {
 		updatedAt: new Date('2023-10-26T10:00:00Z').getTime(),
 	};
 
-	const renderWithInlineContext = (ui: React.ReactElement) => {
-		return render(<MemoryRouter>{ui}</MemoryRouter>);
-	};
-
 	it('renders project name and dates', () => {
-		renderWithInlineContext(<ProjectCard project={baseProject} />);
+		renderWithProviders(<ProjectCard project={baseProject} />);
 
 		expect(screen.getByTestId('project-card')).toBeInTheDocument();
 		expect(screen.getByText(/Alpha/i)).toBeInTheDocument();
@@ -25,7 +35,7 @@ describe('ProjectCard', () => {
 
 	it('calls onEditClick when Update button is clicked', () => {
 		const onEditClick = vi.fn();
-		renderWithInlineContext(
+		renderWithProviders(
 			<ProjectCard project={baseProject} onEditClick={onEditClick} />,
 		);
 
@@ -35,7 +45,7 @@ describe('ProjectCard', () => {
 
 	it('calls onDeleteClick when Delete button is clicked', () => {
 		const onDeleteClick = vi.fn();
-		renderWithInlineContext(
+		renderWithProviders(
 			<ProjectCard project={baseProject} onDeleteClick={onDeleteClick} />,
 		);
 
@@ -44,7 +54,7 @@ describe('ProjectCard', () => {
 	});
 
 	it('renders buttons even without click handlers', () => {
-		renderWithInlineContext(<ProjectCard project={baseProject} />);
+		renderWithProviders(<ProjectCard project={baseProject} />);
 
 		expect(screen.getByRole('button', { name: /update/i })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
@@ -58,7 +68,7 @@ describe('ProjectCard', () => {
 	});
 
 	it('handles hover states correctly', () => {
-		renderWithInlineContext(<ProjectCard project={baseProject} />);
+		renderWithProviders(<ProjectCard project={baseProject} />);
 
 		const card = screen.getByTestId('project-card');
 		fireEvent.mouseEnter(card);

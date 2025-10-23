@@ -1,32 +1,22 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
-// ─── TYPES ────────────────────────────────────────────────────────────────
 export type EditorCanvasProps = {
-	/** Logical width/height of the canvas in project units (px) */
 	width: number;
 	height: number;
-	/** Canvas background color (default comes from theme via Tailwind) */
 	background?: string;
-	/** Minimal padding around the canvas inside its workspace */
 	padding?: number;
-	/** Enable or disable auto-resize based on container size */
 	autoResize?: boolean;
-	/** Callback when canvas is ready (used to initialize renderer/layers) */
 	onReady?: (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void;
-	/** Callback when scale changes (for syncing minimap/zoom lens, etc.) */
-	onScaleChange?: (scale: number) => void;
 	className?: string;
 	'data-testid'?: string;
 };
 
-// ─── HOOK: Resize Observer Wrapper ───────────────────────────────────────
 function useResizeObserver<T extends HTMLElement>(
 	enabled: boolean,
 	onResize: (rect: DOMRectReadOnly) => void,
 ) {
 	const ref = useRef<T | null>(null);
-
 	useLayoutEffect(() => {
 		if (!enabled || !ref.current) return;
 		const el = ref.current;
@@ -36,63 +26,42 @@ function useResizeObserver<T extends HTMLElement>(
 		ro.observe(el);
 		return () => ro.disconnect();
 	}, [enabled, onResize]);
-
 	return ref;
 }
 
-// ─── MAIN COMPONENT: EditorCanvas ────────────────────────────────────────
 export const EditorCanvas = memo(function EditorCanvas({
 	width,
 	height,
-	background,
+	background = '#ffffff',
 	padding = 24,
 	autoResize = true,
 	onReady,
-	onScaleChange,
 	className = '',
 	'data-testid': testId = 'editor-canvas',
 }: EditorCanvasProps) {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const [scale, setScale] = useState(1);
 
-	// ─── OBSERVE HOST CONTAINER SIZE ────────────────────────────────────
 	const hostRef = useResizeObserver<HTMLDivElement>(
 		true,
 		useCallback(
 			(rect) => {
 				if (!autoResize) return;
-
-				// Calculate available width/height with padding subtracted
-				const availW = Math.max(0, rect.width - padding * 2);
-				const availH = Math.max(0, rect.height - padding * 2);
-				if (availW === 0 || availH === 0) return;
-
-				// Maintain proportions while fitting canvas into container
+				const availW = rect.width - padding * 2;
+				const availH = rect.height - padding * 2;
 				const next = Math.min(availW / width, availH / height);
-				setScale((prev) => {
-					if (Math.abs(prev - next) > 0.001) {
-						onScaleChange?.(next);
-						return next;
-					}
-					return prev;
-				});
+				setScale((prev) => (Math.abs(prev - next) > 0.001 ? next : prev));
 			},
-			[autoResize, height, onScaleChange, padding, width],
+			[autoResize, height, padding, width],
 		),
 	);
 
-	// ─── INITIALIZE CANVAS (pixel ratio, transform, background) ─────────
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-
 		const dpr = Math.max(1, window.devicePixelRatio || 1);
-
-		// Physical buffer size (hi-DPI support)
-		canvas.width = Math.max(1, Math.round(width * dpr));
-		canvas.height = Math.max(1, Math.round(height * dpr));
-
-		// CSS size matches logical dimensions
+		canvas.width = Math.round(width * dpr);
+		canvas.height = Math.round(height * dpr);
 		canvas.style.width = `${width}px`;
 		canvas.style.height = `${height}px`;
 
@@ -100,45 +69,27 @@ export const EditorCanvas = memo(function EditorCanvas({
 		if (!ctx) return;
 		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-		// Optional solid background fill
-		if (background) {
-			ctx.save();
-			ctx.fillStyle = background;
-			ctx.fillRect(0, 0, width, height);
-			ctx.restore();
-		}
+		ctx.save();
+		ctx.fillStyle = background;
+		ctx.fillRect(0, 0, width, height);
+		ctx.restore();
 
 		onReady?.(ctx, canvas);
 	}, [background, height, onReady, width]);
 
-	// ─── BACKGROUND FALLBACK (theme-based) ───────────────────────────────
-	const themeBg = background ?? 'transparent';
-
-	// ─── RENDER ─────────────────────────────────────────────────────────
 	return (
 		<div
 			ref={hostRef}
 			className={`relative h-full w-full overflow-hidden ${className}`}
 			data-testid={`${testId}-host`}
 		>
-			{/* ─── CENTERED WORK AREA ─────────────────────────────── */}
 			<div
 				className="absolute inset-0 flex items-center justify-center"
 				style={{ padding }}
 			>
-				{/* Visual backdrop (light/dark theme surface) */}
-				<div
-					className="relative rounded-md shadow-sm outline-1 outline-black/5 dark:outline-white/10"
-					style={{
-						background: 'theme(colors.gray.50)',
-					}}
-				>
-					{/* ─── SCALE HOLDER (animated with Framer Motion) ─── */}
+				<div className="relative bg-gray-100 dark:bg-gray-800 rounded-md shadow-md p-1">
 					<motion.div
-						style={{
-							transformOrigin: 'top left',
-							scale,
-						}}
+						style={{ transformOrigin: 'top left', scale }}
 						initial={false}
 						aria-label="canvas-scale-holder"
 					>
@@ -146,8 +97,12 @@ export const EditorCanvas = memo(function EditorCanvas({
 							ref={canvasRef}
 							width={width}
 							height={height}
-							style={{ background: themeBg }}
-							className="block rounded-md"
+							style={{
+								background,
+								borderRadius: '0.25rem',
+								border: '1px solid rgba(0,0,0,0.1)',
+							}}
+							className="block"
 							data-testid={testId}
 						/>
 					</motion.div>
