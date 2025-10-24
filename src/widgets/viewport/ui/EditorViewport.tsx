@@ -4,6 +4,7 @@ import { ViewportControls } from './ViewportControls';
 import { projectsSelectors } from '@/entities/project/model';
 import { EditorCanvas } from '@/widgets/canvas/model';
 import { useViewportControls } from '../hooks';
+import { ToolBar } from '@/widgets/toolbar/model';
 
 const GRID_SPACING = 20;
 const LABEL_SPACING = 100;
@@ -66,6 +67,7 @@ export const EditorViewport = () => {
 			onMouseUp={onMouseUp}
 			className="relative w-full h-full bg-gray-100 dark:bg-gray-900 select-none overflow-hidden flex items-center justify-center"
 		>
+			{/* ───────── CANVAS ───────── */}
 			<div
 				style={{
 					width,
@@ -86,6 +88,7 @@ export const EditorViewport = () => {
 				/>
 			</div>
 
+			{/* ───────── VIEWPORT CONTROLS ───────── */}
 			<ViewportControls
 				scale={scale}
 				offsetX={offsetX}
@@ -95,6 +98,14 @@ export const EditorViewport = () => {
 				onToggleGrid={toggleGrid}
 				showGrid={showGrid}
 			/>
+
+			{/* ───────── TOOLBAR ───────── */}
+			<ToolBar position="left">
+				{/* <BrushTool />*/}
+				{/* <EraserTool /> */}
+				{/* <ShapeTool /> */}
+				{/* <TextTool /> */}
+			</ToolBar>
 		</div>
 	);
 };
