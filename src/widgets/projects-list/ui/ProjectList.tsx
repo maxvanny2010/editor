@@ -1,4 +1,4 @@
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector } from '@/store/hooks.ts';
 import { PROJECT_STATE } from '@/shared/constants';
 import { useDelayedSkeleton } from '@/shared/lib/hooks';
 import { useFetchProjectsOnMount } from '@/features/project-list/model';

@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithStore } from '@/test-utils';
-import { ProjectListCardsView } from '../ProjectListCardsView';
+import { ProjectListCardsView } from '../index';
 
 describe('ProjectListCardsView', () => {
 	const mockProjects = [{ id: '1', name: 'Alpha', createdAt: 1, updatedAt: 1 }];

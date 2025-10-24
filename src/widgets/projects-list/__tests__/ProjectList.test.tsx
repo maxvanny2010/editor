@@ -3,7 +3,7 @@ import { describe, type Mock, vi } from 'vitest';
 import { renderWithStore } from '@/test-utils';
 import { projectsAdapter } from '@/entities/project/model';
 import { PROJECT_STATE } from '@/shared/constants';
-import { ProjectList } from '../ProjectList';
+import { ProjectList } from '../model';
 
 // cancel a global mock ProjectModalBase
 vi.unmock('@/entities/project/ui/_shared');

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ProjectListSkeletonView } from '../ProjectListSkeletonView';
+import { ProjectListSkeletonView } from '../index';
 
 describe('ProjectListSkeletonView', () => {
 	it('renders 12 skeleton items', () => {

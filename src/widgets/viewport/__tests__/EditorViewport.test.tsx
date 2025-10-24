@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux';
-import * as appHooks from '@/store/hooks';
+import * as appHooks from '@/store/hooks.ts';
 import { configureStore } from '@reduxjs/toolkit';
-import { EditorViewport } from '@/entities/editor/model';
+import { EditorViewport } from '@/widgets/viewport/model';
 import { act, fireEvent, render } from '@testing-library/react';
 import { projectsReducer } from '@/entities/project/model/slice';
 import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
