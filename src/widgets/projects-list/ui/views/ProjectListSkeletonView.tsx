@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ProjectSkeleton } from '@/widgets/projects-list';
+import { ProjectSkeleton } from '@/widgets/projects-list/model';
 
 const ProjectListSkeletonViewComponent = () => (
 	<div className="relative min-h-[400px]" data-testid="project-list">

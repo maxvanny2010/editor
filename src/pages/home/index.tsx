@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { HomeLayout } from './ui/HomeLayout';
-import { ProjectList } from '@/widgets/projects-list';
+import { ProjectList } from '@/widgets/projects-list/model';
 import { CreateProjectModal } from '@/features/project-create/model';
 
 export default function HomePage() {

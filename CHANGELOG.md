@@ -1,6 +1,6 @@
 # 🧭 CHANGELOG
 
-Полная история релизов проекта **React Editor**
+Full release story **React Editor**
 (IndexedDB + Redux Toolkit + Vite + React 19 + Tailwind + Vitest)
 
 ---

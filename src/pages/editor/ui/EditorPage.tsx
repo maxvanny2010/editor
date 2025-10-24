@@ -1,4 +1,4 @@
-import { EditorViewport } from '@/entities/editor/model';
+import { EditorViewport } from '@/widgets/viewport/model';
 
 export const EditorPage = () => {
 	return (
