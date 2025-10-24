@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { ViewportControls } from './ViewportControls';
 import { projectsSelectors } from '@/entities/project/model';
@@ -14,6 +15,9 @@ export const EditorViewport = () => {
 	const width = active?.width ?? CANVAS_WIDTH;
 	const height = active?.height ?? CANVAS_HEIGHT;
 
+	const [showGrid, setShowGrid] = useState(true);
+	const toggleGrid = () => setShowGrid((v) => !v);
+
 	const {
 		containerRef,
 		scale,
@@ -27,6 +31,7 @@ export const EditorViewport = () => {
 	} = useViewportControls(width, height);
 
 	const drawGrid = (ctx: CanvasRenderingContext2D) => {
+		if (!showGrid) return;
 		ctx.save();
 		ctx.strokeStyle = '#e5e7eb';
 		ctx.lineWidth = 1;
@@ -87,6 +92,8 @@ export const EditorViewport = () => {
 				offsetY={offsetY}
 				onReset={handleReset}
 				onFit={handleFit}
+				onToggleGrid={toggleGrid}
+				showGrid={showGrid}
 			/>
 		</div>
 	);

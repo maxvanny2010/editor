@@ -1,9 +1,7 @@
-import { Provider } from 'react-redux';
-import * as appHooks from '@/store/hooks.ts';
-import { configureStore } from '@reduxjs/toolkit';
-import { EditorViewport } from '@/widgets/viewport/model';
 import { act, fireEvent, render } from '@testing-library/react';
-import { projectsReducer } from '@/entities/project/model/slice';
+import * as appHooks from '@/store/hooks';
+import { EditorViewport } from '@/widgets/viewport/ui/EditorViewport';
+import { TestStoreProvider } from '@/test-utils/testStoreProvider';
 import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
 
 vi.mock('@/entities/editor/model/slice', async (orig) => {
@@ -36,18 +34,11 @@ describe('EditorViewport — user interactions', () => {
 		vi.restoreAllMocks();
 	});
 
-	const makeStore = () =>
-		configureStore({
-			reducer: { projects: projectsReducer },
-			devTools: false,
-		});
-
 	it('Ctrl+wheel → dispatch(setScale)', () => {
-		const store = makeStore();
 		const { getByTestId } = render(
-			<Provider store={store}>
+			<TestStoreProvider>
 				<EditorViewport />
-			</Provider>,
+			</TestStoreProvider>,
 		);
 
 		const container = getByTestId('viewport-container');
@@ -69,11 +60,10 @@ describe('EditorViewport — user interactions', () => {
 	});
 
 	it('Middle mouse drag → dispatch(setOffset)', () => {
-		const store = makeStore();
 		const { getByTestId } = render(
-			<Provider store={store}>
+			<TestStoreProvider>
 				<EditorViewport />
-			</Provider>,
+			</TestStoreProvider>,
 		);
 
 		const container = getByTestId('viewport-container');
@@ -88,11 +78,10 @@ describe('EditorViewport — user interactions', () => {
 	});
 
 	it('Fit button → dispatch(setScale)', () => {
-		const store = makeStore();
 		const { getByTestId } = render(
-			<Provider store={store}>
+			<TestStoreProvider>
 				<EditorViewport />
-			</Provider>,
+			</TestStoreProvider>,
 		);
 
 		fireEvent.click(getByTestId('fit-button-testid'));
@@ -112,11 +101,10 @@ describe('EditorViewport — user interactions', () => {
 				return 1;
 			});
 
-		const store = makeStore();
 		const { getByTestId } = render(
-			<Provider store={store}>
+			<TestStoreProvider>
 				<EditorViewport />
-			</Provider>,
+			</TestStoreProvider>,
 		);
 
 		fireEvent.click(getByTestId('reset-button-testid'));
@@ -132,5 +120,22 @@ describe('EditorViewport — user interactions', () => {
 
 		raf.mockRestore();
 		vi.useRealTimers();
+	});
+
+	it('Grid toggle button → toggles text between Hide and Show', () => {
+		const { getByTestId, getByText } = render(
+			<TestStoreProvider>
+				<EditorViewport />
+			</TestStoreProvider>,
+		);
+
+		const hideButton = getByText(/Hide Grid/i);
+		expect(hideButton).toBeInTheDocument();
+
+		fireEvent.click(getByTestId('grid-button-testid'));
+		expect(getByText(/Show Grid/i)).toBeInTheDocument();
+
+		fireEvent.click(getByTestId('grid-button-testid'));
+		expect(getByText(/Hide Grid/i)).toBeInTheDocument();
 	});
 });
