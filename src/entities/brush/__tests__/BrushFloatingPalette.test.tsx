@@ -14,13 +14,13 @@ describe('BrushFloatingPalette', () => {
 
 	it('renders all brush size buttons', () => {
 		renderWithStore(<BrushFloatingPalette />, { initialState });
-		const sizeButtons = screen.getAllByTestId(/brush-size-/i);
+		const sizeButtons = screen.getAllByTestId(/brush-value-/i);
 		expect(sizeButtons.length).toBeGreaterThan(3);
 	});
 
 	it('highlights the selected size when clicked', () => {
 		renderWithStore(<BrushFloatingPalette />, { initialState });
-		const sizeButton = screen.getByTestId('brush-size-8');
+		const sizeButton = screen.getByTestId('brush-value-8');
 		fireEvent.click(sizeButton);
 		expect(sizeButton.className).toContain('ring-2');
 	});

@@ -6,15 +6,17 @@ import {
 import { projectsReducer } from '@/entities/project/model/slice';
 import { editorReducer } from '@/entities/editor/model/slice';
 import { brushReducer } from '@/entities/brush/model/slice';
+import { lineReducer, type LineState } from '@/entities/line/model/slice';
 
 type ProjectsState = ReturnType<typeof projectsReducer>;
 type EditorState = ReturnType<typeof editorReducer>;
 type BrushState = ReturnType<typeof brushReducer>;
 
-interface BaseTestState {
+interface TestBaseState {
 	projects: ProjectsState;
 	editor: EditorState;
 	brush: BrushState;
+	line: LineState;
 }
 
 /**
@@ -23,13 +25,14 @@ interface BaseTestState {
 export const makeTestStore = <
 	TExtraReducers extends ReducersMapObject = Record<string, never>,
 >(
-	preloadedState?: Partial<BaseTestState>,
+	preloadedState?: Partial<TestBaseState>,
 	extraReducers?: TExtraReducers,
 ) => {
 	const rootReducer = combineReducers({
 		projects: projectsReducer,
 		editor: editorReducer,
 		brush: brushReducer,
+		line: lineReducer,
 		...extraReducers,
 	});
 

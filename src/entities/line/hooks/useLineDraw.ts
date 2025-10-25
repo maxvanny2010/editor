@@ -30,7 +30,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 	}, []);
 
 	// Mouse down: save start + snapshot
-	const handleMouseDown = useCallback(
+	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
 			setStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -48,7 +48,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 	);
 
 	// Mouse move: draw preview (light line)
-	const handleMouseMove = useCallback(
+	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current) return;
 			const ctx = canvasRef.current.getContext('2d');
@@ -74,7 +74,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 	);
 
 	// Mouse up: draw solid final line
-	const handleMouseUp = useCallback(
+	const onPointerUp = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current) return;
 			const ctx = canvasRef.current.getContext('2d');
@@ -98,5 +98,5 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 		[start, color, thickness, canvasRef],
 	);
 
-	return { handleMouseDown, handleMouseMove, handleMouseUp };
+	return { onPointerDown, onPointerMove, onPointerUp };
 }

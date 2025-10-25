@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { projectsSelectors } from '@/entities/project/model';
 import { useViewportControls } from '../hooks';
@@ -9,8 +9,18 @@ import { LineTool, useLineDraw } from '@/entities/line/model';
 import { selectActiveTool } from '@/entities/editor/model/selectors';
 import { DrawCanvas, GridCanvas } from '@/widgets/canvas/model';
 
+// ─── Constants ────────────────────────────────────────────
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 800;
+
+// ─── Types ────────────────────────────────────────────────
+type ToolType = 'brush' | 'eraser' | 'line' | 'rect' | 'circle';
+
+interface ToolHandlers {
+	onPointerDown?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+	onPointerMove?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+	onPointerUp?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+}
 
 /**
  * The main editor viewport — manages zooming, panning,
@@ -38,14 +48,26 @@ export const EditorViewport = () => {
 		onMouseUp,
 	} = useViewportControls(width, height);
 
-	// Layer refs
+	// ─── Layer refs ─────────────────────────────────────────────
 	const gridRef = useRef<HTMLCanvasElement | null>(null);
 	const drawRef = useRef<HTMLCanvasElement | null>(null);
 
-	// Drawing tool hooks
+	// ─── Drawing tool hooks ─────────────────────────────────────
 	const brush = useBrushDraw(drawRef, viewportScale);
 	const line = useLineDraw(drawRef);
 
+	// ─── Tool handler map ───────────────────────────────────────
+	const toolHandlers: Partial<Record<ToolType, ToolHandlers>> = useMemo(
+		() => ({
+			brush,
+			line,
+		}),
+		[brush, line],
+	);
+
+	const activeHandlers = activeTool ? toolHandlers[activeTool] : undefined;
+
+	// ─── JSX ─────────────────────────────────────────────────────
 	return (
 		<div
 			data-testid="viewport-container"
@@ -82,27 +104,9 @@ export const EditorViewport = () => {
 					ref={drawRef}
 					width={width}
 					height={height}
-					onPointerDown={
-						activeTool === 'brush'
-							? brush.onPointerDown
-							: activeTool === 'line'
-								? line.handleMouseDown
-								: undefined
-					}
-					onPointerMove={
-						activeTool === 'brush'
-							? brush.onPointerMove
-							: activeTool === 'line'
-								? line.handleMouseMove
-								: undefined
-					}
-					onPointerUp={
-						activeTool === 'brush'
-							? brush.onPointerUp
-							: activeTool === 'line'
-								? line.handleMouseUp
-								: undefined
-					}
+					onPointerDown={activeHandlers?.onPointerDown}
+					onPointerMove={activeHandlers?.onPointerMove}
+					onPointerUp={activeHandlers?.onPointerUp}
 				/>
 			</div>
 
