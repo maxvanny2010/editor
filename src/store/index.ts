@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { projectsReducer } from '@/entities/project/model/slice';
 import { editorReducer } from '@/entities/editor/model/slice';
+import { brushReducer } from '@/entities/brush/model/slice';
 import logger from 'redux-logger';
 
 export const store = configureStore({
 	reducer: {
 		projects: projectsReducer,
 		editor: editorReducer,
+		brush: brushReducer,
 	},
 	middleware: (getDefaultMiddleware) => {
 		const middlewares = getDefaultMiddleware();
