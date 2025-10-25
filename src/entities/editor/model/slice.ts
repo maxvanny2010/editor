@@ -8,6 +8,7 @@ const initialState: EditorState = {
 		offsetY: 0,
 	},
 	activeTool: null,
+	paletteOpen: false,
 };
 
 const editorSlice = createSlice({
@@ -24,12 +25,23 @@ const editorSlice = createSlice({
 		resetViewport(state) {
 			state.viewport = initialState.viewport;
 		},
+
 		setActiveTool(state, action: PayloadAction<EditorState['activeTool']>) {
-			state.activeTool = action.payload;
+			if (state.activeTool === action.payload) {
+				state.paletteOpen = !state.paletteOpen;
+			} else {
+				state.activeTool = action.payload;
+				state.paletteOpen = true;
+			}
+		},
+
+		closePalette(state) {
+			state.paletteOpen = false;
 		},
 	},
 });
 
-export const { setScale, setOffset, resetViewport, setActiveTool } = editorSlice.actions;
+export const { setScale, setOffset, resetViewport, setActiveTool, closePalette } =
+	editorSlice.actions;
 
 export const editorReducer = editorSlice.reducer;
