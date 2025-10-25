@@ -7,6 +7,7 @@ import { useViewportControls } from '../hooks';
 import { ToolBar } from '@/widgets/toolbar/model';
 import { BrushTool, useBrushDraw } from '@/entities/brush/model';
 import { selectActiveTool } from '@/entities/editor/model/selectors';
+import { LineTool, useLineDraw } from '@/entities/line/model';
 
 const GRID_SPACING = 20;
 const LABEL_SPACING = 100;
@@ -37,7 +38,7 @@ export const EditorViewport = () => {
 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const brush = useBrushDraw(canvasRef, viewportScale);
-
+	const line = useLineDraw(canvasRef);
 	const drawGrid = useCallback(
 		(ctx: CanvasRenderingContext2D) => {
 			if (!showGrid) return;
@@ -98,12 +99,26 @@ export const EditorViewport = () => {
 					background={'#ffffff'}
 					onReady={drawGrid}
 					onPointerDown={
-						activeTool === 'brush' ? brush.onPointerDown : undefined
+						activeTool === 'brush'
+							? brush.onPointerDown
+							: activeTool === 'line'
+								? line.handleMouseDown
+								: undefined
 					}
 					onPointerMove={
-						activeTool === 'brush' ? brush.onPointerMove : undefined
+						activeTool === 'brush'
+							? brush.onPointerMove
+							: activeTool === 'line'
+								? line.handleMouseMove
+								: undefined
 					}
-					onPointerUp={activeTool === 'brush' ? brush.onPointerUp : undefined}
+					onPointerUp={
+						activeTool === 'brush'
+							? brush.onPointerUp
+							: activeTool === 'line'
+								? line.handleMouseUp
+								: undefined
+					}
 				/>
 			</div>
 
@@ -121,6 +136,7 @@ export const EditorViewport = () => {
 			{/* ───────── TOOLBAR ───────── */}
 			<ToolBar position="left">
 				<BrushTool />
+				<LineTool />
 			</ToolBar>
 		</div>
 	);
