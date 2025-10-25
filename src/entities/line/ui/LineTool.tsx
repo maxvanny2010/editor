@@ -3,15 +3,16 @@ import { ToolButton } from '@/widgets/toolbar/model';
 import { LineFloatingPalette } from '@/entities/line/model';
 import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectActiveTool } from '@/entities/editor/model/selectors';
+import { selectActiveTool, selectPaletteOpen } from '@/entities/editor/model/selectors';
 
 export function LineTool() {
 	const dispatch = useAppDispatch();
 	const activeTool = useAppSelector(selectActiveTool);
+	const paletteOpen = useAppSelector(selectPaletteOpen);
 	const isActive = activeTool === 'line';
 
 	const handleClick = () => {
-		dispatch(setActiveTool(isActive ? null : 'line'));
+		dispatch(setActiveTool('line'));
 	};
 
 	return (
@@ -23,7 +24,7 @@ export function LineTool() {
 				active={isActive}
 				onClick={handleClick}
 			/>
-			{isActive && <LineFloatingPalette />}
+			{isActive && paletteOpen && <LineFloatingPalette />}
 		</>
 	);
 }

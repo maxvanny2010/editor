@@ -2,16 +2,17 @@ import { Brush } from 'lucide-react';
 import { BrushFloatingPalette } from '@/entities/brush/model';
 import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectActiveTool } from '@/entities/editor/model/selectors';
+import { selectActiveTool, selectPaletteOpen } from '@/entities/editor/model/selectors';
 import { ToolButton } from '@/widgets/toolbar/model';
 
 export function BrushTool() {
 	const dispatch = useAppDispatch();
 	const activeTool = useAppSelector(selectActiveTool);
+	const paletteOpen = useAppSelector(selectPaletteOpen);
 	const isActive = activeTool === 'brush';
 
 	const handleClick = () => {
-		dispatch(setActiveTool(isActive ? null : 'brush'));
+		dispatch(setActiveTool('brush'));
 	};
 
 	return (
@@ -23,7 +24,7 @@ export function BrushTool() {
 				active={isActive}
 				onClick={handleClick}
 			/>
-			{isActive && <BrushFloatingPalette />}
+			{isActive && paletteOpen && <BrushFloatingPalette />}
 		</>
 	);
 }
