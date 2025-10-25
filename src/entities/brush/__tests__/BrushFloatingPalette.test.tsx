@@ -3,13 +3,14 @@ import { BrushFloatingPalette } from '@/entities/brush/model';
 import { renderWithStore, type TestRootState } from '@/test-utils';
 
 describe('BrushFloatingPalette', () => {
-	const initialState = {
+	const initialState: Partial<TestRootState> = {
 		brush: { color: '#111827', size: 4, isDrawing: false },
 		editor: {
 			activeTool: 'brush',
+			paletteOpen: true,
 			viewport: { scale: 1, offsetX: 0, offsetY: 0 },
 		},
-	} satisfies Partial<TestRootState>;
+	};
 
 	it('renders all brush size buttons', () => {
 		renderWithStore(<BrushFloatingPalette />, { initialState });
