@@ -6,6 +6,6 @@ export interface ViewportState {
 
 export interface EditorState {
 	viewport: ViewportState;
-	activeTool: 'brush' | 'eraser' | 'line' | 'rect' | 'circle' | null;
+	activeTool: 'brush' | 'eraser' | 'line' | 'shape' | null;
 	paletteOpen: boolean;
 }

@@ -4,6 +4,7 @@ import { projectsReducer } from '@/entities/project/model/slice';
 import { editorReducer } from '@/entities/editor/model/slice';
 import { brushReducer } from '@/entities/brush/model/slice';
 import { lineReducer } from '@/entities/line/model/slice';
+import { shapeReducer } from '@/entities/shape/model/slice';
 
 export const store = configureStore({
 	reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
 		editor: editorReducer,
 		brush: brushReducer,
 		line: lineReducer,
+		shape: shapeReducer,
 	},
 	middleware: (getDefaultMiddleware) => {
 		const middlewares = getDefaultMiddleware();

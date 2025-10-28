@@ -8,13 +8,15 @@ import { BrushTool, useBrushDraw } from '@/entities/brush/model';
 import { LineTool, useLineDraw } from '@/entities/line/model';
 import { selectActiveTool } from '@/entities/editor/model/selectors';
 import { DrawCanvas, GridCanvas } from '@/widgets/canvas/model';
+import { ShapeTool } from '@/entities/shape/ui/ShapeTool.tsx';
+import { useShapeDraw } from '@/entities/shape/hooks/useShapeDraw.ts';
 
 // ─── Constants ────────────────────────────────────────────
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 800;
 
 // ─── Types ────────────────────────────────────────────────
-type ToolType = 'brush' | 'eraser' | 'line' | 'rect' | 'circle';
+type ToolType = 'brush' | 'eraser' | 'line' | 'shape';
 
 interface ToolHandlers {
 	onPointerDown?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
@@ -55,14 +57,16 @@ export const EditorViewport = () => {
 	// ─── Drawing tool hooks ─────────────────────────────────────
 	const brush = useBrushDraw(drawRef, viewportScale);
 	const line = useLineDraw(drawRef);
+	const shape = useShapeDraw(drawRef);
 
 	// ─── Tool handler map ───────────────────────────────────────
 	const toolHandlers: Partial<Record<ToolType, ToolHandlers>> = useMemo(
 		() => ({
 			brush,
 			line,
+			shape,
 		}),
-		[brush, line],
+		[brush, line, shape],
 	);
 
 	const activeHandlers = activeTool ? toolHandlers[activeTool] : undefined;
@@ -125,6 +129,7 @@ export const EditorViewport = () => {
 			<ToolBar position="left">
 				<BrushTool />
 				<LineTool />
+				<ShapeTool />
 			</ToolBar>
 		</div>
 	);
