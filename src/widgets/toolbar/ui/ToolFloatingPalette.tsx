@@ -1,4 +1,5 @@
 import { ColorSelector, ValueSelector } from '@/widgets/toolbar/model';
+import type { ReactNode } from 'react';
 
 interface ToolFloatingPaletteProps {
 	title: string;
@@ -10,6 +11,7 @@ interface ToolFloatingPaletteProps {
 	onValueChange: (value: number) => void;
 	onColorChange: (color: string) => void;
 	position?: string;
+	children?: ReactNode;
 }
 
 export function ToolFloatingPalette({
@@ -22,6 +24,7 @@ export function ToolFloatingPalette({
 	onValueChange,
 	onColorChange,
 	position = 'top-24',
+	children,
 }: ToolFloatingPaletteProps) {
 	return (
 		<div
@@ -48,6 +51,8 @@ export function ToolFloatingPalette({
 				onChange={onColorChange}
 				dataPrefix={title.toLowerCase()}
 			/>
+
+			{children && <div className="mt-3">{children}</div>}
 		</div>
 	);
 }
