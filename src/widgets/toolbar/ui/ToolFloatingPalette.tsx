@@ -5,11 +5,11 @@ interface ToolFloatingPaletteProps {
 	title: string;
 	subtitle: string;
 	values: number[];
-	colors: string[];
+	colors?: string[];
 	selectedValue: number;
-	selectedColor: string;
+	selectedColor?: string;
 	onValueChange: (value: number) => void;
-	onColorChange: (color: string) => void;
+	onColorChange?: (color: string) => void;
 	position?: string;
 	children?: ReactNode;
 }
@@ -20,12 +20,13 @@ export function ToolFloatingPalette({
 	values,
 	colors,
 	selectedValue,
-	selectedColor,
+	selectedColor = '#6B7280',
 	onValueChange,
 	onColorChange,
 	position = 'top-24',
 	children,
 }: ToolFloatingPaletteProps) {
+	const hasColors = Array.isArray(colors) && colors.length > 0;
 	return (
 		<div
 			className={`fixed left-20 ${position} z-40 w-[320px] rounded-2xl border border-gray-200 bg-white shadow-xl p-3 backdrop-blur-sm`}
@@ -43,14 +44,17 @@ export function ToolFloatingPalette({
 				dataPrefix={title.toLowerCase()}
 			/>
 
-			<hr className="my-3 h-px bg-gray-100" />
-
-			<ColorSelector
-				colors={colors}
-				selectedColor={selectedColor}
-				onChange={onColorChange}
-				dataPrefix={title.toLowerCase()}
-			/>
+			{hasColors && (
+				<>
+					<hr className="my-3 h-px bg-gray-100" />
+					<ColorSelector
+						colors={colors!}
+						selectedColor={selectedColor}
+						onChange={onColorChange!}
+						dataPrefix={title.toLowerCase()}
+					/>
+				</>
+			)}
 
 			{children && <div className="mt-3">{children}</div>}
 		</div>

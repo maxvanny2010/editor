@@ -14,15 +14,14 @@ export const ValueSelector = ({
 	dataPrefix = 'tool',
 }: ValueSelectorProps) => {
 	return (
-		<div className="flex items-center gap-2 overflow-x-auto pb-1">
+		<div className="flex items-center gap-2 overflow-x-auto py-2 min-h-[64px]">
 			{values.map((v) => (
 				<button
 					key={v}
 					data-testid={`${dataPrefix}-value-${v}`}
 					onClick={() => onChange(v)}
-					className={`relative grid place-items-center rounded-full border border-gray-200 bg-white p-1 hover:bg-gray-50 transition ${
-						selectedValue === v ? 'ring-2 ring-indigo-400' : ''
-					}`}
+					className={`relative grid place-items-center rounded-full border border-gray-200 bg-white p-1 hover:bg-gray-50 transition shrink-0
+            ${selectedValue === v ? 'ring-2 ring-offset-1 ring-indigo-400' : ''}`}
 				>
 					<span
 						className="block rounded-full"
