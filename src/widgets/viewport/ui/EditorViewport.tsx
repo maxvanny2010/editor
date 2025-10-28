@@ -55,10 +55,10 @@ export const EditorViewport = () => {
 	const drawRef = useRef<HTMLCanvasElement | null>(null);
 
 	// ─── Drawing tool hooks ─────────────────────────────────────
-	const brush = useBrushDraw(drawRef, viewportScale);
+	const brush = useBrushDraw(drawRef);
 	const line = useLineDraw(drawRef);
 	const shape = useShapeDraw(drawRef);
-	const eraser = useEraserDraw(drawRef, viewportScale);
+	const eraser = useEraserDraw(drawRef);
 
 	// ─── Tool handler map ───────────────────────────────────────
 	const toolHandlers: Partial<Record<ToolType, ToolHandlers>> = useMemo(
