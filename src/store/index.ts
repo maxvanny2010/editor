@@ -5,6 +5,7 @@ import { editorReducer } from '@/entities/editor/model/slice';
 import { brushReducer } from '@/entities/brush/model/slice';
 import { lineReducer } from '@/entities/line/model/slice';
 import { shapeReducer } from '@/entities/shape/model/slice';
+import { eraserReducer } from '@/entities/eraser/model/slice';
 
 export const store = configureStore({
 	reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
 		brush: brushReducer,
 		line: lineReducer,
 		shape: shapeReducer,
+		eraser: eraserReducer,
 	},
 	middleware: (getDefaultMiddleware) => {
 		const middlewares = getDefaultMiddleware();

@@ -6,10 +6,10 @@ import { ViewportControls } from './ViewportControls';
 import { ToolBar } from '@/widgets/toolbar/model';
 import { BrushTool, useBrushDraw } from '@/entities/brush/model';
 import { LineTool, useLineDraw } from '@/entities/line/model';
+import { ShapeTool, useShapeDraw } from '@/entities/shape/model';
+import { EraserTool, useEraserDraw } from '@/entities/eraser/model';
 import { selectActiveTool } from '@/entities/editor/model/selectors';
 import { DrawCanvas, GridCanvas } from '@/widgets/canvas/model';
-import { ShapeTool } from '@/entities/shape/ui/ShapeTool.tsx';
-import { useShapeDraw } from '@/entities/shape/hooks/useShapeDraw.ts';
 
 // ─── Constants ────────────────────────────────────────────
 const CANVAS_WIDTH = 1200;
@@ -58,6 +58,7 @@ export const EditorViewport = () => {
 	const brush = useBrushDraw(drawRef, viewportScale);
 	const line = useLineDraw(drawRef);
 	const shape = useShapeDraw(drawRef);
+	const eraser = useEraserDraw(drawRef, viewportScale);
 
 	// ─── Tool handler map ───────────────────────────────────────
 	const toolHandlers: Partial<Record<ToolType, ToolHandlers>> = useMemo(
@@ -65,8 +66,9 @@ export const EditorViewport = () => {
 			brush,
 			line,
 			shape,
+			eraser,
 		}),
-		[brush, line, shape],
+		[brush, eraser, line, shape],
 	);
 
 	const activeHandlers = activeTool ? toolHandlers[activeTool] : undefined;
@@ -130,6 +132,7 @@ export const EditorViewport = () => {
 				<BrushTool />
 				<LineTool />
 				<ShapeTool />
+				<EraserTool />
 			</ToolBar>
 		</div>
 	);
