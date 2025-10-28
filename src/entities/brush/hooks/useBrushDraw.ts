@@ -1,24 +1,22 @@
 import React, { useCallback, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setBrushDrawing } from '@/entities/brush/model/slice';
+import { strokeWidth, toCanvasPoint } from '@/shared/lib/utils';
+import { selectViewport } from '@/entities/editor/model/selectors';
 
-export function useBrushDraw(
-	canvasRef: React.RefObject<HTMLCanvasElement | null>,
-	scale: number,
-) {
+export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const { color, size, isDrawing } = useAppSelector((s) => s.brush);
+	const { scale: viewportScale } = useAppSelector(selectViewport);
 	const dispatch = useAppDispatch();
 	const last = useRef<{ x: number; y: number } | null>(null);
+	const dpr = 1;
 
 	const getPos = useCallback(
-		(e: React.PointerEvent) => {
-			const rect = canvasRef.current!.getBoundingClientRect();
-			return {
-				x: (e.clientX - rect.left) / scale,
-				y: (e.clientY - rect.top) / scale,
-			};
+		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			const canvas = canvasRef.current!;
+			return toCanvasPoint(e, canvas, { dpr });
 		},
-		[canvasRef, scale],
+		[canvasRef],
 	);
 
 	const onPointerDown = useCallback(
@@ -28,7 +26,7 @@ export function useBrushDraw(
 			if (!ctx) return;
 
 			ctx.strokeStyle = color;
-			ctx.lineWidth = size;
+			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
 
@@ -36,7 +34,7 @@ export function useBrushDraw(
 			dispatch(setBrushDrawing(true));
 			canvasRef.current.setPointerCapture(e.pointerId);
 		},
-		[canvasRef, color, size, getPos, dispatch],
+		[canvasRef, color, size, viewportScale, getPos, dispatch],
 	);
 
 	const onPointerMove = useCallback(
@@ -44,6 +42,8 @@ export function useBrushDraw(
 			if (!isDrawing || !canvasRef.current || !last.current) return;
 			const ctx = canvasRef.current.getContext('2d');
 			if (!ctx) return;
+
+			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');
 
 			const p = getPos(e);
 			const l = last.current;
@@ -55,7 +55,7 @@ export function useBrushDraw(
 
 			last.current = p;
 		},
-		[canvasRef, getPos, isDrawing],
+		[canvasRef, getPos, isDrawing, size, viewportScale],
 	);
 
 	const onPointerUp = useCallback(

@@ -14,7 +14,7 @@ export const ValueSelector = ({
 	dataPrefix = 'tool',
 }: ValueSelectorProps) => {
 	return (
-		<div className="flex items-center gap-2 overflow-x-auto py-2 min-h-[64px]">
+		<div className="flex items-center gap-2 overflow-x-auto py-2 min-h-[64px] pl-3 pr-2 scroll-px-2">
 			{values.map((v) => (
 				<button
 					key={v}

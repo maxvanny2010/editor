@@ -1,16 +1,20 @@
-import { useAppSelector } from '@/store/hooks';
 import React, { useCallback, useRef, useState } from 'react';
+import { useAppSelector } from '@/store/hooks';
+import { toCanvasPoint } from '@/shared/lib/utils';
 
 export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const { type, fill, stroke, thickness } = useAppSelector((s) => s.shape);
 	const [start, setStart] = useState<{ x: number; y: number } | null>(null);
 	const snapshot = useRef<ImageData | null>(null);
+	const dpr = 1;
 
 	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-			setStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-			const ctx = canvasRef.current?.getContext('2d');
+			const canvas = canvasRef.current!;
+			const p = toCanvasPoint(e, canvas, { dpr });
+			setStart(p);
+
+			const ctx = canvas.getContext('2d');
 			if (ctx)
 				snapshot.current = ctx.getImageData(
 					0,
@@ -19,21 +23,21 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 					ctx.canvas.height,
 				);
 		},
-		[canvasRef],
+		[canvasRef, dpr],
 	);
 
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current || !snapshot.current) return;
-			const ctx = canvasRef.current.getContext('2d');
+			const canvas = canvasRef.current;
+			const ctx = canvas.getContext('2d');
 			if (!ctx) return;
 
 			ctx.putImageData(snapshot.current, 0, 0);
-			const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
-			const w = x - start.x;
-			const h = y - start.y;
+
+			const p = toCanvasPoint(e, canvas, { dpr });
+			const w = p.x - start.x;
+			const h = p.y - start.y;
 
 			ctx.lineWidth = thickness;
 			ctx.strokeStyle = stroke;
@@ -54,7 +58,7 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 				ctx.globalAlpha = 1;
 			}
 		},
-		[start, fill, stroke, thickness, type, canvasRef],
+		[start, fill, stroke, thickness, type, canvasRef, dpr],
 	);
 
 	const onPointerUp = useCallback(() => {
