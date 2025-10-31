@@ -37,7 +37,7 @@ describe('EditorViewport — user interactions', () => {
 	it('Ctrl+wheel → dispatch(setScale)', () => {
 		const { getByTestId } = render(
 			<TestStoreProvider>
-				<EditorViewport />
+				<EditorViewport isLayersOpen={false} />
 			</TestStoreProvider>,
 		);
 
@@ -62,7 +62,7 @@ describe('EditorViewport — user interactions', () => {
 	it('Middle mouse drag → dispatch(setOffset)', () => {
 		const { getByTestId } = render(
 			<TestStoreProvider>
-				<EditorViewport />
+				<EditorViewport isLayersOpen={false} />
 			</TestStoreProvider>,
 		);
 
@@ -80,7 +80,7 @@ describe('EditorViewport — user interactions', () => {
 	it('Fit button → dispatch(setScale)', () => {
 		const { getByTestId } = render(
 			<TestStoreProvider>
-				<EditorViewport />
+				<EditorViewport isLayersOpen={false} />
 			</TestStoreProvider>,
 		);
 
@@ -103,7 +103,7 @@ describe('EditorViewport — user interactions', () => {
 
 		const { getByTestId } = render(
 			<TestStoreProvider>
-				<EditorViewport />
+				<EditorViewport isLayersOpen={false} />
 			</TestStoreProvider>,
 		);
 
@@ -125,7 +125,7 @@ describe('EditorViewport — user interactions', () => {
 	it('Grid toggle button → toggles text between Hide and Show', () => {
 		const { getByTestId, getByText } = render(
 			<TestStoreProvider>
-				<EditorViewport />
+				<EditorViewport isLayersOpen={false} />
 			</TestStoreProvider>,
 		);
 
