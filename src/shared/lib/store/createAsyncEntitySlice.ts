@@ -1,64 +1,111 @@
 import {
+	type AsyncThunk,
 	createAsyncThunk,
 	createEntityAdapter,
+	createSelector,
 	createSlice,
-	isAnyOf,
-	type PayloadAction,
+	type Draft,
 } from '@reduxjs/toolkit';
-import { PROJECT_MESSAGES } from '@/shared/constants/projectMessages.ts';
+import {
+	CRUD_ACTION_SUFFIXES,
+	ENTITY_LOADING_STATUSES,
+	type EntityLoadingStatus,
+	PROJECT_MESSAGES,
+} from '@/shared/constants';
+import { createThunkWithErrorHandling } from '@/shared/lib/store';
 
 /**
- * a fabric of CRUD-slice.
- * T — entity (require id: string, name? for selectByName)
- * C — a type of argument for createOne
- * U — a type of argument for updateOne
+ * Generic CRUD slice factory with strict type safety.
+ *
+ * @template T - Entity type (must include `id: string`)
+ * @template C - Argument type for createOne (defaults to Partial<T>)
+ * @template U - Argument type for updateOne (Partial<T> & { id: string })
+ * @template P - Argument type for fetchByParam (e.g., projectId)
  */
 export function createAsyncEntitySlice<
 	T extends { id: string; name?: string },
-	C,
-	U,
+	C = Partial<T>,
+	U = Partial<T> & { id: string },
+	P = void,
 >(options: {
 	name: string;
-	fetchAll: () => Promise<T[]>;
+	fetchAll?: () => Promise<T[]>;
+	fetchByParam?: (param: P) => Promise<T[]>;
 	createOne: (data: C) => Promise<T>;
 	updateOne: (data: U) => Promise<T>;
 	deleteOne: (id: string) => Promise<void>;
 	sortComparer?: (a: T, b: T) => number;
 }) {
-	const { name, fetchAll, createOne, updateOne, deleteOne, sortComparer } = options;
+	const {
+		name,
+		fetchAll,
+		fetchByParam,
+		createOne,
+		updateOne,
+		deleteOne,
+		sortComparer,
+	} = options;
 
-	//  T has id
 	const adapter = createEntityAdapter<T>({ sortComparer });
 
-	const fetchAllThunk = createAsyncThunk<T[]>(
-		`${name}/fetchAll`,
-		async () => await fetchAll(),
+	// Helper: creates a noop thunk that always resolves with empty array
+	const noopThunk = createAsyncThunk(`${name}/noop`, async () => [] as T[]);
+
+	// ──────────────────────────────
+	// Async Thunks
+	// ──────────────────────────────
+	const fetchAllThunk = fetchAll
+		? createThunkWithErrorHandling<T[], void>(
+				`${name}${CRUD_ACTION_SUFFIXES.FETCH_ALL}`,
+				fetchAll,
+			)
+		: (noopThunk as unknown as AsyncThunk<T[], void, { rejectValue: string }>);
+
+	const fetchByParamThunk = fetchByParam
+		? createThunkWithErrorHandling<{ param: P; data: T[] }, P>(
+				`${name}${CRUD_ACTION_SUFFIXES.FETCH_BY_PARAM}`,
+				async (param) => {
+					const data = await fetchByParam(param);
+					return { param, data };
+				},
+			)
+		: (noopThunk as unknown as AsyncThunk<
+				{ param: P; data: T[] },
+				P,
+				{ rejectValue: string }
+			>);
+
+	const createOneThunk = createThunkWithErrorHandling<T, C>(
+		`${name}${CRUD_ACTION_SUFFIXES.CREATE_ONE}`,
+		createOne,
 	);
 
-	const createOneThunk = createAsyncThunk<T, C>(
-		`${name}/createOne`,
-		async (arg) => await createOne(arg),
+	const updateOneThunk = createThunkWithErrorHandling<T, U>(
+		`${name}${CRUD_ACTION_SUFFIXES.UPDATE_ONE}`,
+		updateOne,
 	);
 
-	const updateOneThunk = createAsyncThunk<T, U>(
-		`${name}/updateOne`,
-		async (arg) => await updateOne(arg),
-	);
-
-	const deleteOneThunk = createAsyncThunk<string, string>(
-		`${name}/deleteOne`,
+	const deleteOneThunk = createThunkWithErrorHandling<string, string>(
+		`${name}${CRUD_ACTION_SUFFIXES.DELETE_ONE}`,
 		async (id) => {
 			await deleteOne(id);
 			return id;
 		},
 	);
 
+	// ──────────────────────────────
+	// Initial State
+	// ──────────────────────────────
 	const initialState = adapter.getInitialState({
-		loading: 'idle' as 'idle' | 'pending' | 'succeeded' | 'failed',
+		loading: ENTITY_LOADING_STATUSES.IDLE as EntityLoadingStatus,
 		error: null as string | null,
 	});
+
 	type SliceState = typeof initialState;
 
+	// ──────────────────────────────
+	// Slice Definition
+	// ──────────────────────────────
 	const slice = createSlice({
 		name,
 		initialState,
@@ -66,75 +113,111 @@ export function createAsyncEntitySlice<
 			clearError(state) {
 				state.error = null;
 			},
+			reset: () => initialState,
 		},
 		extraReducers: (builder) => {
-			builder
-				.addCase(fetchAllThunk.fulfilled, (state, action: PayloadAction<T[]>) => {
-					adapter.setAll(state, action.payload);
-					state.loading = 'succeeded';
-				})
-				.addCase(createOneThunk.fulfilled, (state, action: PayloadAction<T>) => {
-					adapter.addOne(state, action.payload);
-					state.loading = 'succeeded';
-				})
-				.addCase(updateOneThunk.fulfilled, (state, action: PayloadAction<T>) => {
-					adapter.upsertOne(state, action.payload);
-					state.loading = 'succeeded';
-				})
-				.addCase(
-					deleteOneThunk.fulfilled,
-					(state, action: PayloadAction<string>) => {
-						adapter.removeOne(state, action.payload);
-						state.loading = 'succeeded';
-					},
-				)
-				.addMatcher(
-					isAnyOf(
-						fetchAllThunk.pending,
-						createOneThunk.pending,
-						updateOneThunk.pending,
-						deleteOneThunk.pending,
-					),
-					(state) => {
-						state.loading = 'pending';
-					},
-				)
-				.addMatcher(
-					isAnyOf(
-						fetchAllThunk.rejected,
-						createOneThunk.rejected,
-						updateOneThunk.rejected,
-						deleteOneThunk.rejected,
-					),
-					(state, action) => {
-						state.loading = 'failed';
-						state.error =
-							action.error.message ?? PROJECT_MESSAGES.ERROR_ACTION;
-					},
-				);
+			const handlePending = (state: Draft<SliceState>) => {
+				state.loading = ENTITY_LOADING_STATUSES.PENDING;
+				state.error = null;
+			};
+
+			const handleRejected = (
+				state: Draft<SliceState>,
+				action: { payload?: string; error: { message?: string } },
+			) => {
+				state.loading = ENTITY_LOADING_STATUSES.FAILED;
+				state.error =
+					action.payload ??
+					action.error.message ??
+					PROJECT_MESSAGES.ERROR_ACTION;
+			};
+
+			const handleFulfilled = (state: Draft<SliceState>) => {
+				state.loading = ENTITY_LOADING_STATUSES.SUCCEEDED;
+				state.error = null;
+			};
+
+			const addFulfilled = <R, A>(
+				thunk: AsyncThunk<R, A, { rejectValue: string }> | undefined,
+				handler: (state: Draft<SliceState>, payload: R) => void,
+			): void => {
+				if (thunk) {
+					builder.addCase(thunk.fulfilled, (state, action) => {
+						handler(state, action.payload);
+						handleFulfilled(state);
+					});
+				}
+			};
+
+			// Fulfilled cases
+			addFulfilled(fetchAllThunk, (s, p) => adapter.setAll(s, p));
+			addFulfilled(fetchByParamThunk, (s, p) => adapter.setAll(s, p.data));
+			addFulfilled(createOneThunk, (s, p) => adapter.addOne(s, p));
+			addFulfilled(updateOneThunk, (s, p) => adapter.upsertOne(s, p));
+			addFulfilled(deleteOneThunk, (s, p) => adapter.removeOne(s, p));
+
+			// Pending & Rejected matchers
+			type AnyThunk =
+				| typeof fetchAllThunk
+				| typeof fetchByParamThunk
+				| typeof createOneThunk
+				| typeof updateOneThunk
+				| typeof deleteOneThunk;
+
+			const allThunks: Exclude<AnyThunk, undefined>[] = [
+				fetchAllThunk,
+				fetchByParamThunk,
+				createOneThunk,
+				updateOneThunk,
+				deleteOneThunk,
+			].filter((t): t is Exclude<AnyThunk, undefined> => t !== undefined);
+
+			allThunks.forEach((thunk) => {
+				builder
+					.addMatcher(thunk.pending.match, handlePending)
+					.addMatcher(thunk.rejected.match, handleRejected);
+			});
 		},
 	});
 
-	/** selectors with a RootState */
+	// ──────────────────────────────
+	// Selectors
+	// ──────────────────────────────
 	function makeSelectors<RootState>(selectSlice: (state: RootState) => SliceState) {
 		const base = adapter.getSelectors(selectSlice);
-		return {
-			...base,
-			/** if name is empty — takes empty string */
-			selectByName(state: RootState, query: string): T[] {
-				const q = query.toLowerCase();
-				return base
-					.selectAll(state)
-					.filter((item) => (item.name ?? '').toLowerCase().includes(q));
-			},
-		};
+
+		const selectByName = createSelector(
+			[base.selectAll, (_: RootState, query: string) => query.trim().toLowerCase()],
+			(entities, q) =>
+				q
+					? entities.filter((i) => (i.name ?? '').toLowerCase().includes(q))
+					: entities,
+		);
+
+		const selectIsLoading = createSelector(
+			[selectSlice],
+			(s) => s.loading === ENTITY_LOADING_STATUSES.PENDING,
+		);
+
+		const selectError = createSelector([selectSlice], (s) => s.error);
+
+		return { ...base, selectByName, selectIsLoading, selectError };
 	}
 
+	// ──────────────────────────────
+	// Public API
+	// ──────────────────────────────
 	return {
 		reducer: slice.reducer,
 		actions: slice.actions,
 		adapter,
-		thunks: { fetchAllThunk, createOneThunk, updateOneThunk, deleteOneThunk },
+		thunks: {
+			fetchAllThunk,
+			fetchByParamThunk,
+			createOneThunk,
+			updateOneThunk,
+			deleteOneThunk,
+		},
 		makeSelectors,
-	};
+	} as const;
 }

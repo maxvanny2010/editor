@@ -28,7 +28,7 @@ interface ToolHandlers {
  * The main editor viewport — manages zooming, panning,
  * and multi-layer canvas composition (grid + drawing).
  */
-export const EditorViewport = () => {
+export const EditorViewport = ({ isLayersOpen }: { isLayersOpen: boolean }) => {
 	const activeProject = useAppSelector(projectsSelectors.selectActiveProject);
 	const activeTool = useAppSelector(selectActiveTool);
 
@@ -125,6 +125,7 @@ export const EditorViewport = () => {
 				onFit={handleFit}
 				onToggleGrid={toggleGrid}
 				showGrid={showGrid}
+				isLayersOpen={isLayersOpen}
 			/>
 
 			{/* ───────── TOOLBAR ───────── */}
