@@ -49,6 +49,7 @@ export const motion = {
 	label: createMockComponent('label'),
 	textarea: createMockComponent('textarea'),
 	svg: createMockComponent('svg'),
+	aside: createMockComponent('aside'),
 };
 
 const mockMotionValue = <T,>(initial: T) => ({

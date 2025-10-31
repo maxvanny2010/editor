@@ -2,6 +2,12 @@ import '@testing-library/jest-dom';
 import 'fake-indexeddb/auto';
 import { webcrypto } from 'crypto';
 
+// ─── Fix: mock window.scrollTo to prevent jsdom warnings ───────────────
+Object.defineProperty(window, 'scrollTo', {
+	value: vi.fn(),
+	writable: true,
+});
+
 // ─── Mock framer-motion for deterministic tests ─────────────────────────────
 vi.mock('framer-motion', async () => {
 	const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { ViewportButton } from '@/shared/shared/ui/buttons/ViewportButton';
 
 export const ViewportControls = ({
@@ -8,6 +9,7 @@ export const ViewportControls = ({
 	onFit,
 	onToggleGrid,
 	showGrid,
+	isLayersOpen,
 }: {
 	scale: number;
 	offsetX: number;
@@ -16,8 +18,19 @@ export const ViewportControls = ({
 	onFit: () => void;
 	onToggleGrid: () => void;
 	showGrid: boolean;
+	isLayersOpen?: boolean;
 }) => (
-	<div className="absolute bottom-3 right-3 flex gap-2 items-center text-xs text-gray-700 dark:text-gray-300">
+	<motion.div
+		animate={{
+			right: isLayersOpen ? 304 : 12,
+		}}
+		transition={{
+			type: 'spring',
+			stiffness: 200,
+			damping: 22,
+		}}
+		className="absolute bottom-3 flex gap-2 items-center text-xs text-gray-700 dark:text-gray-300"
+	>
 		<div className="bg-white/70 dark:bg-gray-800/70 px-2 py-1 rounded-md">
 			Zoom: {(scale * 100).toFixed(0)}% | Offset: {offsetX}, {offsetY}
 		</div>
@@ -30,5 +43,5 @@ export const ViewportControls = ({
 			active={showGrid}
 			testId="grid-button-testid"
 		/>
-	</div>
+	</motion.div>
 );
