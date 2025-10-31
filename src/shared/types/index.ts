@@ -6,3 +6,13 @@ export interface Project {
 	createdAt: number;
 	updatedAt: number;
 }
+export interface Layer {
+	id: string;
+	projectId: string;
+	name: string;
+	visible: boolean;
+	opacity: number; // 0..1
+	zIndex: number;
+	createdAt: number;
+	updatedAt: number;
+}
