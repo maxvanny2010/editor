@@ -16,22 +16,16 @@ const lineSlice = createSlice({
 	name: 'line',
 	initialState,
 	reducers: {
-		activateLine(state) {
-			state.active = true;
-		},
-		deactivateLine(state) {
-			state.active = false;
-		},
 		setLineColor(state, action: PayloadAction<string>) {
 			state.color = action.payload;
 		},
 		setLineThickness(state, action: PayloadAction<number>) {
 			state.thickness = action.payload;
 		},
+		resetLineState: () => initialState,
 	},
 });
 
-export const { activateLine, deactivateLine, setLineColor, setLineThickness } =
-	lineSlice.actions;
+export const { setLineColor, setLineThickness, resetLineState } = lineSlice.actions;
 
 export const lineReducer = lineSlice.reducer;

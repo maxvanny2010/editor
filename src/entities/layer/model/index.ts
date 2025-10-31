@@ -1,3 +1,3 @@
 export * from './slice';
-export * from './selectors';
 export * from './service';
+export * from './useLayerCanvases';

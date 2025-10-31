@@ -4,3 +4,7 @@ html, body, #root {
 	height: 100%;
 	margin: 0;
 }
+
+.cursor-grab, .cursor-grabbing {
+	transition: cursor 0.15s ease;
+}

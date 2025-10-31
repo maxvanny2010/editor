@@ -11,10 +11,28 @@ export const layerService = {
 	async createLayer(data: { projectId: string; name?: string }): Promise<Layer> {
 		const layers = await layerRepository.getAllByProject(data.projectId);
 
-		// Ищем максимальный номер из имён существующих слоёв
+		// If custom name is given
+		if (data.name?.trim()) {
+			const maxZ = await layerRepository.getMaxZIndex(data.projectId);
+			const newLayer: Layer = {
+				id: nanoid(),
+				projectId: data.projectId,
+				name: data.name.trim(),
+				visible: true,
+				opacity: 1,
+				zIndex: maxZ + 1,
+				createdAt: Date.now(),
+				updatedAt: Date.now(),
+			};
+			await layerRepository.add(newLayer);
+			return newLayer;
+		}
+
+		// Otherwise, generate a unique sequential name: "New layer N"
 		let maxNumber = 0;
+		const regex = /^New layer\s+(\d+)$/i;
 		for (const l of layers) {
-			const match = l.name.match(/New layer\s*(\d+)/); // <-- ищем число после "Новый слой"
+			const match = l.name.match(regex);
 			if (match) {
 				const num = parseInt(match[1], 10);
 				if (num > maxNumber) maxNumber = num;
@@ -22,10 +40,7 @@ export const layerService = {
 		}
 
 		const nextNumber = maxNumber + 1;
-
-		const name = data.name?.trim() || `${LAYER.NEW_LAYER} ${nextNumber}`;
-
-		if (!name) throw new Error(LAYER.NAME_EMPTY);
+		const name = `${LAYER.NEW_LAYER} ${nextNumber}`;
 
 		const maxZ = await layerRepository.getMaxZIndex(data.projectId);
 
@@ -42,6 +57,19 @@ export const layerService = {
 
 		await layerRepository.add(newLayer);
 		return newLayer;
+	},
+
+	async ensureBaseLayer(projectId: string, baseName: string): Promise<Layer | null> {
+		return layerRepository.ensureBaseLayer(projectId, () => ({
+			id: nanoid(),
+			projectId,
+			name: baseName,
+			visible: true,
+			opacity: 1,
+			zIndex: 1,
+			createdAt: Date.now(),
+			updatedAt: Date.now(),
+		}));
 	},
 
 	async updateLayer(args: { id: string; changes: Partial<Layer> }): Promise<Layer> {

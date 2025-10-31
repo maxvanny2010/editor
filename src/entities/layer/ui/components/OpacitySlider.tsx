@@ -1,12 +1,12 @@
 import type { Layer } from '@/shared/types';
 
 interface OpacitySliderProps {
-	activeLayer: Layer | undefined;
+	activeLayer: Layer | null;
 	onOpacityChange: (id: string, value: number) => void;
 }
 
 export function OpacitySlider({ activeLayer, onOpacityChange }: OpacitySliderProps) {
-	const active = activeLayer;
+	const active = activeLayer ?? undefined;
 	const opacityValue = active?.opacity ?? 1;
 
 	return (
@@ -48,7 +48,9 @@ export function OpacitySlider({ activeLayer, onOpacityChange }: OpacitySliderPro
                     "
 					// Uses a linear gradient to visually represent the progress fill of the slider track.
 					style={{
-						background: `linear-gradient(to right, #4f46e5 ${opacityValue * 100}%, #e5e7eb ${opacityValue * 100}%)`,
+						background: `linear-gradient(to right, #4f46e5 ${
+							opacityValue * 100
+						}%, #e5e7eb ${opacityValue * 100}%)`,
 					}}
 				/>
 			</div>

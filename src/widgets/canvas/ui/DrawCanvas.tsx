@@ -6,11 +6,12 @@ interface DrawCanvasProps {
 	onPointerDown?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
 	onPointerMove?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
 	onPointerUp?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
+	isPanning: boolean;
 	'data-testid'?: string;
 }
 
 /**
- * Interactive drawing layer for active tools (brush, line, etc.)
+ * Interactive drawing surface for active tools (brush, eraser, line, shape)
  */
 export const DrawCanvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>(
 	(
@@ -20,6 +21,7 @@ export const DrawCanvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>(
 			onPointerDown,
 			onPointerMove,
 			onPointerUp,
+			isPanning = false,
 			'data-testid': testId = 'draw-canvas',
 		},
 		ref,
@@ -30,7 +32,10 @@ export const DrawCanvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>(
 				role="presentation"
 				width={width}
 				height={height}
-				className="absolute inset-0 cursor-crosshair"
+				className={`absolute inset-0 ${isPanning ? 'cursor-grabbing' : 'cursor-crosshair'}`}
+				style={{
+					zIndex: 1000,
+				}}
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
 				onPointerUp={onPointerUp}

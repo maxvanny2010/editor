@@ -91,7 +91,7 @@ export function layersReducer(
 	state: LayersState = initialState,
 	action: UnknownAction,
 ): LayersState {
-	const base = baseReducer(state, action) as LayersState;
+	let base = baseReducer(state, action) as LayersState;
 
 	switch (true) {
 		// ───────────────────────────────
@@ -102,7 +102,11 @@ export function layersReducer(
 		}
 
 		case setCurrentProjectId.match(action): {
-			return { ...base, projectId: action.payload };
+			//  Clear layers when switching project
+			base = layersAdapter.removeAll(base);
+			base.activeId = null;
+			base.projectId = action.payload;
+			return base;
 		}
 
 		// ───────────────────────────────
@@ -141,7 +145,41 @@ export function layersReducer(
 		}
 
 		// ───────────────────────────────
-		// Default: return base reducer result
+		// After layer created: auto-set activeId if not set
+		// ───────────────────────────────
+		case createLayer.fulfilled.match(action): {
+			const layer = (action as PayloadAction<Layer>).payload;
+			const updated = layersAdapter.addOne(base, layer);
+
+			// If there is no active layer, make this one active
+			if (!base.activeId) {
+				return { ...updated, activeId: layer.id };
+			}
+			return updated;
+		}
+
+		// ───────────────────────────────
+		// After layer deleted: select nearest top layer
+		// ───────────────────────────────
+		case deleteLayer.fulfilled.match(action): {
+			const deletedId = (action as PayloadAction<string>).payload;
+			const updated = layersAdapter.removeOne(base, deletedId);
+
+			if (base.activeId === deletedId) {
+				const remaining = layersAdapter.getSelectors().selectAll(updated);
+				if (remaining.length > 0) {
+					const top = remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b));
+					return { ...updated, activeId: top.id };
+				} else {
+					return { ...updated, activeId: null };
+				}
+			}
+
+			return updated;
+		}
+
+		// ───────────────────────────────
+		// Default
 		// ───────────────────────────────
 		default:
 			return base;

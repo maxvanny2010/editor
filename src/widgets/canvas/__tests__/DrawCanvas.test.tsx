@@ -3,7 +3,9 @@ import { DrawCanvas } from '@/widgets/canvas/ui/DrawCanvas';
 
 describe('DrawCanvas', () => {
 	it('renders correctly with width and height', () => {
-		const { getByTestId } = render(<DrawCanvas width={500} height={300} />);
+		const { getByTestId } = render(
+			<DrawCanvas width={500} height={300} isPanning={false} />,
+		);
 		const canvas = getByTestId('draw-canvas') as HTMLCanvasElement;
 
 		expect(canvas).toBeInTheDocument();
@@ -23,6 +25,7 @@ describe('DrawCanvas', () => {
 				onPointerDown={onDown}
 				onPointerMove={onMove}
 				onPointerUp={onUp}
+				isPanning={false}
 			/>,
 		);
 
@@ -37,7 +40,9 @@ describe('DrawCanvas', () => {
 	});
 
 	it('renders safely without handlers', () => {
-		const { getByTestId } = render(<DrawCanvas width={100} height={100} />);
+		const { getByTestId } = render(
+			<DrawCanvas width={100} height={100} isPanning={false} />,
+		);
 		const canvas = getByTestId('draw-canvas') as HTMLCanvasElement;
 
 		expect(canvas).toBeInTheDocument();

@@ -35,13 +35,11 @@ const editorSlice = createSlice({
 			}
 		},
 
-		closePalette(state) {
-			state.paletteOpen = false;
-		},
+		resetEditorState: () => initialState,
 	},
 });
 
-export const { setScale, setOffset, resetViewport, setActiveTool, closePalette } =
+export const { setScale, setOffset, resetViewport, setActiveTool, resetEditorState } =
 	editorSlice.actions;
 
 export const editorReducer = editorSlice.reducer;

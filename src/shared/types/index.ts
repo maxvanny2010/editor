@@ -15,4 +15,14 @@ export interface Layer {
 	zIndex: number;
 	createdAt: number;
 	updatedAt: number;
+	snapshot?: string;
+}
+
+export interface ProjectViewState {
+	projectId: string;
+	scale: number;
+	offsetX: number;
+	offsetY: number;
+	showGrid: boolean;
+	snapshot?: string; // base64 PNG preview
 }
