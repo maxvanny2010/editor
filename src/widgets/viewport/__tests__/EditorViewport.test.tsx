@@ -1,7 +1,7 @@
 import { act, fireEvent, render } from '@testing-library/react';
 import * as appHooks from '@/store/hooks';
-import { EditorViewport } from '@/widgets/viewport/ui/EditorViewport';
-import { TestStoreProvider } from '@/test-utils/testStoreProvider';
+import { TestStoreProvider } from '@/test-utils';
+import { EditorViewport } from '@/widgets/viewport/model';
 import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
 
 vi.mock('@/entities/editor/model/slice', async (orig) => {
@@ -17,16 +17,36 @@ vi.mock('@/entities/editor/model/slice', async (orig) => {
 	};
 });
 
+function setup() {
+	const utils = render(
+		<TestStoreProvider>
+			<EditorViewport
+				projectId="p1"
+				width={800}
+				height={600}
+				isLayersOpen={false}
+			/>
+		</TestStoreProvider>,
+	);
+	return {
+		...utils,
+		container: utils.getByTestId('viewport-container'),
+	};
+}
+
 describe('EditorViewport — user interactions', () => {
 	let dispatchMock: ReturnType<typeof vi.fn>;
 
 	beforeEach(() => {
 		dispatchMock = vi.fn();
 		vi.spyOn(appHooks, 'useAppDispatch').mockReturnValue(dispatchMock);
-		vi.spyOn(appHooks, 'useAppSelector').mockReturnValue({
-			scale: 1,
-			offsetX: 0,
-			offsetY: 0,
+		vi.spyOn(appHooks, 'useAppSelector').mockImplementation((selector) => {
+			// return fake viewport state
+			if (selector.name === 'selectViewport') {
+				return { scale: 1, offsetX: 0, offsetY: 0 };
+			}
+			// return fake layers
+			return [];
 		});
 	});
 
@@ -35,22 +55,18 @@ describe('EditorViewport — user interactions', () => {
 	});
 
 	it('Ctrl+wheel → dispatch(setScale)', () => {
-		const { getByTestId } = render(
-			<TestStoreProvider>
-				<EditorViewport isLayersOpen={false} />
-			</TestStoreProvider>,
-		);
+		const { container } = setup();
 
-		const container = getByTestId('viewport-container');
-		const wheelEvent = new WheelEvent('wheel', {
+		const wheel = new WheelEvent('wheel', {
 			deltaY: 100,
 			ctrlKey: true,
 			bubbles: true,
 			cancelable: true,
 		});
 
-		const prevent = vi.spyOn(wheelEvent, 'preventDefault');
-		container.dispatchEvent(wheelEvent);
+		const prevent = vi.fn();
+		Object.defineProperty(wheel, 'preventDefault', { value: prevent });
+		container.dispatchEvent(wheel);
 
 		expect(prevent).toHaveBeenCalled();
 		expect(setScale).toHaveBeenCalledWith(expect.any(Number));
@@ -60,13 +76,8 @@ describe('EditorViewport — user interactions', () => {
 	});
 
 	it('Middle mouse drag → dispatch(setOffset)', () => {
-		const { getByTestId } = render(
-			<TestStoreProvider>
-				<EditorViewport isLayersOpen={false} />
-			</TestStoreProvider>,
-		);
+		const { container } = setup();
 
-		const container = getByTestId('viewport-container');
 		fireEvent.mouseDown(container, { button: 1, clientX: 100, clientY: 100 });
 		fireEvent.mouseMove(container, { clientX: 130, clientY: 120 }); // dx=30, dy=20
 		fireEvent.mouseUp(container);
@@ -78,11 +89,7 @@ describe('EditorViewport — user interactions', () => {
 	});
 
 	it('Fit button → dispatch(setScale)', () => {
-		const { getByTestId } = render(
-			<TestStoreProvider>
-				<EditorViewport isLayersOpen={false} />
-			</TestStoreProvider>,
-		);
+		const { getByTestId } = setup();
 
 		fireEvent.click(getByTestId('fit-button-testid'));
 		expect(setScale).toHaveBeenCalledWith(expect.any(Number));
@@ -101,12 +108,7 @@ describe('EditorViewport — user interactions', () => {
 				return 1;
 			});
 
-		const { getByTestId } = render(
-			<TestStoreProvider>
-				<EditorViewport isLayersOpen={false} />
-			</TestStoreProvider>,
-		);
-
+		const { getByTestId } = setup();
 		fireEvent.click(getByTestId('reset-button-testid'));
 
 		act(() => {
@@ -122,20 +124,16 @@ describe('EditorViewport — user interactions', () => {
 		vi.useRealTimers();
 	});
 
-	it('Grid toggle button → toggles text between Hide and Show', () => {
-		const { getByTestId, getByText } = render(
-			<TestStoreProvider>
-				<EditorViewport isLayersOpen={false} />
-			</TestStoreProvider>,
-		);
+	it('Grid toggle button → toggles between Hide and Show text', () => {
+		const { getByTestId } = setup();
 
-		const hideButton = getByText(/Hide Grid/i);
-		expect(hideButton).toBeInTheDocument();
+		const gridButton = getByTestId('grid-button-testid');
+		expect(gridButton).toHaveTextContent(/Hide Grid/i);
 
-		fireEvent.click(getByTestId('grid-button-testid'));
-		expect(getByText(/Show Grid/i)).toBeInTheDocument();
+		fireEvent.click(gridButton);
+		expect(gridButton).toHaveTextContent(/Show Grid/i);
 
-		fireEvent.click(getByTestId('grid-button-testid'));
-		expect(getByText(/Hide Grid/i)).toBeInTheDocument();
+		fireEvent.click(gridButton);
+		expect(gridButton).toHaveTextContent(/Hide Grid/i);
 	});
 });

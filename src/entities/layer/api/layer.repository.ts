@@ -26,4 +26,18 @@ export const layerRepository = {
 	async remove(id: string): Promise<void> {
 		await db.layers.delete(id);
 	},
+
+	// Atomic: check + create in one transaction (remove duplicate in StrictMode)
+	async ensureBaseLayer(
+		projectId: string,
+		factory: () => Layer,
+	): Promise<Layer | null> {
+		return db.transaction('rw', db.layers, async () => {
+			const count = await db.layers.where('projectId').equals(projectId).count();
+			if (count > 0) return null;
+			const layer = factory();
+			await db.layers.add(layer);
+			return layer;
+		});
+	},
 };

@@ -17,8 +17,9 @@ const eraserSlice = createSlice({
 		setEraserSize(state, action: PayloadAction<number>) {
 			state.size = action.payload;
 		},
+		resetEraserState: () => initialState,
 	},
 });
 
-export const { setEraserSize } = eraserSlice.actions;
+export const { setEraserSize, resetEraserState } = eraserSlice.actions;
 export const eraserReducer = eraserSlice.reducer;

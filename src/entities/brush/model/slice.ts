@@ -25,8 +25,10 @@ const brushSlice = createSlice({
 		setBrushDrawing(state, action: PayloadAction<boolean>) {
 			state.isDrawing = action.payload;
 		},
+		resetBrushState: () => initialState,
 	},
 });
 
-export const { setBrushColor, setBrushSize, setBrushDrawing } = brushSlice.actions;
+export const { setBrushColor, setBrushSize, setBrushDrawing, resetBrushState } =
+	brushSlice.actions;
 export const brushReducer = brushSlice.reducer;

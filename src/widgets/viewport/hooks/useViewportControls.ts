@@ -1,17 +1,53 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { ViewportRepository } from '@/widgets/viewport/api';
 import { selectViewport } from '@/entities/editor/model/selectors';
 import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
 
 const PADDING = 64;
 
-export function useViewportControls(width: number, height: number) {
+/**
+ * Handles viewport scaling, panning, and fitting.
+ * Persists state to Dexie if projectId is provided.
+ */
+export function useViewportControls(width: number, height: number, projectId?: string) {
 	const { scale, offsetX, offsetY } = useAppSelector(selectViewport);
 	const dispatch = useAppDispatch();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const panRef = useRef<{ x: number; y: number } | null>(null);
 	const [fitScale, setFitScale] = useState(1);
+	const [showGrid, setShowGrid] = useState(true);
+	const [isPanning, setIsPanning] = useState(false);
 
+	// Load saved viewport state from Dexie
+	useEffect(() => {
+		if (!projectId) return;
+		void (async () => {
+			const saved = await ViewportRepository.get(projectId);
+			if (saved) {
+				dispatch(setScale(saved.scale));
+				dispatch(setOffset({ x: saved.offsetX, y: saved.offsetY }));
+				setShowGrid(saved.showGrid);
+			}
+		})();
+	}, [dispatch, projectId]);
+
+	// Autosave to Dexie every 2 seconds
+	useEffect(() => {
+		if (!projectId) return;
+		const id = setInterval(() => {
+			void ViewportRepository.save({
+				projectId,
+				scale,
+				offsetX,
+				offsetY,
+				showGrid,
+			});
+		}, 2000);
+		return () => clearInterval(id);
+	}, [projectId, scale, offsetX, offsetY, showGrid]);
+
+	// Compute fit scale based on container size
 	useLayoutEffect(() => {
 		const node = containerRef.current;
 		if (!node) return;
@@ -31,6 +67,7 @@ export function useViewportControls(width: number, height: number) {
 		};
 	}, [width, height]);
 
+	// Zoom with Ctrl + wheel
 	useEffect(() => {
 		const node = containerRef.current;
 		if (!node) return;
@@ -44,10 +81,12 @@ export function useViewportControls(width: number, height: number) {
 		return () => node.removeEventListener('wheel', handleWheel);
 	}, [dispatch, scale]);
 
+	// Panning logic
 	const onMouseDown = useCallback((e: React.MouseEvent) => {
 		if (e.button === 1) {
 			e.preventDefault();
 			panRef.current = { x: e.clientX, y: e.clientY };
+			setIsPanning(true);
 		}
 	}, []);
 
@@ -65,8 +104,18 @@ export function useViewportControls(width: number, height: number) {
 		[dispatch, offsetX, offsetY],
 	);
 
-	const onMouseUp = useCallback(() => (panRef.current = null), []);
+	const onMouseUp = useCallback(() => {
+		panRef.current = null;
+		setIsPanning(false);
+	}, []);
 
+	useEffect(() => {
+		const handleGlobalMouseUp = () => setIsPanning(false);
+		window.addEventListener('mouseup', handleGlobalMouseUp);
+		return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+	}, []);
+
+	// Smooth reset animation
 	const handleReset = useCallback(() => {
 		const startScale = scale;
 		const startX = offsetX;
@@ -98,11 +147,14 @@ export function useViewportControls(width: number, height: number) {
 		scale,
 		offsetX,
 		offsetY,
+		showGrid,
+		setShowGrid,
 		handleFit,
 		handleReset,
 		onMouseDown,
 		onMouseMove,
 		onMouseUp,
 		fitScale,
+		isPanning,
 	};
 }

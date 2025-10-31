@@ -34,10 +34,16 @@ const shapeSlice = createSlice({
 		setShapeThickness(state, action: PayloadAction<number>) {
 			state.thickness = action.payload;
 		},
+		resetShapeState: () => initialState,
 	},
 });
 
-export const { setShapeType, setShapeFill, setShapeStroke, setShapeThickness } =
-	shapeSlice.actions;
+export const {
+	setShapeType,
+	setShapeFill,
+	setShapeStroke,
+	setShapeThickness,
+	resetShapeState,
+} = shapeSlice.actions;
 
 export const shapeReducer = shapeSlice.reducer;

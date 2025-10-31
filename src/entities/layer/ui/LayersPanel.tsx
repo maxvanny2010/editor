@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion, Reorder } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
 	createLayer,
@@ -8,7 +8,7 @@ import {
 	setActiveLayerId,
 	updateLayer,
 } from '@/entities/layer/model/slice';
-import { layersSelectors } from '@/entities/layer/model/selectors';
+import { layersSelectors, makeSelectByProject } from '@/entities/layer/model/selectors';
 import { X as CloseIcon } from 'lucide-react';
 import {
 	AddLayerButton,
@@ -25,9 +25,11 @@ export function LayersPanel({
 	setIsOpen: (v: boolean) => void;
 }) {
 	const dispatch = useAppDispatch();
-	const layers = useAppSelector(layersSelectors.selectAll)
+	const selectByProject = useMemo(makeSelectByProject, []);
+	const layers = (useAppSelector((s) => selectByProject(s, projectId)) ?? [])
 		.slice()
 		.sort((a, b) => b.zIndex - a.zIndex);
+
 	const activeLayer = useAppSelector(layersSelectors.selectActiveLayer);
 
 	const [open, setOpen] = useState(false);
@@ -42,6 +44,17 @@ export function LayersPanel({
 		setIsOpen(open);
 	}, [open, setIsOpen]);
 
+	// Reorder handler
+	const handleReorder = (newOrder: typeof layers) => {
+		newOrder.forEach((layer, idx) => {
+			const newZ = newOrder.length - 1 - idx;
+			if (layer.zIndex !== newZ) {
+				dispatch(updateLayer({ id: layer.id, changes: { zIndex: newZ } }));
+			}
+		});
+	};
+
+	// UI actions
 	const handlers = {
 		onCreate: () => void dispatch(createLayer({ projectId })),
 		onSetActive: (id: string) => dispatch(setActiveLayerId(id)),
@@ -94,23 +107,25 @@ export function LayersPanel({
 
 						<AddLayerButton onCreate={handlers.onCreate} />
 
-						<ul className="flex-1 overflow-auto flex flex-col gap-1">
+						{/* Animated reorderable layer list */}
+						<Reorder.Group axis="y" values={layers} onReorder={handleReorder}>
 							{layers.map((layer) => (
-								<LayerItem
-									key={layer.id}
-									layer={layer}
-									isActive={activeLayer?.id === layer.id}
-									isEditing={localNameId === layer.id}
-									openMenuId={openMenuId}
-									onSetActive={handlers.onSetActive}
-									onToggleVisibility={handlers.onToggleVisibility}
-									onRenameSubmit={handlers.onRenameSubmit}
-									onDelete={handlers.onDelete}
-									setLocalNameId={setLocalNameId}
-									setOpenMenuId={setOpenMenuId}
-								/>
+								<Reorder.Item key={layer.id} value={layer}>
+									<LayerItem
+										layer={layer}
+										isActive={activeLayer?.id === layer.id}
+										isEditing={localNameId === layer.id}
+										openMenuId={openMenuId}
+										onSetActive={handlers.onSetActive}
+										onToggleVisibility={handlers.onToggleVisibility}
+										onRenameSubmit={handlers.onRenameSubmit}
+										onDelete={handlers.onDelete}
+										setLocalNameId={setLocalNameId}
+										setOpenMenuId={setOpenMenuId}
+									/>
+								</Reorder.Item>
 							))}
-						</ul>
+						</Reorder.Group>
 					</motion.aside>
 				)}
 			</AnimatePresence>
