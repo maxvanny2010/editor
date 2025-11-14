@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ToolBar } from '@/widgets/toolbar/model';
+import { ToolBar } from '@/widgets/toolbar/ui';
 
 describe('ToolBar', () => {
 	it('renders children correctly', () => {

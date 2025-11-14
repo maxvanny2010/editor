@@ -12,6 +12,7 @@ const ignoredMotionProps = [
 	'variants',
 	'drag',
 	'layout',
+	'layoutId',
 	'onAnimationStart',
 	'onAnimationComplete',
 ];
@@ -50,6 +51,8 @@ export const motion = {
 	textarea: createMockComponent('textarea'),
 	svg: createMockComponent('svg'),
 	aside: createMockComponent('aside'),
+	li: createMockComponent('li'),
+	footer: createMockComponent('footer'),
 };
 
 const mockMotionValue = <T,>(initial: T) => ({

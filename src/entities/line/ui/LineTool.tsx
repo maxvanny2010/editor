@@ -1,5 +1,5 @@
 import { Slash } from 'lucide-react';
-import { ToolButton } from '@/widgets/toolbar/model';
+import { ToolButton } from '@/widgets/toolbar/ui';
 import { LineFloatingPalette } from '@/entities/line/model';
 import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';

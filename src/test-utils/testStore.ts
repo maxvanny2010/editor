@@ -9,6 +9,7 @@ import { brushReducer } from '@/entities/brush/model/slice';
 import { lineReducer } from '@/entities/line/model/slice';
 import { shapeReducer } from '@/entities/shape/model/slice';
 import { eraserReducer } from '@/entities/eraser/model/slice';
+import { historyReducer } from '@/entities/history/model/slice';
 
 type ProjectsState = ReturnType<typeof projectsReducer>;
 type EditorState = ReturnType<typeof editorReducer>;
@@ -24,6 +25,7 @@ interface TestBaseState {
 	line: LineState;
 	shape: ShapeState;
 	eraser: EraserState;
+	history: ReturnType<typeof historyReducer>;
 }
 
 /**
@@ -42,6 +44,7 @@ export const makeTestStore = <
 		line: lineReducer,
 		shape: shapeReducer,
 		eraser: eraserReducer,
+		history: historyReducer,
 		...extraReducers,
 	});
 

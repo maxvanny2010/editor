@@ -69,7 +69,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 			await onSubmitAction(dispatch, buildArgs(name, width, height));
 			onClose();
 		} catch (err) {
-			const message = (err as Error).message;
+			const message = (err instanceof Error ? err.message : '') || '';
 			setError(
 				message.includes('exists')
 					? PROJECT_MESSAGES.NAME_DUPLICATE

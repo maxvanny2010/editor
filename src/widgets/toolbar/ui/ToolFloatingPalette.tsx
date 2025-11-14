@@ -1,4 +1,4 @@
-import { ColorSelector, ValueSelector } from '@/widgets/toolbar/model';
+import { ColorSelector, ValueSelector } from '@/widgets/toolbar/ui';
 import type { ReactNode } from 'react';
 
 interface ToolFloatingPaletteProps {

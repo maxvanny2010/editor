@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { EditorState } from '@/entities/editor/model/types.ts';
+import type { EditorState } from '@/shared/types';
 
 const initialState: EditorState = {
 	viewport: {

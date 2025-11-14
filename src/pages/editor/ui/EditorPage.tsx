@@ -1,68 +1,33 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import { HistoryPanel, PreviewOverlay } from '@/entities/history/ui';
+import { BottomFooter, RightSidebar } from '@/widgets/layout/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { projectsSelectors } from '@/entities/project/model';
+import { redo, undo } from '@/entities/history/model/slice';
 import { EditorViewport } from '@/widgets/viewport/model';
-import { LAYER } from '@/shared/constants';
 import { LayersPanel } from '@/entities/layer/ui';
-import { layerService } from '@/entities/layer/model';
-import { layersSelectors } from '@/entities/layer/model/selectors';
-import { fetchLayersByProject, setActiveLayerId } from '@/entities/layer/model/slice';
-import { resetEditorState } from '@/entities/editor/model/slice';
-import { resetBrushState } from '@/entities/brush/model/slice';
-import { resetLineState } from '@/entities/line/model/slice';
-import { resetShapeState } from '@/entities/shape/model/slice';
-import { resetEraserState } from '@/entities/eraser/model/slice';
-import { store } from '@/store';
+import { NAMES } from '@/shared/constants';
+
+export type PanelKey = typeof NAMES.LAYERS | typeof NAMES.HISTORY | null;
 
 export const EditorPage = () => {
-	const [isLayersOpen, setIsLayersOpen] = useState(false);
 	const dispatch = useAppDispatch();
 	const activeProject = useAppSelector(projectsSelectors.selectActiveProject);
 
-	// Protect from double initialization in StrictMode
-	const initRef = useRef(false);
+	const [viewportInfo, setViewportInfo] = useState({
+		scale: 1,
+		offsetX: 0,
+		offsetY: 0,
+		showGrid: true,
+		handleFit: () => {},
+		handleReset: () => {},
+		toggleGrid: () => {},
+	});
 
-	useEffect(() => {
-		return () => {
-			dispatch(resetEditorState());
-			dispatch(resetBrushState());
-			dispatch(resetLineState());
-			dispatch(resetShapeState());
-			dispatch(resetEraserState());
-		};
-	}, [dispatch]);
-	useEffect(() => {
-		const pid = activeProject?.id;
-		if (!pid || initRef.current) return;
-		initRef.current = true;
+	const [activePanel, setActivePanel] = useState<PanelKey>(null);
 
-		(async () => {
-			//  Load existing layers
-			const { layers: loaded } = await dispatch(fetchLayersByProject(pid)).unwrap();
-
-			// If this is first open — atomically create base layer
-			if (loaded.length === 0) {
-				const created = await layerService.ensureBaseLayer(
-					pid,
-					`${LAYER.NEW_LAYER} 1`,
-				);
-
-				//  Do NOT call createLayer again — ensureBaseLayer already wrote to DB
-				if (created) {
-					// just sync Redux with current Dexie state
-					await dispatch(fetchLayersByProject(pid)).unwrap();
-				}
-			}
-
-			// Pick top layer as active
-			const allLayers = layersSelectors.selectByProject(store.getState(), pid);
-			if (allLayers.length > 0) {
-				const topLayer = allLayers.sort((a, b) => b.zIndex - a.zIndex)[0];
-				dispatch(setActiveLayerId(topLayer.id));
-			}
-		})();
-	}, [dispatch, activeProject?.id]);
-
+	// if project not chosen
 	if (!activeProject) {
 		return (
 			<div className="flex items-center justify-center h-screen text-gray-500">
@@ -73,13 +38,54 @@ export const EditorPage = () => {
 
 	return (
 		<div className="relative h-screen w-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
+			{/* Canvas viewport */}
 			<EditorViewport
-				isLayersOpen={isLayersOpen}
+				isLayersOpen={activePanel === NAMES.LAYERS}
+				isHistoryOpen={activePanel === NAMES.HISTORY}
 				projectId={activeProject.id}
 				width={activeProject.width}
 				height={activeProject.height}
+				onViewportUpdate={setViewportInfo}
 			/>
-			<LayersPanel projectId={activeProject.id} setIsOpen={setIsLayersOpen} />
+
+			{/* Overlay preview banner */}
+			<PreviewOverlay />
+
+			{/* Sidebar (Layers / History) */}
+			<RightSidebar active={activePanel} onSelect={setActivePanel} />
+
+			{/* Side panels */}
+			<AnimatePresence>
+				{activePanel === NAMES.LAYERS && (
+					<LayersPanel
+						key={NAMES.LAYERS}
+						open
+						onClose={() => setActivePanel(null)}
+						projectId={activeProject.id}
+					/>
+				)}
+
+				{activePanel === NAMES.HISTORY && (
+					<HistoryPanel
+						key={NAMES.HISTORY}
+						open
+						onClose={() => setActivePanel(null)}
+					/>
+				)}
+			</AnimatePresence>
+
+			{/* Footer (zoom, undo/redo, grid toggle) */}
+			<BottomFooter
+				scale={viewportInfo.scale}
+				offsetX={viewportInfo.offsetX}
+				offsetY={viewportInfo.offsetY}
+				onUndo={() => dispatch(undo())}
+				onRedo={() => dispatch(redo())}
+				onFit={viewportInfo.handleFit}
+				onReset={viewportInfo.handleReset}
+				onToggleGrid={viewportInfo.toggleGrid}
+				showGrid={viewportInfo.showGrid}
+			/>
 		</div>
 	);
 };

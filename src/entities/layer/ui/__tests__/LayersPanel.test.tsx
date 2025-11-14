@@ -1,13 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { forwardRef } from 'react';
 import * as hooks from '@/store/hooks';
 import type { AppDispatch, RootState } from '@/store';
-import type { Layer } from '@/shared/types';
 import { LayersPanel } from '@/entities/layer/ui';
+import type { Layer } from '@/shared/types';
 
+// ──────────────────────────────
+// Mock UI components
+// ──────────────────────────────
 vi.mock('@/entities/layer/ui/components', () => {
-	type ToggleProps = { open: boolean; setOpen: (open: boolean) => void };
 	type OpacityProps = {
 		activeLayer: Layer | null;
 		onOpacityChange: (id: string, value: number) => void;
@@ -45,47 +46,70 @@ vi.mock('@/entities/layer/ui/components', () => {
 				Opacity: {activeLayer ? activeLayer.opacity : 'N/A'}
 			</div>
 		),
-
-		PanelToggleButton: ({ open, setOpen }: ToggleProps) => (
-			<button
-				type="button"
-				data-testid="mock-toggle-btn"
-				aria-label={open ? 'Close Layers Panel' : 'Open Layers Panel'}
-				onClick={() => setOpen(!open)}
-			>
-				{open ? 'Close' : 'Open'} Panel
-			</button>
-		),
 	};
 });
 
+// ──────────────────────────────
+// Mock Redux store
+// ──────────────────────────────
+interface MockState {
+	layers: {
+		entities: Record<string, { id: string; name: string }>;
+	};
+	history: { isPreview: boolean };
+}
+
+let mockStoreState: MockState = {
+	layers: {
+		entities: {
+			'layer-1': { id: 'layer-1', name: 'Background' },
+			'layer-2': { id: 'layer-2', name: 'Foreground' },
+		},
+	},
+	history: { isPreview: false },
+};
+
+vi.mock('@/store', () => ({
+	store: {
+		getState: vi.fn(() => mockStoreState),
+	},
+}));
+
+// ──────────────────────────────
+// Mock hooks and slices
+// ──────────────────────────────
 vi.mock('@/store/hooks', () => ({
 	useAppDispatch: vi.fn(),
 	useAppSelector: vi.fn(),
 }));
 
-vi.mock('@/entities/layer/model/slice', () => ({
-	createLayer: vi.fn((payload: { projectId: string }) => ({
-		type: 'layers/createLayer',
-		payload,
-	})),
-	deleteLayer: vi.fn((id: string) => ({
-		type: 'layers/deleteLayer',
-		payload: id,
-	})),
-	updateLayer: vi.fn((payload: { id: string; changes: Partial<Layer> }) => ({
-		type: 'layers/updateLayer',
-		payload,
-	})),
-	setActiveLayerId: vi.fn((id: string) => ({
-		type: 'layers/setActiveLayerId',
-		payload: id,
-	})),
-	fetchLayersByProject: vi.fn((projectId: string) => ({
-		type: 'layers/fetchLayersByProject',
-		payload: projectId,
-	})),
-}));
+vi.mock('@/entities/layer/model/slice', () => {
+	const mockReducer = (state = {}) => state;
+
+	return {
+		layersReducer: mockReducer,
+		createLayer: vi.fn((payload: { projectId: string }) => ({
+			type: 'layers/createLayer',
+			payload,
+		})),
+		deleteLayer: vi.fn((id: string) => ({
+			type: 'layers/deleteLayer',
+			payload: id,
+		})),
+		updateLayer: vi.fn((payload: { id: string; changes: Partial<Layer> }) => ({
+			type: 'layers/updateLayer',
+			payload,
+		})),
+		setActiveLayerId: vi.fn((id: string) => ({
+			type: 'layers/setActiveLayerId',
+			payload: id,
+		})),
+		fetchLayersByProject: vi.fn((projectId: string) => ({
+			type: 'layers/fetchLayersByProject',
+			payload: projectId,
+		})),
+	};
+});
 
 vi.mock('@/entities/layer/model/selectors', () => {
 	const createMockLayers = (): Layer[] => [
@@ -116,16 +140,13 @@ vi.mock('@/entities/layer/model/selectors', () => {
 	const createMockSelector = <TResult,>(
 		impl: SelectorFunc<TResult>,
 	): SelectorFunc<TResult> => {
-		const selector = (state: RootState, ...args: string[]): TResult => {
-			return impl(state, ...args);
-		};
-
+		const selector = (state: RootState, ...args: string[]): TResult =>
+			impl(state, ...args);
 		Object.assign(selector, {
 			resultFunc: impl,
 			recomputations: vi.fn(() => 0),
 			resetRecomputations: vi.fn(),
 		});
-
 		return selector;
 	};
 
@@ -145,16 +166,15 @@ vi.mock('@/entities/layer/model/selectors', () => {
 
 	return {
 		layersSelectors: {
-			selectAll: vi.fn(),
 			selectActiveLayer: mockSelectActiveLayer,
-			selectLoading: vi.fn(),
-			selectError: vi.fn(),
-			selectByProject: vi.fn(),
 		},
 		makeSelectByProject: vi.fn(() => mockSelectByProjectInstance),
 	};
 });
 
+// ──────────────────────────────
+// Setup and tests
+// ──────────────────────────────
 const mockLayers: Layer[] = [
 	{
 		id: 'layer-1',
@@ -179,7 +199,6 @@ const mockLayers: Layer[] = [
 ];
 
 const mockDispatch = vi.fn();
-const mockSetIsOpen = vi.fn();
 
 const createMockState = (): RootState =>
 	({
@@ -191,26 +210,31 @@ const createMockState = (): RootState =>
 			loading: 'succeeded' as const,
 			error: null,
 		},
-	}) as RootState;
+		history: {
+			isPreview: false,
+			stack: [],
+			currentIndex: -1,
+		},
+	}) as Partial<RootState> as unknown as RootState;
 
 type SelectorFunc<TResult> = (state: RootState, ...args: string[]) => TResult;
 
-describe('LayersPanel', () => {
+// ──────────────────────────────
+// TESTS
+// ──────────────────────────────
+describe('LayersPanel (controlled)', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(hooks.useAppDispatch).mockReturnValue(mockDispatch as AppDispatch);
 		vi.mocked(hooks.useAppSelector).mockImplementation(
 			<T,>(selector: (state: RootState) => T): T => {
 				const state = createMockState();
-				if (typeof selector === 'function') {
-					const result = selector(state);
-					if (typeof result === 'function') {
-						const projectorFunc = result as SelectorFunc<Layer[]>;
-						return projectorFunc(state, 'project-123') as T;
-					}
-					return result;
+				const result = selector(state);
+				if (typeof result === 'function') {
+					const projectorFunc = result as SelectorFunc<Layer[]>;
+					return projectorFunc(state, 'project-123') as T;
 				}
-				return undefined as T;
+				return result;
 			},
 		);
 		mockDispatch.mockImplementation((action: unknown) => action);
@@ -218,7 +242,11 @@ describe('LayersPanel', () => {
 
 	it('dispatches fetchLayersByProject on mount', async () => {
 		const { fetchLayersByProject } = await import('@/entities/layer/model/slice');
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
+		mockStoreState = {
+			layers: { entities: {} },
+			history: { isPreview: false },
+		};
+		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
 		expect(fetchLayersByProject).toHaveBeenCalledWith('project-123');
 		expect(mockDispatch).toHaveBeenCalledWith({
 			type: 'layers/fetchLayersByProject',
@@ -226,37 +254,28 @@ describe('LayersPanel', () => {
 		});
 	});
 
-	it('renders toggle button (panel closed by default)', () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		const btn = screen.getByRole('button', { name: /open layers panel/i });
-		expect(btn).toBeInTheDocument();
-		expect(btn).toHaveTextContent('Open Panel');
+	it('renders panel only when open=true', () => {
+		const { rerender } = render(
+			<LayersPanel projectId="project-123" open={false} onClose={() => {}} />,
+		);
+		expect(screen.queryByText('Layers')).not.toBeInTheDocument();
+
+		rerender(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		expect(screen.getByText('Layers')).toBeInTheDocument();
 	});
 
-	it('opens and closes the panel', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		const openBtn = screen.getByRole('button', { name: /open layers panel/i });
-		fireEvent.click(openBtn);
-		await waitFor(() => {
-			expect(screen.getByText(/layers/i)).toBeInTheDocument();
-		});
-		expect(mockSetIsOpen).toHaveBeenCalledWith(true);
-		const closeBtn = screen.getByRole('button', { name: /close layers panel/i });
-		fireEvent.click(closeBtn);
-		await waitFor(() => {
-			expect(screen.queryByText(/layers/i)).not.toBeInTheDocument();
-		});
-		expect(mockSetIsOpen).toHaveBeenCalledWith(false);
+	it('calls onClose when Close button clicked', async () => {
+		const mockOnClose = vi.fn();
+		render(<LayersPanel projectId="project-123" open={true} onClose={mockOnClose} />);
+		const btn = screen.getByRole('button', { name: /close panel/i });
+		fireEvent.click(btn);
+		expect(mockOnClose).toHaveBeenCalledTimes(1);
 	});
 
 	it('dispatches createLayer when Add Layer clicked', async () => {
 		const { createLayer } = await import('@/entities/layer/model/slice');
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			expect(screen.getByTestId('mock-add-layer-btn')).toBeInTheDocument();
-		});
-		const addBtn = screen.getByTestId('mock-add-layer-btn');
+		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		const addBtn = await screen.findByTestId('mock-add-layer-btn');
 		fireEvent.click(addBtn);
 		expect(createLayer).toHaveBeenCalledWith({ projectId: 'project-123' });
 		expect(mockDispatch).toHaveBeenCalledWith({
@@ -265,65 +284,22 @@ describe('LayersPanel', () => {
 		});
 	});
 
-	it('renders layer list via LayerItem mock', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			const items = screen.getAllByTestId('mock-layer-item');
-			expect(items).toHaveLength(2);
-		});
-		const items = screen.getAllByTestId('mock-layer-item');
-		expect(items[0]).toHaveTextContent('Foreground');
-		expect(items[1]).toHaveTextContent('Background');
+	it('renders all layers sorted by zIndex desc', async () => {
+		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		const items = await screen.findAllByTestId('mock-layer-item');
+		expect(items[0]).toHaveAttribute('data-layer-id', 'layer-2');
+		expect(items[1]).toHaveAttribute('data-layer-id', 'layer-1');
 	});
 
-	it('displays active layer correctly', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			const activeItem = screen.getByText(/background.*\(active\)/i);
-			expect(activeItem).toBeInTheDocument();
-		});
+	it('renders active layer with (active) label', async () => {
+		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		const active = await screen.findByText(/background.*\(active\)/i);
+		expect(active).toBeInTheDocument();
 	});
 
 	it('renders opacity slider with active layer opacity', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			const opacitySlider = screen.getByTestId('mock-opacity-slider');
-			expect(opacitySlider).toHaveTextContent('Opacity: 1');
-		});
-	});
-
-	it('calls setIsOpen callback when panel state changes', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			expect(mockSetIsOpen).toHaveBeenCalledWith(true);
-		});
-		const closeButton = screen.getByRole('button', { name: /close panel/i });
-		fireEvent.click(closeButton);
-		await waitFor(() => {
-			expect(mockSetIsOpen).toHaveBeenCalledWith(false);
-		});
-	});
-
-	it('sorts layers by zIndex in descending order', async () => {
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		await waitFor(() => {
-			const items = screen.getAllByTestId('mock-layer-item');
-			expect(items[0]).toHaveAttribute('data-layer-id', 'layer-2');
-			expect(items[1]).toHaveAttribute('data-layer-id', 'layer-1');
-		});
-	});
-
-	it('uses memoized selector from makeSelectByProject', async () => {
-		const { makeSelectByProject } = await import('@/entities/layer/model/selectors');
-		render(<LayersPanel projectId="project-123" setIsOpen={mockSetIsOpen} />);
-		expect(makeSelectByProject).toHaveBeenCalled();
-		fireEvent.click(screen.getByRole('button', { name: /open layers panel/i }));
-		const items = screen.getAllByTestId('mock-layer-item');
-		expect(items).toHaveLength(2);
+		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		const opacitySlider = await screen.findByTestId('mock-opacity-slider');
+		expect(opacitySlider).toHaveTextContent('Opacity: 1');
 	});
 });

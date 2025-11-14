@@ -1,5 +1,5 @@
 import type { RootState } from '@/store';
-import { projectsAdapter } from '@/entities/project/model/slice.ts';
+import { projectsAdapter } from '@/entities/project/model/slice';
 
 export const projectsSelectors = {
 	...projectsAdapter.getSelectors((s: RootState) => s.projects),

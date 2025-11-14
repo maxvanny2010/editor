@@ -4,14 +4,16 @@ import { useState } from 'react';
 
 interface AddLayerButtonProps {
 	onCreate: () => void;
+	disabled?: boolean;
 }
 
-export function AddLayerButton({ onCreate }: AddLayerButtonProps) {
+export function AddLayerButton({ onCreate, disabled }: AddLayerButtonProps) {
 	const [hoverAdd, setHoverAdd] = useState(false);
 
 	return (
 		<button
-			onClick={onCreate}
+			onClick={() => !disabled && onCreate()}
+			disabled={disabled}
 			onMouseEnter={() => setHoverAdd(true)}
 			onMouseLeave={() => setHoverAdd(false)}
 			className="

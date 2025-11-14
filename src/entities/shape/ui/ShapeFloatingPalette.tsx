@@ -9,7 +9,7 @@ import {
 	type ShapeType,
 } from '@/entities/shape/model';
 import { TOOL_COLORS, TOOL_SIZES } from '@/shared/constants';
-import { ToolFloatingPalette } from '@/widgets/toolbar/model';
+import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
 import { Circle, Square } from 'lucide-react';
 
 // ─── Shape type icons ───────────────────────────────────────────

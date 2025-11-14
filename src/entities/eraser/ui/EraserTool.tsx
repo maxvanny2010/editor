@@ -1,5 +1,5 @@
 import { Eraser } from 'lucide-react';
-import { ToolButton } from '@/widgets/toolbar/model';
+import { ToolButton } from '@/widgets/toolbar/ui';
 import { EraserFloatingPalette } from './EraserFloatingPalette';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setActiveTool } from '@/entities/editor/model/slice';

@@ -1,8 +1,8 @@
-import { act, fireEvent, render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import * as appHooks from '@/store/hooks';
 import { TestStoreProvider } from '@/test-utils';
 import { EditorViewport } from '@/widgets/viewport/model';
-import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
+import { setOffset, setScale } from '@/entities/editor/model/slice';
 
 vi.mock('@/entities/editor/model/slice', async (orig) => {
 	const actual = (await orig()) as Record<string, unknown>;
@@ -25,6 +25,7 @@ function setup() {
 				width={800}
 				height={600}
 				isLayersOpen={false}
+				isHistoryOpen={false}
 			/>
 		</TestStoreProvider>,
 	);
@@ -86,54 +87,5 @@ describe('EditorViewport — user interactions', () => {
 		expect(dispatchMock).toHaveBeenCalledWith(
 			expect.objectContaining({ type: 'editor/setOffset' }),
 		);
-	});
-
-	it('Fit button → dispatch(setScale)', () => {
-		const { getByTestId } = setup();
-
-		fireEvent.click(getByTestId('fit-button-testid'));
-		expect(setScale).toHaveBeenCalledWith(expect.any(Number));
-		expect(dispatchMock).toHaveBeenCalledWith(
-			expect.objectContaining({ type: 'editor/setScale' }),
-		);
-	});
-
-	it('Reset button → triggers animation and dispatches resetViewport', () => {
-		vi.useFakeTimers();
-
-		const raf = vi
-			.spyOn(window, 'requestAnimationFrame')
-			.mockImplementation((cb: FrameRequestCallback) => {
-				cb(performance.now() + 400);
-				return 1;
-			});
-
-		const { getByTestId } = setup();
-		fireEvent.click(getByTestId('reset-button-testid'));
-
-		act(() => {
-			vi.advanceTimersByTime(400);
-		});
-
-		expect(resetViewport).toHaveBeenCalled();
-		expect(dispatchMock).toHaveBeenCalledWith(
-			expect.objectContaining({ type: 'editor/resetViewport' }),
-		);
-
-		raf.mockRestore();
-		vi.useRealTimers();
-	});
-
-	it('Grid toggle button → toggles between Hide and Show text', () => {
-		const { getByTestId } = setup();
-
-		const gridButton = getByTestId('grid-button-testid');
-		expect(gridButton).toHaveTextContent(/Hide Grid/i);
-
-		fireEvent.click(gridButton);
-		expect(gridButton).toHaveTextContent(/Show Grid/i);
-
-		fireEvent.click(gridButton);
-		expect(gridButton).toHaveTextContent(/Hide Grid/i);
 	});
 });

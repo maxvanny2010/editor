@@ -33,7 +33,7 @@ export function createAsyncEntitySlice<
 	fetchByParam?: (param: P) => Promise<T[]>;
 	createOne: (data: C) => Promise<T>;
 	updateOne: (data: U) => Promise<T>;
-	deleteOne: (id: string) => Promise<void>;
+	deleteOne: (id: string) => Promise<string>;
 	sortComparer?: (a: T, b: T) => number;
 }) {
 	const {
