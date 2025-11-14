@@ -9,7 +9,7 @@ describe('createAsyncEntitySlice', () => {
 		name: data.name,
 	}));
 	const updateOne = vi.fn(async (data: { id: string; name: string }) => data);
-	const deleteOne = vi.fn(async () => undefined);
+	const deleteOne = vi.fn(async (id: string) => id);
 
 	const slice = createAsyncEntitySlice({
 		name: 'test',
