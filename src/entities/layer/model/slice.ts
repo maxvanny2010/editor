@@ -1,5 +1,5 @@
 import { createAsyncEntitySlice } from '@/shared/lib/store';
-import { layerService } from './service';
+import { layerService } from '@/entities/layer/model/layer.service';
 import type { Layer } from '@/shared/types';
 import {
 	createAction,
@@ -11,8 +11,10 @@ import {
 	CRUD_ACTION_SUFFIXES,
 	ENTITY_LOADING_STATUSES,
 	LAYER,
-	SLICE_ACTIONS,
+	LAYER_SLICE_ACTIONS,
+	NAMES,
 } from '@/shared/constants';
+import { nanoid } from 'nanoid';
 
 // ───────────────────────────────────────────────
 // Base CRUD slice
@@ -31,7 +33,7 @@ export const {
 	{ projectId: string; name?: string },
 	{ id: string; changes: Partial<Layer> }
 >({
-	name: `${LAYER.SLICE_NAME}`,
+	name: `${NAMES.LAYERS}`,
 	fetchAll: async () => {
 		throw new Error(LAYER.ERROR_FETCH_BY_PROJECT);
 	},
@@ -47,7 +49,7 @@ export const {
 export const fetchLayersByProject = createAsyncThunk<
 	{ projectId: string; layers: Layer[] },
 	string
->(`${LAYER.SLICE_NAME}${CRUD_ACTION_SUFFIXES.FETCH_BY_PARAM}`, async (projectId) => {
+>(`${NAMES.LAYERS}${CRUD_ACTION_SUFFIXES.FETCH_BY_PARAM}`, async (projectId) => {
 	try {
 		const layers = await layerService.getLayers(projectId);
 		return { projectId, layers };
@@ -78,11 +80,20 @@ export const initialState: LayersState = {
 // Actions
 // ───────────────────────────────────────────────
 export const setActiveLayerId = createAction<string | null>(
-	`${LAYER.SLICE_NAME}${SLICE_ACTIONS.SET_ACTIVE_ID}`,
+	`${LAYER_SLICE_ACTIONS.SET_ACTIVE_ID}`,
 );
 export const setCurrentProjectId = createAction<string | null>(
-	`${LAYER.SLICE_NAME}${SLICE_ACTIONS.SET_CURRENT_PROJECT}`,
+	`${LAYER_SLICE_ACTIONS.SET_CURRENT_PROJECT}`,
 );
+export const updateLayerSnapshot = createAction<{
+	id: string;
+	changes: Partial<Layer>;
+}>(`${LAYER_SLICE_ACTIONS.UPDATE_SNAPSHOT}`);
+
+export const replaceFromSnapshot = createAction<{
+	projectId: string;
+	layers: Partial<Layer>[];
+}>(`${LAYER_SLICE_ACTIONS.REPLACE_FROM_SNAPSHOT}`);
 
 // ───────────────────────────────────────────────
 // Reducer
@@ -91,46 +102,70 @@ export function layersReducer(
 	state: LayersState = initialState,
 	action: UnknownAction,
 ): LayersState {
-	let base = baseReducer(state, action) as LayersState;
+	const base = baseReducer(state, action) as LayersState;
 
 	switch (true) {
 		// ───────────────────────────────
-		// Local synchronous actions
+		// Set active layer
 		// ───────────────────────────────
 		case setActiveLayerId.match(action): {
 			return { ...base, activeId: action.payload };
 		}
 
+		// ───────────────────────────────
+		// Update snapshot of a layer
+		// ───────────────────────────────
+		case updateLayerSnapshot.match(action): {
+			const { id, changes } = action.payload;
+			const existing = base.entities[id];
+
+			if (existing) {
+				// update current layer
+				return layersAdapter.updateOne(base, { id, changes });
+			} else {
+				const newLayer: Layer = {
+					id,
+					projectId: base.projectId ?? 'unknown',
+					name: LAYER.RESTORED_LAYER,
+					visible: changes.visible ?? true,
+					opacity: changes.opacity ?? 1,
+					zIndex: changes.zIndex ?? 0,
+					snapshot: changes.snapshot ?? '',
+					createdAt: Date.now(),
+					updatedAt: Date.now(),
+				};
+				return layersAdapter.addOne(base, newLayer);
+			}
+		}
+
+		// ───────────────────────────────
+		// Clear all layers when switching project
+		// ───────────────────────────────
 		case setCurrentProjectId.match(action): {
 			//  Clear layers when switching project
-			base = layersAdapter.removeAll(base);
-			base.activeId = null;
-			base.projectId = action.payload;
-			return base;
+			const cleared = layersAdapter.removeAll(base);
+			return { ...cleared, activeId: null, projectId: action.payload };
 		}
 
 		// ───────────────────────────────
 		// Fetch layers by project
 		// ───────────────────────────────
 		case fetchLayersByProject.pending.match(action): {
-			return {
-				...base,
-				loading: ENTITY_LOADING_STATUSES.PENDING,
-				error: null,
-			};
+			return { ...base, loading: ENTITY_LOADING_STATUSES.PENDING, error: null };
 		}
 
 		case fetchLayersByProject.fulfilled.match(action): {
-			const { projectId, layers } = (
-				action as PayloadAction<{ projectId: string; layers: Layer[] }>
-			).payload;
-
+			const { projectId, layers } = action.payload;
 			// setAll returns a new immutable state instance
 			const updated = layersAdapter.setAll(base, layers);
+
+			// Automatically activate the first layer if exists
+			const firstLayer = layers.length > 0 ? layers[0].id : null;
 
 			return {
 				...updated,
 				projectId,
+				activeId: firstLayer,
 				loading: ENTITY_LOADING_STATUSES.SUCCEEDED,
 				error: null,
 			};
@@ -145,21 +180,16 @@ export function layersReducer(
 		}
 
 		// ───────────────────────────────
-		// After layer created: auto-set activeId if not set
+		// Layer created → set as active
 		// ───────────────────────────────
 		case createLayer.fulfilled.match(action): {
 			const layer = (action as PayloadAction<Layer>).payload;
 			const updated = layersAdapter.addOne(base, layer);
-
-			// If there is no active layer, make this one active
-			if (!base.activeId) {
-				return { ...updated, activeId: layer.id };
-			}
-			return updated;
+			return { ...updated, activeId: layer.id };
 		}
 
 		// ───────────────────────────────
-		// After layer deleted: select nearest top layer
+		// Layer deleted → select next top
 		// ───────────────────────────────
 		case deleteLayer.fulfilled.match(action): {
 			const deletedId = (action as PayloadAction<string>).payload;
@@ -167,20 +197,53 @@ export function layersReducer(
 
 			if (base.activeId === deletedId) {
 				const remaining = layersAdapter.getSelectors().selectAll(updated);
-				if (remaining.length > 0) {
-					const top = remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b));
-					return { ...updated, activeId: top.id };
-				} else {
-					return { ...updated, activeId: null };
-				}
+				const next = remaining.length
+					? remaining.reduce((a, b) => (a.zIndex > b.zIndex ? a : b))
+					: null;
+				return { ...updated, activeId: next ? next.id : null };
 			}
 
 			return updated;
 		}
 
-		// ───────────────────────────────
-		// Default
-		// ───────────────────────────────
+		// ───────────────
+		// Replace all from snapshot (атомарно)
+		// ───────────────
+		case replaceFromSnapshot.match(action): {
+			const { projectId, layers } = action.payload;
+
+			// clear for current project and set a projectId
+			let cleared = layersAdapter.removeAll(base);
+			cleared = { ...cleared, projectId, activeId: null };
+
+			// collect Layer object
+			const now = Date.now();
+			const fullLayers: Layer[] = layers.map((l, idx) => ({
+				id: l.id ?? nanoid(),
+				projectId,
+				name: l.name ?? LAYER.NAME(idx + 1),
+				visible: l.visible ?? true,
+				opacity: l.opacity ?? 1,
+				zIndex: l.zIndex ?? idx,
+				snapshot: l.snapshot ?? '',
+				createdAt: now,
+				updatedAt: now,
+			}));
+
+			// set from history
+			const updated = layersAdapter.setAll(cleared, fullLayers);
+
+			// higher layer set active
+			const nextActive = fullLayers.length ? fullLayers[0].id : null;
+
+			return {
+				...updated,
+				activeId: nextActive,
+				loading: ENTITY_LOADING_STATUSES.SUCCEEDED,
+				error: null,
+			};
+		}
+
 		default:
 			return base;
 	}
