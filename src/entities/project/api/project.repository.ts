@@ -1,5 +1,6 @@
 import type { Project } from '@/shared/types';
 import { projectTable } from './project.db';
+import { REPOSITORY_FIELDS } from '@/shared/constants';
 
 /**
  * Repository layer for project entity.
@@ -7,7 +8,10 @@ import { projectTable } from './project.db';
  */
 export const projectRepository = {
 	async getAll(): Promise<Project[]> {
-		return projectTable.orderBy('updatedAt').reverse().toArray();
+		return projectTable
+			.orderBy(`${REPOSITORY_FIELDS.UPDATED_AT}`)
+			.reverse()
+			.toArray();
 	},
 
 	async getById(id: string): Promise<Project | undefined> {
@@ -15,7 +19,10 @@ export const projectRepository = {
 	},
 
 	async findByName(name: string): Promise<Project | undefined> {
-		return projectTable.where('name').equalsIgnoreCase(name).first();
+		return projectTable
+			.where(`${REPOSITORY_FIELDS.NAME}`)
+			.equalsIgnoreCase(name)
+			.first();
 	},
 
 	async add(project: Project): Promise<void> {

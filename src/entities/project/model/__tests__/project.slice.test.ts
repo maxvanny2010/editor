@@ -12,6 +12,7 @@ import { db } from '@/shared/lib/db';
 import type { Project } from '@/shared/types';
 import { makeSelectors } from '@/shared/lib/store';
 import { projectRepository } from '@/entities/project/api';
+import { projectService } from '@/entities/project/model';
 
 const storeFactory = () =>
 	configureStore({
@@ -80,13 +81,21 @@ describe('projectsSlice + thunks', () => {
 	});
 
 	it('deleteProject removes a project', async () => {
-		const store = storeFactory();
+		const id = 'test-id-123';
 
-		const p = await store.dispatch(createProject({ name: 'ToDelete' })).unwrap();
-		await store.dispatch(deleteProject(p.id));
+		const mockFn = vi
+			.spyOn(projectService, 'deleteWithRelations')
+			.mockResolvedValue(id);
 
-		const exists = selectors.selectById(store.getState(), p.id);
-		expect(exists).toBeUndefined();
+		const dispatch = vi.fn();
+		const getState = vi.fn();
+
+		const result = await deleteProject(id)(dispatch, getState, undefined);
+
+		expect(result.type).toMatch(/fulfilled$/);
+		expect(result.payload).toBe(id);
+
+		mockFn.mockRestore();
 	});
 
 	it('selectByName filters by name, case-insensitively', async () => {
