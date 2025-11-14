@@ -3,146 +3,134 @@ import { ToolIcon } from '@/entities/history/ui';
 import type { EditorTool } from '@/shared/types';
 import type { SystemIconName } from '@/shared/constants';
 
-describe('ToolIcon', () => {
-	// Универсальный селектор
-	const getSvg = () =>
-		screen.getByTestId('tool-icon').querySelector('svg') as SVGElement;
+const getSvg = () => screen.getByTestId('tool-icon').querySelector('svg') as SVGElement;
 
-	describe('System icons', () => {
-		const systemIcons: SystemIconName[] = [
-			'plus-square',
-			'trash',
-			'edit',
-			'shuffle',
-			'sliders',
-		];
+describe('ToolIcon (updated colors)', () => {
+	// ────────────────────────────────────────────
+	// System icons
+	// ────────────────────────────────────────────
+	const systemIconCases: Record<SystemIconName, { text: string; bg: string }> = {
+		'plus-square': { text: 'text-emerald-600', bg: 'bg-emerald-100' },
+		trash: { text: 'text-rose-600', bg: 'bg-rose-100' },
+		edit: { text: 'text-blue-600', bg: 'bg-blue-100' },
+		shuffle: { text: 'text-indigo-600', bg: 'bg-indigo-100' },
+		sliders: { text: 'text-amber-600', bg: 'bg-amber-100' },
+	};
 
-		systemIcons.forEach((iconName) => {
-			it(`renders ${iconName} icon with default system color`, () => {
-				render(<ToolIcon type={null} iconName={iconName} />);
-
-				const svg = getSvg();
-
-				expect(svg).toBeInTheDocument();
-				expect(svg).toHaveClass('text-gray-600');
-			});
+	for (const [iconName, colors] of Object.entries(systemIconCases)) {
+		it(`renders ${iconName} with correct colors`, () => {
+			render(<ToolIcon type={null} iconName={iconName as SystemIconName} />);
+			const svg = getSvg();
+			expect(svg).toHaveClass(colors.text);
+			expect(svg).toHaveClass(colors.bg);
 		});
+	}
+
+	// ────────────────────────────────────────────
+	// Drawing tools
+	// ────────────────────────────────────────────
+	it('renders brush icon', () => {
+		render(<ToolIcon type="brush" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-indigo-500', 'bg-indigo-100');
 	});
 
-	describe('Drawing tool icons', () => {
-		it('renders brush icon', () => {
-			render(<ToolIcon type="brush" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-blue-600');
-		});
-
-		it('renders eraser icon', () => {
-			render(<ToolIcon type="eraser" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-red-600');
-		});
-
-		it('renders line icon', () => {
-			render(<ToolIcon type="line" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-green-600');
-		});
+	it('renders eraser icon', () => {
+		render(<ToolIcon type="eraser" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-rose-500', 'bg-rose-100');
 	});
 
-	describe('Shape icons', () => {
-		it('renders circle icon', () => {
-			render(<ToolIcon type="shape" shapeType="circle" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-purple-600');
-		});
-
-		it('renders square icon (rect)', () => {
-			render(<ToolIcon type="shape" shapeType="rect" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-purple-600');
-		});
-
-		it('renders square icon by default', () => {
-			render(<ToolIcon type="shape" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-purple-600');
-		});
+	it('renders line icon', () => {
+		render(<ToolIcon type="line" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-emerald-500', 'bg-emerald-100');
 	});
 
-	describe('Default icons', () => {
-		it('renders default icon for null type', () => {
-			render(<ToolIcon type={null} />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-gray-600', 'bg-gray-100');
-		});
-
-		it('renders default icon for unknown type', () => {
-			render(<ToolIcon type={'unknown' as EditorTool} />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-gray-600', 'bg-gray-100');
-		});
+	// ────────────────────────────────────────────
+	// Shapes
+	// ────────────────────────────────────────────
+	it('renders circle shape', () => {
+		render(<ToolIcon type="shape" shapeType="circle" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-violet-500', 'bg-violet-100');
 	});
 
-	describe('Custom className', () => {
-		it('applies custom className', () => {
-			render(<ToolIcon type="brush" className="w-8 h-8 custom-class" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('w-8', 'h-8', 'custom-class');
-		});
-
-		it('uses default className when not provided', () => {
-			render(<ToolIcon type="brush" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('w-4', 'h-4');
-		});
+	it('renders rect shape', () => {
+		render(<ToolIcon type="shape" shapeType="rect" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-violet-500', 'bg-violet-100');
 	});
 
-	describe('Priority', () => {
-		it('prioritizes system icon over tool type', () => {
-			render(<ToolIcon type="brush" iconName="trash" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-gray-600');
-		});
-
-		it('prioritizes system icon over shape', () => {
-			render(<ToolIcon type="shape" shapeType="circle" iconName="plus-square" />);
-
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-gray-600');
-		});
+	it('defaults to rect when no shapeType provided', () => {
+		render(<ToolIcon type="shape" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-violet-500', 'bg-violet-100');
 	});
 
-	describe('Integration', () => {
-		it('handles all parameters together', () => {
-			render(
-				<ToolIcon
-					type="shape"
-					shapeType="circle"
-					iconName="edit"
-					className="w-6 h-6"
-				/>,
-			);
+	// ────────────────────────────────────────────
+	// Default
+	// ────────────────────────────────────────────
+	it('falls back to edit color for null type', () => {
+		render(<ToolIcon type={null} />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-blue-600', 'bg-blue-100');
+	});
 
-			const svg = getSvg();
-			expect(svg).toHaveClass('w-6', 'h-6', 'text-gray-600');
-		});
+	it('fallback for unknown type', () => {
+		render(<ToolIcon type={'xxx' as EditorTool} />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-blue-600', 'bg-blue-100');
+	});
 
-		it('renders correctly without optional params', () => {
-			render(<ToolIcon type="line" />);
+	// ────────────────────────────────────────────
+	// Custom size
+	// ────────────────────────────────────────────
+	it('applies custom className', () => {
+		render(<ToolIcon type="brush" className="w-8 h-8 custom-class" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('w-8', 'h-8', 'custom-class');
+	});
 
-			const svg = getSvg();
-			expect(svg).toHaveClass('text-green-600');
-		});
+	it('uses default size when not provided', () => {
+		render(<ToolIcon type="brush" />);
+		expect(getSvg()).toHaveClass('w-4', 'h-4');
+	});
+
+	// ────────────────────────────────────────────
+	// Priority
+	// ────────────────────────────────────────────
+	it('prioritizes system icon over tool type', () => {
+		render(<ToolIcon type="brush" iconName="trash" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-rose-600', 'bg-rose-100');
+	});
+
+	it('prioritizes system icon over shape', () => {
+		render(<ToolIcon type="shape" shapeType="circle" iconName="plus-square" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-emerald-600', 'bg-emerald-100');
+	});
+
+	// ────────────────────────────────────────────
+	// Integration
+	// ────────────────────────────────────────────
+	it('integration: applies iconName + custom size', () => {
+		render(
+			<ToolIcon
+				type="shape"
+				shapeType="circle"
+				iconName="edit"
+				className="w-6 h-6"
+			/>,
+		);
+		const svg = getSvg();
+		expect(svg).toHaveClass('w-6', 'h-6', 'text-blue-600', 'bg-blue-100');
+	});
+
+	it('integration: works without optional params', () => {
+		render(<ToolIcon type="line" />);
+		const svg = getSvg();
+		expect(svg).toHaveClass('text-emerald-500', 'bg-emerald-100');
 	});
 });

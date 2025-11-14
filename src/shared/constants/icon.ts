@@ -65,12 +65,21 @@ export const ICON_MAP = {
 // Colors
 // ─────────────────────────────────────────────────────────────
 export const ICON_COLORS = {
-	[ICON_KEYS.BRUSH]: 'text-blue-600 bg-blue-100',
-	[ICON_KEYS.ERASER]: 'text-red-600 bg-red-100',
-	[ICON_KEYS.LINE]: 'text-green-600 bg-green-100',
-	[ICON_KEYS.SHAPE_RECT]: 'text-purple-600 bg-purple-100',
-	[ICON_KEYS.SHAPE_CIRCLE]: 'text-purple-600 bg-purple-100',
-	DEFAULT: 'text-gray-600 bg-gray-100',
+	// Tools
+	[ICON_KEYS.BRUSH]: 'text-indigo-500 bg-indigo-100',
+	[ICON_KEYS.ERASER]: 'text-rose-500 bg-rose-100',
+	[ICON_KEYS.LINE]: 'text-emerald-500 bg-emerald-100',
+	[ICON_KEYS.SHAPE_RECT]: 'text-violet-500 bg-violet-100',
+	[ICON_KEYS.SHAPE_CIRCLE]: 'text-violet-500 bg-violet-100',
+
+	// System (History actions)
+	[ICON_KEYS.PLUS_SQUARE]: 'text-emerald-600 bg-emerald-100', // Create layer
+	[ICON_KEYS.TRASH]: 'text-rose-600 bg-rose-100', // Delete
+	[ICON_KEYS.EDIT]: 'text-blue-600 bg-blue-100', // Rename / Apply
+	[ICON_KEYS.SHUFFLE]: 'text-indigo-600 bg-indigo-100', // Reorder
+	[ICON_KEYS.SLIDERS]: 'text-amber-600 bg-amber-100', // Opacity
+
+	DEFAULT: 'text-gray-500 bg-gray-100',
 } as const;
 
 // ─────────────────────────────────────────────────────────────
