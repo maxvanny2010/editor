@@ -1,43 +1,43 @@
-import { db } from '@/shared/lib/db/dexie';
 import type { Layer } from '@/shared/types';
+import { layerTable } from '@/entities/layer/api';
+import { REPOSITORY_FIELDS } from '@/shared/constants';
 
 export const layerRepository = {
 	async getById(id: string): Promise<Layer | undefined> {
-		return db.layers.get(id);
+		return layerTable.get(id);
 	},
 
 	async getAllByProject(projectId: string): Promise<Layer[]> {
-		return db.layers.where('projectId').equals(projectId).sortBy('zIndex');
+		return layerTable
+			.where(`${REPOSITORY_FIELDS.PROJECT_ID}`)
+			.equals(projectId)
+			.sortBy(`${REPOSITORY_FIELDS.Z_INDEX}`);
 	},
 
 	async getMaxZIndex(projectId: string): Promise<number> {
-		const layers = await db.layers.where('projectId').equals(projectId).toArray();
+		const layers = await layerTable
+			.where(`${REPOSITORY_FIELDS.PROJECT_ID}`)
+			.equals(projectId)
+			.toArray();
 		return layers.length ? Math.max(...layers.map((l) => l.zIndex)) : 0;
 	},
 
 	async add(layer: Layer): Promise<void> {
-		await db.layers.add(layer);
+		await layerTable.add(layer);
 	},
 
 	async update(id: string, changes: Partial<Layer>): Promise<void> {
-		await db.layers.update(id, changes);
+		await layerTable.update(id, changes);
 	},
 
 	async remove(id: string): Promise<void> {
-		await db.layers.delete(id);
+		await layerTable.delete(id);
 	},
 
-	// Atomic: check + create in one transaction (remove duplicate in StrictMode)
-	async ensureBaseLayer(
-		projectId: string,
-		factory: () => Layer,
-	): Promise<Layer | null> {
-		return db.transaction('rw', db.layers, async () => {
-			const count = await db.layers.where('projectId').equals(projectId).count();
-			if (count > 0) return null;
-			const layer = factory();
-			await db.layers.add(layer);
-			return layer;
-		});
+	async removeByProject(projectId: string): Promise<void> {
+		await layerTable
+			.where(`${REPOSITORY_FIELDS.PROJECT_ID}`)
+			.equals(projectId)
+			.delete();
 	},
 };

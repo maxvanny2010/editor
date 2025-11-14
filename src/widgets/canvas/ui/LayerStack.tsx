@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Layer } from '@/shared/types';
 
 interface LayerStackProps {
@@ -14,13 +13,13 @@ interface LayerStackProps {
  * These canvases are now non-interactive (pointer-events: none),
  * so pointer input passes through to the DrawCanvas above.
  */
-export const LayerStack: React.FC<LayerStackProps> = ({
+export const LayerStack = ({
 	layers,
 	width,
 	height,
 	bindCanvasRef,
 	activeLayerId,
-}) => {
+}: LayerStackProps) => {
 	return (
 		<>
 			{layers.map((layer) => {
@@ -28,21 +27,22 @@ export const LayerStack: React.FC<LayerStackProps> = ({
 				return (
 					<canvas
 						key={layer.id}
+						id={`layer-canvas-${layer.id}`}
+						data-layer-id={layer.id}
 						ref={bindCanvasRef(layer.id)}
 						width={width}
 						height={height}
 						style={{
 							position: 'absolute',
 							inset: 0,
-							opacity: layer.opacity,
-							display: layer.visible ? 'block' : 'none',
+							opacity: layer.visible ? layer.opacity : 0,
 							pointerEvents: 'none',
-							// Soft aura for the active layer
 							boxShadow: isActive
 								? '0 0 10px 3px rgba(59,130,246,0.5)'
 								: 'none',
-							transition: 'box-shadow 0.25s ease-in-out',
 							backgroundColor: 'transparent',
+							zIndex: layer.zIndex,
+							transition: 'box-shadow 0.25s ease-in-out',
 						}}
 					/>
 				);
