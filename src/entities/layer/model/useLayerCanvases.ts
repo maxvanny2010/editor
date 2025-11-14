@@ -16,6 +16,9 @@ export function useLayerCanvases(
 ) {
 	const canvases = useRef<Map<string, HTMLCanvasElement>>(new Map());
 
+	// Stores the most recent snapshot for each layer id to detect real changes
+	const lastSnapshots = useRef<Map<string, string>>(new Map());
+
 	// Binds DOM <canvas> to layer id
 	const bindCanvasRef = useMemo(
 		() => (id: string) => (el: HTMLCanvasElement | null) => {
@@ -32,6 +35,9 @@ export function useLayerCanvases(
 				const img = new Image();
 				img.src = layer.snapshot;
 				img.onload = () => el.getContext('2d')?.drawImage(img, 0, 0);
+
+				// baseline for diff vs canvas state
+				lastSnapshots.current.set(id, layer.snapshot);
 			}
 		},
 		[layers, width, height],
@@ -45,13 +51,35 @@ export function useLayerCanvases(
 		}
 	}, [width, height]);
 
-	// Save all snapshots when component unmounts
+	// Optional: reset snapshot cache when project changes
 	useEffect(() => {
-		const mapSnapshot = canvases.current;
+		lastSnapshots.current = new Map();
+	}, [projectId]);
+
+	// Save all snapshots when component unmounts or project changes
+	useEffect(() => {
+		// Capture current references at the time the effect runs
+		const mapSnapshot = new Map(canvases.current);
+		const lastSaved = new Map(lastSnapshots.current);
+
 		return () => {
 			for (const [id, canvas] of mapSnapshot.entries()) {
 				const snapshot = canvas.toDataURL('image/png');
-				void layerService.updateLayer({ id, changes: { snapshot } });
+				const prevSnapshot = lastSaved.get(id);
+
+				// Skip if no change
+				if (snapshot === prevSnapshot) continue;
+
+				// Check that layer still exists before saving
+				layerService
+					.getLayers(projectId)
+					.then((all) => {
+						if (!all.some((l) => l.id === id)) return;
+						return layerService.updateLayer({ id, changes: { snapshot } });
+					})
+					.catch(() => {
+						/* ignore missing/deleted layers */
+					});
 			}
 		};
 	}, [projectId]);
