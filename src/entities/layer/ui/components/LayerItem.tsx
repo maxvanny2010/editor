@@ -14,6 +14,7 @@ interface LayerItemProps {
 	onDelete: (id: string) => void;
 	setLocalNameId: (id: string | null) => void;
 	setOpenMenuId: (id: string | null) => void;
+	disabled?: boolean;
 }
 
 export function LayerItem({
@@ -27,6 +28,7 @@ export function LayerItem({
 	onDelete,
 	setLocalNameId,
 	setOpenMenuId,
+	disabled,
 }: LayerItemProps) {
 	const isMenuOpen = openMenuId === layer.id;
 
@@ -42,13 +44,11 @@ export function LayerItem({
 
 	return (
 		// The main list item, handling layer activation on click.
-		<li
-			className={`group relative flex items-center justify-between gap-2 px-2 py-1.5 rounded-md border cursor-pointer ${
-				isActive
-					? 'border-indigo-400 bg-indigo-50'
-					: 'border-transparent hover:bg-gray-50'
-			}`}
-			onClick={() => onSetActive(layer.id)}
+		<div
+			className={`group relative flex items-center justify-between gap-2 px-2 py-1.5 rounded-md border
+			${isActive ? 'border-indigo-400 bg-indigo-50' : 'border-transparent hover:bg-gray-50'}
+			${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+			onClick={() => !disabled && onSetActive(layer.id)}
 		>
 			<div className="flex items-center gap-2 min-w-0">
 				{/* Component to toggle layer visibility */}
@@ -75,6 +75,6 @@ export function LayerItem({
 				onRenameClick={handleRenameClick}
 				onDeleteClick={handleDeleteClick}
 			/>
-		</li>
+		</div>
 	);
 }

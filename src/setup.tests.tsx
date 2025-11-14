@@ -2,6 +2,32 @@ import '@testing-library/jest-dom';
 import 'fake-indexeddb/auto';
 import { webcrypto } from 'crypto';
 
+vi.mock('lucide-react', async (importOriginal) => {
+	const actual = await importOriginal<typeof import('lucide-react')>();
+
+	const makeIcon =
+		(name: string) =>
+		({ className = '' }: { className?: string }) => (
+			<svg data-testid={name} className={className} />
+		);
+
+	return {
+		...actual,
+		PlusSquare: makeIcon('PlusSquare'),
+		Trash2: makeIcon('Trash2'),
+		Edit3: makeIcon('Edit3'),
+		Shuffle: makeIcon('Shuffle'),
+		SlidersHorizontal: makeIcon('SlidersHorizontal'),
+		Grid3X3: makeIcon('grid-icon'),
+		Maximize2: makeIcon('maximize-icon'),
+		Minimize2: makeIcon('minimize-icon'),
+		Redo2: makeIcon('redo-icon'),
+		Undo2: makeIcon('undo-icon'),
+		History: makeIcon('history-icon'),
+		Layers: makeIcon('layers-icon'),
+	};
+});
+
 // ─── Fix: mock window.scrollTo to prevent jsdom warnings ───────────────
 Object.defineProperty(window, 'scrollTo', {
 	value: vi.fn(),
