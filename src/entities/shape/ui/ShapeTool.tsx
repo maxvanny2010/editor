@@ -1,5 +1,5 @@
 import { Square } from 'lucide-react';
-import { ToolButton } from '@/widgets/toolbar/model';
+import { ToolButton } from '@/widgets/toolbar/ui';
 import { ShapeFloatingPalette } from '@/entities/shape/model';
 import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';

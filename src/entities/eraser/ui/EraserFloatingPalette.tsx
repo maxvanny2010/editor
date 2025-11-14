@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { TOOL_SIZES } from '@/shared/constants/toolPresets';
-import { ToolFloatingPalette } from '@/widgets/toolbar/model';
+import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
 import { setEraserSize } from '@/entities/eraser/model/slice';
 
 export function EraserFloatingPalette() {
