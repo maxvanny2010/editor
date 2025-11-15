@@ -2,6 +2,7 @@ export const NAMES = {
 	PROJECTS: 'projects',
 	HISTORY: 'history',
 	LAYERS: 'layers',
+	ACTIVE_PROJECT: 'activeProject',
 } as const;
 
 import type { EditorTool, ShapeType } from '@/shared/types';

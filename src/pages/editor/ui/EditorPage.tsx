@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { HistoryPanel, PreviewOverlay } from '@/entities/history/ui';
 import { BottomFooter, RightSidebar } from '@/widgets/layout/ui';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useRestoreProject } from '@/entities/project/hooks';
 import { projectsSelectors } from '@/entities/project/model';
 import { redo, undo } from '@/entities/history/model/slice';
 import { EditorViewport } from '@/widgets/viewport/model';
+import { EditorSkeleton } from '@/entities/editor/ui';
 import { LayersPanel } from '@/entities/layer/ui';
 import { NAMES } from '@/shared/constants';
 
@@ -13,7 +16,12 @@ export type PanelKey = typeof NAMES.LAYERS | typeof NAMES.HISTORY | null;
 
 export const EditorPage = () => {
 	const dispatch = useAppDispatch();
+	const params = useParams<{ id: string }>();
+
 	const activeProject = useAppSelector(projectsSelectors.selectActiveProject);
+	const loading = useRestoreProject(dispatch, params.id);
+
+	const [activePanel, setActivePanel] = useState<PanelKey>(null);
 
 	const [viewportInfo, setViewportInfo] = useState({
 		scale: 1,
@@ -25,20 +33,11 @@ export const EditorPage = () => {
 		toggleGrid: () => {},
 	});
 
-	const [activePanel, setActivePanel] = useState<PanelKey>(null);
-
-	// if project not chosen
-	if (!activeProject) {
-		return (
-			<div className="flex items-center justify-center h-screen text-gray-500">
-				No active project selected.
-			</div>
-		);
-	}
+	if (loading) return <EditorSkeleton />;
+	if (!activeProject) return null;
 
 	return (
 		<div className="relative h-screen w-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
-			{/* Canvas viewport */}
 			<EditorViewport
 				isLayersOpen={activePanel === NAMES.LAYERS}
 				isHistoryOpen={activePanel === NAMES.HISTORY}
@@ -48,13 +47,9 @@ export const EditorPage = () => {
 				onViewportUpdate={setViewportInfo}
 			/>
 
-			{/* Overlay preview banner */}
 			<PreviewOverlay />
-
-			{/* Sidebar (Layers / History) */}
 			<RightSidebar active={activePanel} onSelect={setActivePanel} />
 
-			{/* Side panels */}
 			<AnimatePresence>
 				{activePanel === NAMES.LAYERS && (
 					<LayersPanel
@@ -64,7 +59,6 @@ export const EditorPage = () => {
 						projectId={activeProject.id}
 					/>
 				)}
-
 				{activePanel === NAMES.HISTORY && (
 					<HistoryPanel
 						key={NAMES.HISTORY}
@@ -74,7 +68,6 @@ export const EditorPage = () => {
 				)}
 			</AnimatePresence>
 
-			{/* Footer (zoom, undo/redo, grid toggle) */}
 			<BottomFooter
 				scale={viewportInfo.scale}
 				offsetX={viewportInfo.offsetX}

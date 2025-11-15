@@ -79,7 +79,7 @@ export interface EditorState {
 	paletteOpen: boolean;
 }
 
-export interface Setting {
-	key: string;
-	value: string;
+export interface ActiveProject {
+	id: 'active';
+	projectId: string;
 }

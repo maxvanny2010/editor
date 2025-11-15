@@ -1,6 +1,8 @@
 export const PROJECT_MESSAGES = {
 	ERROR_ACTION: 'Error during an action',
 	ERROR_VALIDATION: 'Validation failed',
+	ERROR_PROJECT_NOT_FOUND: (id: string) =>
+		`Project "${id}" not found in local database`,
 	NAME_EMPTY: 'Project name is required',
 	NAME_REQUEST: 'Project name must be 25 characters or less',
 	NAME_DUPLICATE: 'A project with this name already exists',

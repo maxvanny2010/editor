@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk, type UnknownAction } from '@reduxjs/toolkit';
-import { createAsyncEntitySlice } from '@/shared/lib/store';
 import { projectService } from '@/entities/project/model/project.service';
+import { createAsyncEntitySlice } from '@/shared/lib/store';
 import type { Project } from '@/shared/types';
 import {
 	ENTITY_LOADING_STATUSES,
@@ -42,7 +42,7 @@ export const {
 // Clear all
 // ───────────────────────────────────────────────
 export const clearAllProjects = createAsyncThunk(
-	`${PROJECT_SLICE_ACTIONS.CLEAR_ALL_PROJECTS}`,
+	PROJECT_SLICE_ACTIONS.PROJECTS_CLEAR_ALL,
 	async (_, { dispatch }) => {
 		await projectService.clearAll();
 		await dispatch(fetchProjects());
@@ -67,8 +67,11 @@ export const initialState: ProjectsState = {
 // Actions
 // ───────────────────────────────────────────────
 export const setActiveProjectId = createAction<string | null>(
-	`${PROJECT_SLICE_ACTIONS.SET_ACTIVE_PROJECT_ID}`,
+	PROJECT_SLICE_ACTIONS.PROJECT_SET_ACTIVE_ID,
 );
+
+// Добавляем экшен для прямой вставки проекта в entities
+export const upsertProject = createAction<Project>(PROJECT_SLICE_ACTIONS.PROJECT_UPSET);
 
 // ───────────────────────────────────────────────
 // Reducer
@@ -80,6 +83,11 @@ export function projectsReducer(
 	if (setActiveProjectId.match(action)) {
 		//	void projectRepository.saveActiveId(action.payload);
 		return { ...state, activeId: action.payload };
+	}
+
+	if (upsertProject.match(action)) {
+		const nextState = projectsAdapter.upsertOne(state, action.payload);
+		return { ...nextState, activeId: state.activeId };
 	}
 
 	let next = baseReducer(state, action) as ProjectsState;

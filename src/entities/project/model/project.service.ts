@@ -40,7 +40,12 @@ export const projectService = {
 		changes: Partial<Project>;
 	}): Promise<Project> {
 		const { id, changes } = args;
-		await projectRepository.update(id, { ...changes, updatedAt: Date.now() });
+
+		await projectRepository.update(id, {
+			...changes,
+			updatedAt: Date.now(),
+		});
+
 		const updated = await projectRepository.getById(id);
 		if (!updated) throw new Error(PROJECT_MESSAGES.NOT_FOUND_AFTER_UPDATE);
 		return updated;
@@ -58,20 +63,35 @@ export const projectService = {
 			db.history,
 			async () => {
 				await projectRepository.remove(projectId);
+
 				await layerRepository.removeByProject(projectId);
+
 				await db.viewStates
-					.where(`${REPOSITORY_FIELDS.PROJECT_ID}`)
+					.where(REPOSITORY_FIELDS.PROJECT_ID)
 					.equals(projectId)
 					.delete();
+
 				await historyRepository.clearByProject(projectId);
 			},
 		);
+
 		return projectId;
 	},
 	async clearAll(): Promise<void> {
 		const projects = await projectRepository.getAll();
 		for (const project of projects) {
-			await projectService.deleteWithRelations(project.id);
+			await this.deleteWithRelations(project.id);
 		}
+	},
+	async getById(id: string): Promise<Project | undefined> {
+		return projectRepository.getById(id);
+	},
+
+	async exists(id: string): Promise<boolean> {
+		return projectRepository.exists(id);
+	},
+
+	async findByName(name: string): Promise<Project | undefined> {
+		return projectRepository.findByName(name);
 	},
 };

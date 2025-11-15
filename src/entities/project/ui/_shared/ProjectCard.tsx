@@ -4,8 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/store/hooks';
 import type { Project } from '@/shared/types';
 import { PROJECT_PATHS } from '@/shared/constants';
-import { setActiveProjectId } from '@/entities/project/model/slice';
+import { projectService } from '@/entities/project/model';
+import { activeProjectService } from '@/entities/settings/model';
 import { ProjectCardButton, ProjectCardDates } from '@/entities/project/ui/project-card';
+import {
+	CheckIcon,
+	EditIcon,
+	OpenIcon,
+	TrashIcon,
+} from '@/entities/project/ui/_shared/ui/icon';
 
 export type ProjectCardData = Pick<Project, 'id' | 'name' | 'createdAt' | 'updatedAt'> & {
 	createdAt: number | string | Date;
@@ -39,15 +46,23 @@ export function ProjectCard({
 		}, 400);
 	};
 
-	const handleOpenClick = () => {
+	const handleOpenClick = async () => {
 		if (!project?.id) {
 			triggerShakeAndFlip();
 			return;
 		}
 
-		dispatch(setActiveProjectId(project.id));
-
-		navigate(PROJECT_PATHS.EDITOR_BY_ID(project.id));
+		try {
+			const existingProject = await projectService.getById(project.id);
+			if (!existingProject) {
+				triggerShakeAndFlip();
+				return;
+			}
+			await activeProjectService.setActiveProject(dispatch, project.id);
+			navigate(PROJECT_PATHS.EDITOR_BY_ID(project.id));
+		} catch {
+			triggerShakeAndFlip();
+		}
 	};
 
 	const handleOk = () => {
@@ -96,26 +111,7 @@ export function ProjectCard({
 							testId={`open-button-${project?.id ?? 'unknown'}`}
 							color="indigo"
 							onClick={handleOpenClick}
-							icon={
-								<motion.svg
-									key="open"
-									initial={{ opacity: 0, x: -4 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: -4 }}
-									transition={{ duration: 0.15 }}
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="w-4 h-4 text-indigo-500 drop-shadow-sm"
-								>
-									<path d="M14 3v4a1 1 0 0 0 1 1h4" />
-									<path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H9l-4-4z" />
-								</motion.svg>
-							}
+							icon={<OpenIcon />}
 						/>
 
 						<ProjectCardButton
@@ -123,26 +119,7 @@ export function ProjectCard({
 							testId={`update-button-${project?.id ?? 'unknown'}`}
 							color="indigo"
 							onClick={() => project && onEditClick?.(project)}
-							icon={
-								<motion.svg
-									key="pencil"
-									initial={{ opacity: 0, x: -4 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: -4 }}
-									transition={{ duration: 0.15 }}
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="w-4 h-4 text-indigo-500 drop-shadow-sm"
-								>
-									<path d="M12 20h9" />
-									<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-								</motion.svg>
-							}
+							icon={<EditIcon />}
 						/>
 
 						<ProjectCardButton
@@ -150,26 +127,7 @@ export function ProjectCard({
 							testId={`delete-button-${project?.id ?? 'unknown'}`}
 							color="rose"
 							onClick={() => project && onDeleteClick?.(project)}
-							icon={
-								<motion.svg
-									key="trash"
-									initial={{ opacity: 0, x: -3, rotate: -15 }}
-									animate={{ opacity: 1, x: 0, rotate: 0 }}
-									exit={{ opacity: 0, x: -3, rotate: 15 }}
-									transition={{ duration: 0.25, ease: 'easeOut' }}
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="w-4 h-4 text-rose-500 drop-shadow-sm"
-								>
-									<polyline points="3 6 5 6 21 6" />
-									<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3-3h8a1 1 0 0 1 1 1v2H7V4a1 1 0 0 1 1-1z" />
-								</motion.svg>
-							}
+							icon={<TrashIcon />}
 						/>
 					</div>
 				</div>
@@ -192,25 +150,7 @@ export function ProjectCard({
 							testId={`ok-button-${project?.id ?? 'unknown'}`}
 							color="rose"
 							onClick={handleOk}
-							icon={
-								<motion.svg
-									key="check"
-									initial={{ opacity: 0, x: -4 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: -4 }}
-									transition={{ duration: 0.15 }}
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="w-4 h-4 text-indigo-500 drop-shadow-sm"
-								>
-									<path d="M5 13l4 4L19 7" />
-								</motion.svg>
-							}
+							icon={<CheckIcon />}
 						/>
 					</div>
 				</motion.div>
