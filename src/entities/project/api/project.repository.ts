@@ -8,21 +8,19 @@ import { REPOSITORY_FIELDS } from '@/shared/constants';
  */
 export const projectRepository = {
 	async getAll(): Promise<Project[]> {
-		return projectTable
-			.orderBy(`${REPOSITORY_FIELDS.UPDATED_AT}`)
-			.reverse()
-			.toArray();
+		return projectTable.orderBy(REPOSITORY_FIELDS.UPDATED_AT).reverse().toArray();
 	},
 
 	async getById(id: string): Promise<Project | undefined> {
 		return projectTable.get(id);
 	},
 
+	async exists(id: string): Promise<boolean> {
+		return Boolean(await projectTable.get(id));
+	},
+
 	async findByName(name: string): Promise<Project | undefined> {
-		return projectTable
-			.where(`${REPOSITORY_FIELDS.NAME}`)
-			.equalsIgnoreCase(name)
-			.first();
+		return projectTable.where(REPOSITORY_FIELDS.NAME).equalsIgnoreCase(name).first();
 	},
 
 	async add(project: Project): Promise<void> {

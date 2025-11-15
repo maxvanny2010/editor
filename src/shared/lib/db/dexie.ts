@@ -1,5 +1,11 @@
 import Dexie, { type Table } from 'dexie';
-import type { HistoryEntry, Layer, Project, ProjectViewState } from '@/shared/types';
+import type {
+	ActiveProject,
+	HistoryEntry,
+	Layer,
+	Project,
+	ProjectViewState,
+} from '@/shared/types';
 
 /**
  * Dexie database for the React Editor.
@@ -13,6 +19,7 @@ export class EditorDB extends Dexie {
 	layers!: Table<Layer, string>;
 	viewStates!: Table<ProjectViewState, string>;
 	history!: Table<HistoryEntry, string>;
+	activeProject: Table<ActiveProject, string>;
 
 	constructor() {
 		super('EditorDB');
@@ -49,11 +56,16 @@ export class EditorDB extends Dexie {
 		this.version(5).stores({
 			history: 'id, timestamp, state.projectId',
 		});
+		// ─── Version 6 — active project table ──────────────────────────────
+		this.version(6).stores({
+			activeProject: 'id, projectId',
+		});
 
 		this.projects = this.table('projects');
 		this.layers = this.table('layers');
 		this.viewStates = this.table('viewStates');
 		this.history = this.table('history');
+		this.activeProject = this.table('activeProject');
 	}
 }
 
