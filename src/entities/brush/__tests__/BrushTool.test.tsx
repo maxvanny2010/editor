@@ -4,7 +4,7 @@ import { BrushTool } from '@/entities/brush/model';
 
 describe('BrushTool', () => {
 	const baseState: Partial<TestRootState> = {
-		brush: { color: '#111827', size: 4, isDrawing: false },
+		brush: { color: '#111827', size: 4 },
 		editor: {
 			activeTool: null,
 			paletteOpen: false,

@@ -2,6 +2,7 @@ export const NAMES = {
 	PROJECTS: 'projects',
 	HISTORY: 'history',
 	LAYERS: 'layers',
+	EDITOR: 'editor',
 	ACTIVE_PROJECT: 'activeProject',
 } as const;
 

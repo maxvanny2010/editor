@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { toCanvasPoint } from '@/shared/lib/utils';
 import { useAppSelector } from '@/store/hooks';
-import { strokeWidth, toCanvasPoint } from '@/shared/lib/utils';
-import { selectViewport } from '@/entities/editor/model/selectors';
 
 /**
  * Eraser tool — erases pixels directly on the active layer.
@@ -9,7 +8,6 @@ import { selectViewport } from '@/entities/editor/model/selectors';
  */
 export function useEraserDraw(getActiveCanvas: () => HTMLCanvasElement | null) {
 	const size = useAppSelector((s) => s.eraser.size);
-	const { scale: viewportScale } = useAppSelector(selectViewport);
 	const drawing = useRef(false);
 	const last = useRef<{ x: number; y: number } | null>(null);
 	const dpr = window.devicePixelRatio ?? 1;
@@ -66,14 +64,15 @@ export function useEraserDraw(getActiveCanvas: () => HTMLCanvasElement | null) {
 			ctx.globalCompositeOperation = 'destination-out';
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
-			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');
+			ctx.lineWidth = size;
+			ctx.lineWidth = size;
 			ctx.beginPath();
 			ctx.moveTo(a.x, a.y);
 			ctx.lineTo(b.x, b.y);
 			ctx.stroke();
 			ctx.restore();
 		},
-		[size, viewportScale],
+		[size],
 	);
 
 	const onPointerDown = useCallback(

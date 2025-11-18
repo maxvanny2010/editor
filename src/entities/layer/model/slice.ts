@@ -80,20 +80,20 @@ export const initialState: LayersState = {
 // Actions
 // ───────────────────────────────────────────────
 export const setActiveLayerId = createAction<string | null>(
-	`${LAYER_SLICE_ACTIONS.SET_ACTIVE_ID}`,
+	LAYER_SLICE_ACTIONS.SET_ACTIVE_ID,
 );
 export const setCurrentProjectId = createAction<string | null>(
-	`${LAYER_SLICE_ACTIONS.SET_CURRENT_PROJECT}`,
+	LAYER_SLICE_ACTIONS.SET_CURRENT_PROJECT,
 );
 export const updateLayerSnapshot = createAction<{
 	id: string;
 	changes: Partial<Layer>;
-}>(`${LAYER_SLICE_ACTIONS.UPDATE_SNAPSHOT}`);
+}>(LAYER_SLICE_ACTIONS.UPDATE_SNAPSHOT);
 
 export const replaceFromSnapshot = createAction<{
 	projectId: string;
 	layers: Partial<Layer>[];
-}>(`${LAYER_SLICE_ACTIONS.REPLACE_FROM_SNAPSHOT}`);
+}>(LAYER_SLICE_ACTIONS.REPLACE_FROM_SNAPSHOT);
 
 // ───────────────────────────────────────────────
 // Reducer
