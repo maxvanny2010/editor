@@ -145,7 +145,9 @@ export const EditorViewport = ({
 		if (target && drawCanvas) {
 			const ctx = target.getContext('2d');
 			ctx?.drawImage(drawCanvas, 0, 0);
-			drawCanvas.getContext('2d')?.clearRect(0, 0, width, height);
+			drawCanvas
+				.getContext('2d', { willReadFrequently: true, alpha: true })
+				?.clearRect(0, 0, width, height);
 			const snapshotPng = target.toDataURL('image/png');
 
 			await dispatch(

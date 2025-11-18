@@ -8,6 +8,7 @@ export interface Project {
 	height: number;
 	createdAt: number;
 	updatedAt: number;
+	snapshot?: string;
 }
 export interface Layer {
 	id: string;

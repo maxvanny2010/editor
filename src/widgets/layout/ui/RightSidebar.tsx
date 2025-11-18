@@ -41,7 +41,7 @@ export function RightSidebar({ active, onSelect }: RightSidebarProps) {
 		onSelect(active === key ? null : key);
 
 	return (
-		<aside className="fixed top-0 right-0 bottom-16 w-16 flex flex-col items-center justify-start gap-4 py-6 bg-gray-900 text-white shadow-2xl border-l border-gray-800 z-50">
+		<aside className="fixed top-12 right-0 bottom-16 w-16 flex flex-col items-center justify-start gap-4 py-6 bg-gray-900 text-white shadow-2xl border-l border-gray-800 z-50">
 			{items.map(({ key, label, icon: Icon, color }) => {
 				const isActive = active === key;
 				return (
