@@ -34,7 +34,10 @@ export function useLayerCanvases(
 			if (layer?.snapshot) {
 				const img = new Image();
 				img.src = layer.snapshot;
-				img.onload = () => el.getContext('2d')?.drawImage(img, 0, 0);
+				img.onload = () =>
+					el
+						.getContext('2d', { willReadFrequently: true })
+						?.drawImage(img, 0, 0);
 
 				// baseline for diff vs canvas state
 				lastSnapshots.current.set(id, layer.snapshot);
