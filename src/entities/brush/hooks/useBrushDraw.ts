@@ -22,7 +22,7 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!canvasRef.current) return;
-			const ctx = canvasRef.current.getContext('2d');
+			const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx) return;
 
 			ctx.strokeStyle = color;
@@ -40,7 +40,7 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!isDrawing || !canvasRef.current || !last.current) return;
-			const ctx = canvasRef.current.getContext('2d');
+			const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx) return;
 
 			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');

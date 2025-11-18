@@ -32,8 +32,15 @@ export function BottomFooter({
 }: BottomFooterProps) {
 	return (
 		<motion.footer
-			className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900 text-white flex items-center
-			justify-between px-6 shadow-inner border-t border-gray-800 z-50"
+			className="
+		fixed bottom-0 left-0 right-0 h-16
+		bg-gray-900 text-white
+		flex items-center justify-between px-6
+		border-t border-gray-800
+		shadow-[0_-6px_12px_-2px_rgba(0,0,0,0.6)]
+		will-change-[box-shadow]
+		z-50
+	"
 			initial={{ y: 80 }}
 			animate={{ y: 0 }}
 			transition={{ type: 'spring', stiffness: 200, damping: 20 }}

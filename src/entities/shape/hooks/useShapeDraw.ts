@@ -14,7 +14,7 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 			const p = toCanvasPoint(e, canvas, { dpr });
 			setStart(p);
 
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (ctx)
 				snapshot.current = ctx.getImageData(
 					0,
@@ -30,7 +30,7 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current || !snapshot.current) return;
 			const canvas = canvasRef.current;
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx) return;
 
 			ctx.putImageData(snapshot.current, 0, 0);

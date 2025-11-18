@@ -35,7 +35,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 			const canvas = canvasRef.current!;
 			const p = toCanvasPoint(e, canvas, { dpr });
 			setStart(p);
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (ctx)
 				snapshot.current = ctx.getImageData(
 					0,
@@ -51,7 +51,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current) return;
 			const canvas = canvasRef.current;
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx || !snapshot.current) return;
 
 			ctx.putImageData(snapshot.current, 0, 0);
@@ -76,7 +76,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			if (!start || !canvasRef.current) return;
 			const canvas = canvasRef.current;
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx) return;
 
 			const end = toCanvasPoint(e, canvas, { dpr });

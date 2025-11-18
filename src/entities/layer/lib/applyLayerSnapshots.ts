@@ -7,7 +7,7 @@ export async function applyLayerSnapshots(
 	for (const layer of layers) {
 		const canvas = getCanvas(layer.id);
 		if (!canvas) continue;
-		const ctx = canvas.getContext('2d');
+		const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 		if (!ctx) continue;
 
 		ctx.clearRect(0, 0, width, height);
