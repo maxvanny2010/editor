@@ -25,7 +25,7 @@ export const {
 	{ name: string },
 	{ id: string; changes: Partial<Project> }
 >({
-	name: `${NAMES.PROJECTS}`,
+	name: NAMES.PROJECTS,
 	fetchAll: projectService.getProjects,
 	createOne: projectService.createProject,
 	updateOne: projectService.updateProject,
@@ -81,7 +81,6 @@ export function projectsReducer(
 	action: UnknownAction,
 ): ProjectsState {
 	if (setActiveProjectId.match(action)) {
-		//	void projectRepository.saveActiveId(action.payload);
 		return { ...state, activeId: action.payload };
 	}
 

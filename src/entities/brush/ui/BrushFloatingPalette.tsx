@@ -1,9 +1,10 @@
+import React from 'react';
+import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
+import { TOOL_COLORS, TOOL_SIZES } from '@/shared/constants';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setBrushColor, setBrushSize } from '@/entities/brush/model/slice';
-import { TOOL_COLORS, TOOL_SIZES } from '@/shared/constants';
-import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
 
-export function BrushFloatingPalette() {
+export const BrushFloatingPalette = React.memo(function BrushFloatingPalette() {
 	const dispatch = useAppDispatch();
 	const { color, size } = useAppSelector((s) => s.brush);
 
@@ -20,4 +21,4 @@ export function BrushFloatingPalette() {
 			position="top-24"
 		/>
 	);
-}
+});

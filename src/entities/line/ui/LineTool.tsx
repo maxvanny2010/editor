@@ -1,3 +1,4 @@
+import React from 'react';
 import { Slash } from 'lucide-react';
 import { ToolButton } from '@/widgets/toolbar/ui';
 import { LineFloatingPalette } from '@/entities/line/model';
@@ -5,7 +6,7 @@ import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectActiveTool, selectPaletteOpen } from '@/entities/editor/model/selectors';
 
-export function LineTool() {
+export const LineTool = React.memo(function LineTool() {
 	const dispatch = useAppDispatch();
 	const activeTool = useAppSelector(selectActiveTool);
 	const paletteOpen = useAppSelector(selectPaletteOpen);
@@ -27,4 +28,4 @@ export function LineTool() {
 			{isActive && paletteOpen && <LineFloatingPalette />}
 		</>
 	);
-}
+});

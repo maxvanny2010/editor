@@ -1,4 +1,6 @@
-export function ClockIcon({ date }: { date: Date }) {
+import React from 'react';
+
+export const ClockIcon = React.memo(function ClockIcon({ date }: { date: Date }) {
 	const hours = date.getHours();
 	const minutes = date.getMinutes();
 	const hourAngle = (hours % 12) * 30 + minutes * 0.5;
@@ -31,4 +33,4 @@ export function ClockIcon({ date }: { date: Date }) {
 			/>
 		</svg>
 	);
-}
+});

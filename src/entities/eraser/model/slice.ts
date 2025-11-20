@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { TOOLS } from '@/shared/constants';
 
 export interface EraserState {
 	active: boolean;
@@ -11,7 +12,7 @@ const initialState: EraserState = {
 };
 
 const eraserSlice = createSlice({
-	name: 'eraser',
+	name: TOOLS.ERASER,
 	initialState,
 	reducers: {
 		setEraserSize(state, action: PayloadAction<number>) {

@@ -1,5 +1,5 @@
 import { type HTMLMotionProps, motion } from 'framer-motion';
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 interface ToolButtonProps extends HTMLMotionProps<'button'> {
 	icon: ReactNode;
@@ -7,7 +7,13 @@ interface ToolButtonProps extends HTMLMotionProps<'button'> {
 	active?: boolean;
 }
 
-export function ToolButton({ icon, label, active, onClick, ...rest }: ToolButtonProps) {
+export const ToolButton = React.memo(function ToolButton({
+	icon,
+	label,
+	active,
+	onClick,
+	...rest
+}: ToolButtonProps) {
 	return (
 		<motion.button
 			whileHover={{ scale: 1.1 }}
@@ -33,4 +39,4 @@ export function ToolButton({ icon, label, active, onClick, ...rest }: ToolButton
 			)}
 		</motion.button>
 	);
-}
+});

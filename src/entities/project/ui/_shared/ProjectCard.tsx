@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@/store/hooks';
@@ -19,7 +19,7 @@ export type ProjectCardData = Pick<Project, 'id' | 'name' | 'createdAt' | 'updat
 	updatedAt: number | string | Date;
 };
 
-export function ProjectCard({
+export const ProjectCard = React.memo(function ProjectCard({
 	project,
 	onEditClick,
 	onDeleteClick,
@@ -157,4 +157,4 @@ export function ProjectCard({
 			)}
 		</div>
 	);
-}
+});

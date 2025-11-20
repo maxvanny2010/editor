@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { motion, Reorder } from 'framer-motion';
 import {
@@ -8,7 +8,6 @@ import {
 	setActiveLayerId,
 	updateLayer,
 } from '@/entities/layer/model/slice';
-import { X as CloseIcon } from 'lucide-react';
 import { layersSelectors, makeSelectByProject } from '@/entities/layer/model/selectors';
 import { AddLayerButton, LayerItem, OpacitySlider } from '@/entities/layer/ui/components';
 import { LAYER_DEFAULTS } from '@/shared/constants';
@@ -17,10 +16,12 @@ import { store } from '@/store';
 interface LayersPanelProps {
 	projectId: string;
 	open: boolean;
-	onClose: () => void;
 }
 
-export function LayersPanel({ projectId, open, onClose }: LayersPanelProps) {
+export const LayersPanel = React.memo(function LayersPanel({
+	projectId,
+	open,
+}: LayersPanelProps) {
 	const dispatch = useAppDispatch();
 
 	const selectByProject = useMemo(makeSelectByProject, [projectId]);
@@ -112,13 +113,6 @@ export function LayersPanel({ projectId, open, onClose }: LayersPanelProps) {
 					Layers{' '}
 					{isPreview && <span className="text-amber-600 ml-1">(Preview)</span>}
 				</h3>
-				<button
-					onClick={onClose}
-					className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
-					aria-label="Close panel"
-				>
-					<CloseIcon className="w-4 h-4" />
-				</button>
 			</header>
 
 			<OpacitySlider
@@ -150,4 +144,4 @@ export function LayersPanel({ projectId, open, onClose }: LayersPanelProps) {
 			</Reorder.Group>
 		</motion.aside>
 	);
-}
+});

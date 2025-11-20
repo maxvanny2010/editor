@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { TOOLS } from '@/shared/constants';
 
 export type ShapeType = 'rect' | 'circle';
 
@@ -19,7 +20,7 @@ const initialState: ShapeState = {
 };
 
 const shapeSlice = createSlice({
-	name: 'shape',
+	name: TOOLS.SHAPE,
 	initialState,
 	reducers: {
 		setShapeType(state, action: PayloadAction<ShapeType>) {

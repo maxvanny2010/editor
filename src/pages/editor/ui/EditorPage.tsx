@@ -61,8 +61,6 @@ export const EditorPage = () => {
 
 			{/* ---------------------- VIEWPORT ---------------------- */}
 			<EditorViewport
-				isLayersOpen={activePanel === NAMES.LAYERS}
-				isHistoryOpen={activePanel === NAMES.HISTORY}
 				projectId={activeProject.id}
 				width={activeProject.width}
 				height={activeProject.height}
@@ -75,19 +73,10 @@ export const EditorPage = () => {
 			{/* ---------------------- PANELS ---------------------- */}
 			<AnimatePresence>
 				{activePanel === NAMES.LAYERS && (
-					<LayersPanel
-						key={NAMES.LAYERS}
-						open
-						onClose={() => setActivePanel(null)}
-						projectId={activeProject.id}
-					/>
+					<LayersPanel key={NAMES.LAYERS} open projectId={activeProject.id} />
 				)}
 				{activePanel === NAMES.HISTORY && (
-					<HistoryPanel
-						key={NAMES.HISTORY}
-						open
-						onClose={() => setActivePanel(null)}
-					/>
+					<HistoryPanel key={NAMES.HISTORY} open />
 				)}
 			</AnimatePresence>
 

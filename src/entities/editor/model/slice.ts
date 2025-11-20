@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { EditorState } from '@/shared/types';
+import { NAMES } from '@/shared/constants';
 
 const initialState: EditorState = {
 	viewport: {
@@ -12,7 +13,7 @@ const initialState: EditorState = {
 };
 
 const editorSlice = createSlice({
-	name: 'editor',
+	name: NAMES.EDITOR,
 	initialState,
 	reducers: {
 		setScale(state, action: PayloadAction<number>) {

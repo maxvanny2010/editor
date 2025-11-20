@@ -1,19 +1,18 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { TOOLS } from '@/shared/constants';
 
 export type BrushState = {
 	color: string;
 	size: number;
-	isDrawing: boolean;
 };
 
 const initialState: BrushState = {
 	color: '#1F2937',
 	size: 4,
-	isDrawing: false,
 };
 
 const brushSlice = createSlice({
-	name: 'brush',
+	name: TOOLS.BRUSH,
 	initialState,
 	reducers: {
 		setBrushColor(state, action: PayloadAction<string>) {
@@ -22,13 +21,9 @@ const brushSlice = createSlice({
 		setBrushSize(state, action: PayloadAction<number>) {
 			state.size = action.payload;
 		},
-		setBrushDrawing(state, action: PayloadAction<boolean>) {
-			state.isDrawing = action.payload;
-		},
 		resetBrushState: () => initialState,
 	},
 });
 
-export const { setBrushColor, setBrushSize, setBrushDrawing, resetBrushState } =
-	brushSlice.actions;
+export const { setBrushColor, setBrushSize, resetBrushState } = brushSlice.actions;
 export const brushReducer = brushSlice.reducer;

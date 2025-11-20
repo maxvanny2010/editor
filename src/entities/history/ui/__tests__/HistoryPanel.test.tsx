@@ -33,19 +33,16 @@ const mockStack = [
 
 describe('HistoryPanel', () => {
 	it('renders nothing when closed', () => {
-		const { container } = renderWithStore(
-			<HistoryPanel open={false} onClose={() => {}} />,
-			{
-				initialState: {
-					history: { stack: [], currentIndex: -1, isPreview: false },
-				},
+		const { container } = renderWithStore(<HistoryPanel open={false} />, {
+			initialState: {
+				history: { stack: [], currentIndex: -1, isPreview: false },
 			},
-		);
+		});
 		expect(container.firstChild).toBeNull();
 	});
 
 	it('renders list of history items', () => {
-		renderWithStore(<HistoryPanel open={true} onClose={() => {}} />, {
+		renderWithStore(<HistoryPanel open={true} />, {
 			initialState: {
 				history: { stack: mockStack, currentIndex: 1, isPreview: false },
 			},
@@ -56,22 +53,10 @@ describe('HistoryPanel', () => {
 		expect(screen.getByText('Draw Circle')).toBeInTheDocument();
 	});
 
-	it('calls onClose when close button clicked', () => {
-		const onClose = vi.fn();
-		renderWithStore(<HistoryPanel open={true} onClose={onClose} />, {
-			initialState: {
-				history: { stack: mockStack, currentIndex: 1, isPreview: false },
-			},
-		});
-
-		fireEvent.click(screen.getByLabelText(/Close panel/i));
-		expect(onClose).toHaveBeenCalled();
-	});
-
 	it('dispatches jumpTo on click', () => {
 		const spy = vi.spyOn(historySlice, 'jumpTo');
 
-		renderWithStore(<HistoryPanel open={true} onClose={() => {}} />, {
+		renderWithStore(<HistoryPanel open={true} />, {
 			initialState: {
 				history: { stack: mockStack, currentIndex: 1, isPreview: false },
 			},

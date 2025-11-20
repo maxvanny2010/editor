@@ -1,13 +1,16 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus as PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface AddLayerButtonProps {
 	onCreate: () => void;
 	disabled?: boolean;
 }
 
-export function AddLayerButton({ onCreate, disabled }: AddLayerButtonProps) {
+export const AddLayerButton = React.memo(function AddLayerButton({
+	onCreate,
+	disabled,
+}: AddLayerButtonProps) {
 	const [hoverAdd, setHoverAdd] = useState(false);
 
 	return (
@@ -56,4 +59,4 @@ export function AddLayerButton({ onCreate, disabled }: AddLayerButtonProps) {
 			<span>Add Layer</span>
 		</button>
 	);
-}
+});

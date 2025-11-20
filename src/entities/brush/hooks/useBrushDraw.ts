@@ -1,13 +1,10 @@
 import React, { useCallback, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setBrushDrawing } from '@/entities/brush/model/slice';
-import { strokeWidth, toCanvasPoint } from '@/shared/lib/utils';
-import { selectViewport } from '@/entities/editor/model/selectors';
+import { useAppSelector } from '@/store/hooks';
+import { toCanvasPoint } from '@/shared/lib/utils';
 
 export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
-	const { color, size, isDrawing } = useAppSelector((s) => s.brush);
-	const { scale: viewportScale } = useAppSelector(selectViewport);
-	const dispatch = useAppDispatch();
+	const { color, size } = useAppSelector((s) => s.brush);
+	const isDrawingRef = useRef(false);
 	const last = useRef<{ x: number; y: number } | null>(null);
 	const dpr = 1;
 
@@ -26,24 +23,24 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 			if (!ctx) return;
 
 			ctx.strokeStyle = color;
-			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');
+			ctx.lineWidth = size;
 			ctx.lineCap = 'round';
 			ctx.lineJoin = 'round';
 
 			last.current = getPos(e);
-			dispatch(setBrushDrawing(true));
+			isDrawingRef.current = true;
 			canvasRef.current.setPointerCapture(e.pointerId);
 		},
-		[canvasRef, color, size, viewportScale, getPos, dispatch],
+		[canvasRef, color, size, getPos],
 	);
 
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			if (!isDrawing || !canvasRef.current || !last.current) return;
+			if (!isDrawingRef.current || !canvasRef.current || !last.current) return;
 			const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true })!;
 			if (!ctx) return;
 
-			ctx.lineWidth = strokeWidth(size, viewportScale, 'screen');
+			ctx.lineWidth = size;
 
 			const p = getPos(e);
 			const l = last.current;
@@ -55,18 +52,18 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 
 			last.current = p;
 		},
-		[canvasRef, getPos, isDrawing, size, viewportScale],
+		[canvasRef, getPos, size],
 	);
 
 	const onPointerUp = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			last.current = null;
-			dispatch(setBrushDrawing(false));
+			isDrawingRef.current = false;
 			if (canvasRef.current?.hasPointerCapture(e.pointerId)) {
 				canvasRef.current.releasePointerCapture(e.pointerId);
 			}
 		},
-		[dispatch, canvasRef],
+		[canvasRef],
 	);
 
 	return { onPointerDown, onPointerMove, onPointerUp };

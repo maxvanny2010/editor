@@ -1,160 +1,139 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { ViewportRepository } from '@/widgets/viewport/api';
-import { selectViewport } from '@/entities/editor/model/selectors';
-import { resetViewport, setOffset, setScale } from '@/entities/editor/model/slice';
+import React, { useCallback, useRef, useState } from 'react';
 
-const PADDING = 64;
+type Writeable<T> = {
+	-readonly [P in keyof T]: T[P];
+};
+
+type ViewportControlsResult = {
+	containerRef: Writeable<React.RefObject<HTMLDivElement | null>>;
+	scaleRef: Writeable<React.RefObject<number>>;
+	offsetXRef: Writeable<React.RefObject<number>>;
+	offsetYRef: Writeable<React.RefObject<number>>;
+	isPanningRef: Writeable<React.RefObject<boolean>>;
+
+	isPanning: boolean;
+
+	showGrid: boolean;
+	setShowGrid: React.Dispatch<React.SetStateAction<boolean>>;
+
+	onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+	onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
+	onMouseUp: () => void;
+	onWheel: (e: React.WheelEvent<HTMLDivElement>) => void;
+
+	handleFit: () => void;
+	handleReset: () => void;
+};
 
 /**
- * Handles viewport scaling, panning, and fitting.
- * Persists state to Dexie if projectId is provided.
+ * Viewport controls in "Figma mode":
+ * Direct DOM transforms for panning/zooming, no React re-renders on movement.
  */
-export function useViewportControls(width: number, height: number, projectId?: string) {
-	const { scale, offsetX, offsetY } = useAppSelector(selectViewport);
-	const dispatch = useAppDispatch();
-	const containerRef = useRef<HTMLDivElement | null>(null);
-	const panRef = useRef<{ x: number; y: number } | null>(null);
-	const [fitScale, setFitScale] = useState(1);
-	const [showGrid, setShowGrid] = useState(true);
+export function useViewportControls(
+	width: number,
+	height: number,
+): ViewportControlsResult {
+	// container (writeable ref)
+	const containerRef = useRef<HTMLDivElement | null>(null) as Writeable<
+		React.RefObject<HTMLDivElement | null>
+	>;
+
+	// transform state (writeable refs, TS-safe)
+	const scaleRef = useRef(1) as Writeable<React.RefObject<number>>;
+	const offsetXRef = useRef(0) as Writeable<React.RefObject<number>>;
+	const offsetYRef = useRef(0) as Writeable<React.RefObject<number>>;
+	const isPanningRef = useRef(false) as Writeable<React.RefObject<boolean>>;
+
 	const [isPanning, setIsPanning] = useState(false);
+	const [showGrid, setShowGrid] = useState(true);
 
-	// Load saved viewport state from Dexie
-	useEffect(() => {
-		if (!projectId) return;
-		void (async () => {
-			const saved = await ViewportRepository.get(projectId);
-			if (saved) {
-				dispatch(setScale(saved.scale));
-				dispatch(setOffset({ x: saved.offsetX, y: saved.offsetY }));
-				setShowGrid(saved.showGrid);
-			}
-		})();
-	}, [dispatch, projectId]);
+	const applyTransform = useCallback(() => {
+		const el = containerRef.current;
+		if (!el) return;
 
-	// Autosave to Dexie every 2 seconds
-	useEffect(() => {
-		if (!projectId) return;
-		const id = setInterval(() => {
-			void ViewportRepository.save({
-				projectId,
-				scale,
-				offsetX,
-				offsetY,
-				showGrid,
-			});
-		}, 2000);
-		return () => clearInterval(id);
-	}, [projectId, scale, offsetX, offsetY, showGrid]);
+		el.style.transform = `translate(${offsetXRef.current}px, ${offsetYRef.current}px) scale(${scaleRef.current})`;
+		el.style.transformOrigin = 'center';
+	}, []);
 
-	// Compute fit scale based on container size
-	useLayoutEffect(() => {
-		const node = containerRef.current;
-		if (!node) return;
-		const updateFit = () => {
-			const rect = node.getBoundingClientRect();
-			const availW = Math.max(0, rect.width - PADDING * 2);
-			const availH = Math.max(0, rect.height - PADDING * 2);
-			setFitScale(Math.min(availW / width, availH / height));
-		};
-		updateFit();
-		const ro = new ResizeObserver(updateFit);
-		ro.observe(node);
-		window.addEventListener('resize', updateFit);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener('resize', updateFit);
-		};
-	}, [width, height]);
-
-	// Zoom with Ctrl + wheel
-	useEffect(() => {
-		const node = containerRef.current;
-		if (!node) return;
-		const handleWheel = (e: WheelEvent) => {
-			if (!e.ctrlKey) return;
-			e.preventDefault();
-			const nextScale = scale * (e.deltaY > 0 ? 0.9 : 1.1);
-			dispatch(setScale(nextScale));
-		};
-		node.addEventListener('wheel', handleWheel, { passive: false });
-		return () => node.removeEventListener('wheel', handleWheel);
-	}, [dispatch, scale]);
-
-	// Panning logic
-	const onMouseDown = useCallback((e: React.MouseEvent) => {
-		if (e.button === 1) {
-			e.preventDefault();
-			panRef.current = { x: e.clientX, y: e.clientY };
-			setIsPanning(true);
-		}
+	const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+		if (e.button !== 1) return;
+		e.preventDefault();
+		isPanningRef.current = true;
+		setIsPanning(true);
 	}, []);
 
 	const onMouseMove = useCallback(
-		(e: React.MouseEvent) => {
-			if (!panRef.current) return;
-			dispatch(
-				setOffset({
-					x: offsetX + (e.clientX - panRef.current.x),
-					y: offsetY + (e.clientY - panRef.current.y),
-				}),
-			);
-			panRef.current = { x: e.clientX, y: e.clientY };
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			if (!isPanningRef.current) return;
+			offsetXRef.current += e.movementX;
+			offsetYRef.current += e.movementY;
+			applyTransform();
 		},
-		[dispatch, offsetX, offsetY],
+		[applyTransform],
 	);
 
 	const onMouseUp = useCallback(() => {
-		panRef.current = null;
+		isPanningRef.current = false;
 		setIsPanning(false);
 	}, []);
 
-	useEffect(() => {
-		const handleGlobalMouseUp = () => setIsPanning(false);
-		window.addEventListener('mouseup', handleGlobalMouseUp);
-		return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
-	}, []);
+	const onWheel = useCallback(
+		(e: React.WheelEvent<HTMLDivElement>) => {
+			if (!e.ctrlKey) return;
+			e.preventDefault();
 
-	// Smooth reset animation
-	const handleReset = useCallback(() => {
-		const startScale = scale;
-		const startX = offsetX;
-		const startY = offsetY;
-		const startTime = performance.now();
-		const duration = 300;
+			const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+			scaleRef.current *= zoomFactor;
 
-		const animate = (time: number) => {
-			const t = Math.min(1, (time - startTime) / duration);
-			const ease = 1 - Math.pow(1 - t, 3);
-			const newScale = startScale + (1 - startScale) * ease;
-			const newX = startX * (1 - ease);
-			const newY = startY * (1 - ease);
-			dispatch(setScale(newScale));
-			dispatch(setOffset({ x: newX, y: newY }));
-			if (t < 1) requestAnimationFrame(animate);
-			else dispatch(resetViewport());
-		};
-		requestAnimationFrame(animate);
-	}, [dispatch, offsetX, offsetY, scale]);
-
-	const handleFit = useCallback(
-		() => dispatch(setScale(fitScale)),
-		[dispatch, fitScale],
+			applyTransform();
+		},
+		[applyTransform],
 	);
+
+	const handleFit = useCallback(() => {
+		const el = containerRef.current;
+		if (!el) return;
+
+		const parent = el.parentElement;
+		if (!parent) return;
+
+		const rect = parent.getBoundingClientRect();
+		const padding = 64;
+
+		const availW = rect.width - padding * 2;
+		const availH = rect.height - padding * 2;
+
+		const scaleX = availW / width;
+		const scaleY = availH / height;
+
+		scaleRef.current = Math.min(scaleX, scaleY);
+		offsetXRef.current = 0;
+		offsetYRef.current = 0;
+
+		applyTransform();
+	}, [applyTransform, width, height]);
+
+	const handleReset = useCallback(() => {
+		scaleRef.current = 1;
+		offsetXRef.current = 0;
+		offsetYRef.current = 0;
+		applyTransform();
+	}, [applyTransform]);
 
 	return {
 		containerRef,
-		scale,
-		offsetX,
-		offsetY,
+		scaleRef,
+		offsetXRef,
+		offsetYRef,
+		isPanningRef,
+		isPanning,
 		showGrid,
 		setShowGrid,
-		handleFit,
-		handleReset,
 		onMouseDown,
 		onMouseMove,
 		onMouseUp,
-		fitScale,
-		isPanning,
+		onWheel,
+		handleFit,
+		handleReset,
 	};
 }

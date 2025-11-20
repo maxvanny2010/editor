@@ -4,7 +4,7 @@ import { renderWithStore, type TestRootState } from '@/test-utils';
 
 describe('BrushFloatingPalette', () => {
 	const initialState: Partial<TestRootState> = {
-		brush: { color: '#111827', size: 4, isDrawing: false },
+		brush: { color: '#111827', size: 4 },
 		editor: {
 			activeTool: 'brush',
 			paletteOpen: true,

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
+import React from 'react';
 
 interface ViewportButtonProps {
 	label: string;
@@ -13,7 +14,7 @@ interface ViewportButtonProps {
  * Universal small control button used in the viewport footer.
  * Harmonized with editor's indigo–slate color scheme.
  */
-export function ViewportButton({
+export const ViewportButton = React.memo(function ViewportButton({
 	label,
 	Icon,
 	onClick,
@@ -52,4 +53,4 @@ export function ViewportButton({
 			)}
 		</motion.button>
 	);
-}
+});

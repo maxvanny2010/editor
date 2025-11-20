@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+
 import { layersSelectors, makeSelectByProject } from '@/entities/layer/model/selectors';
-import { DrawCanvas, GridCanvas, LayerStack } from '@/widgets/canvas/model';
 import { updateLayer, useLayerCanvases } from '@/entities/layer/model';
+
 import { selectActiveTool } from '@/entities/editor/model/selectors';
-import { EraserTool, useEraserDraw } from '@/entities/eraser/model';
-import { ToolBar, UndoRedoButtons } from '@/widgets/toolbar/ui';
-import { ShapeTool, useShapeDraw } from '@/entities/shape/model';
+
 import { BrushTool, useBrushDraw } from '@/entities/brush/model';
-import { useViewportControls } from '@/widgets/viewport/hooks';
 import { LineTool, useLineDraw } from '@/entities/line/model';
+import { ShapeTool, useShapeDraw } from '@/entities/shape/model';
+import { EraserTool, useEraserDraw } from '@/entities/eraser/model';
+
+import { ToolBar, UndoRedoButtons } from '@/widgets/toolbar/ui';
+import { useViewportControls } from '@/widgets/viewport/hooks';
+
+import { DrawCanvas, GridCanvas, LayerStack } from '@/widgets/canvas/model';
 import type { EditorTool } from '@/shared/types';
 
-/**
- * Handlers for each drawing tool.
- */
 interface ToolHandlers {
 	onPointerDown?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
 	onPointerMove?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
@@ -23,11 +25,14 @@ interface ToolHandlers {
 
 /**
  * Main drawing viewport of the editor.
- * Manages all drawing tools, layers, and grid.
+ *
+ * Responsibilities:
+ * - Manages project layers and connects them to DOM canvases.
+ * - Delegates all drawing to "tool hooks" (brush/line/shape/eraser).
+ * - Uses "Figma-like" viewport controls: panning/zoom via refs + CSS transforms.
+ * - Avoids React re-renders during pointer movement and drawing.
  */
 interface EditorViewportProps {
-	isLayersOpen: boolean;
-	isHistoryOpen: boolean;
 	projectId: string;
 	width: number;
 	height: number;
@@ -42,16 +47,21 @@ interface EditorViewportProps {
 	}) => void;
 }
 
-export const EditorViewport = ({
+type ActiveEditorTool = Exclude<EditorTool, null>;
+
+export const EditorViewport = React.memo(function EditorViewport({
 	projectId,
 	width,
 	height,
 	onViewportUpdate,
-}: EditorViewportProps) => {
+}: EditorViewportProps) {
 	const dispatch = useAppDispatch();
 	const didDrawRef = useRef(false);
 
+	// Current active tool from Redux (brush / line / shape / eraser / null)
 	const activeTool = useAppSelector(selectActiveTool);
+
+	// Layers for this project
 	const selectByProject = useMemo(makeSelectByProject, []);
 	const layersAll = useAppSelector((s) => selectByProject(s, projectId));
 	const layers = useMemo(
@@ -63,9 +73,9 @@ export const EditorViewport = ({
 
 	const {
 		containerRef,
-		scale: viewportScale,
-		offsetX,
-		offsetY,
+		scaleRef,
+		offsetXRef,
+		offsetYRef,
 		showGrid,
 		setShowGrid,
 		handleFit,
@@ -73,17 +83,18 @@ export const EditorViewport = ({
 		onMouseDown,
 		onMouseMove,
 		onMouseUp,
+		onWheel,
 		isPanning,
-	} = useViewportControls(width, height, projectId);
+	} = useViewportControls(width, height);
 
-	const toggleGrid = useCallback(() => setShowGrid((v) => !v), [setShowGrid]);
+	const toggleGrid = useCallback(() => setShowGrid((prev) => !prev), [setShowGrid]);
 
 	useEffect(() => {
 		if (!onViewportUpdate) return;
 		onViewportUpdate({
-			scale: viewportScale,
-			offsetX,
-			offsetY,
+			scale: scaleRef.current,
+			offsetX: offsetXRef.current,
+			offsetY: offsetYRef.current,
 			showGrid,
 			handleFit,
 			handleReset,
@@ -91,9 +102,9 @@ export const EditorViewport = ({
 		});
 	}, [
 		onViewportUpdate,
-		viewportScale,
-		offsetX,
-		offsetY,
+		scaleRef,
+		offsetXRef,
+		offsetYRef,
 		showGrid,
 		handleFit,
 		handleReset,
@@ -107,91 +118,129 @@ export const EditorViewport = ({
 		width,
 		height,
 	);
+
+	// Draw canvas sits above all layer canvases and collects pointer input.
 	const drawRef = useRef<HTMLCanvasElement | null>(null);
 
-	const brush = useBrushDraw(drawRef);
-	const line = useLineDraw(drawRef);
-	const shape = useShapeDraw(drawRef);
-	const eraser = useEraserDraw(() => (activeLayer ? getCanvas(activeLayer.id) : null));
+	// Tool hooks — they contain all drawing logic and are independent of React state during pointer move.
+	const brushHandlers = useBrushDraw(drawRef);
+	const lineHandlers = useLineDraw(drawRef);
+	const shapeHandlers = useShapeDraw(drawRef);
+	const eraserHandlers = useEraserDraw(() =>
+		activeLayer ? getCanvas(activeLayer.id) : null,
+	);
 
-	const toolHandlers: Partial<Record<Exclude<EditorTool, null>, ToolHandlers>> =
-		useMemo(() => ({ brush, line, shape, eraser }), [brush, line, shape, eraser]);
+	// Stable map of handlers per tool type.
+	const toolHandlers: Partial<Record<ActiveEditorTool, ToolHandlers>> = useMemo(
+		() => ({
+			brush: brushHandlers,
+			line: lineHandlers,
+			shape: shapeHandlers,
+			eraser: eraserHandlers,
+		}),
+		[brushHandlers, lineHandlers, shapeHandlers, eraserHandlers],
+	);
 
-	const activeHandlers = activeTool ? toolHandlers[activeTool] : undefined;
+	const activeHandlers = activeTool
+		? toolHandlers[activeTool as ActiveEditorTool]
+		: undefined;
 
-	// ───────────── Tool event handlers ─────────────
+	// ───────────── Tool event handlers (pointer) ─────────────
 
-	// start draw
-	const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-		didDrawRef.current = false;
-		activeHandlers?.onPointerDown?.(e);
-	};
+	/**
+	 * Pointer down:
+	 * - reset "didDraw" flag,
+	 * - delegate to active tool handlers.
+	 */
+	const handlePointerDown = useCallback(
+		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			didDrawRef.current = false;
+			activeHandlers?.onPointerDown?.(e);
+		},
+		[activeHandlers],
+	);
 
-	// is drawing
-	const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-		activeHandlers?.onPointerMove?.(e);
-		didDrawRef.current = true;
-	};
+	/**
+	 * Pointer move:
+	 * - delegate to active tool,
+	 * - mark that this stroke has drawn something.
+	 */
+	const handlePointerMove = useCallback(
+		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			activeHandlers?.onPointerMove?.(e);
+			didDrawRef.current = true;
+		},
+		[activeHandlers],
+	);
 
-	// leave a mouse
-	const handlePointerUp = async (e: React.PointerEvent<HTMLCanvasElement>) => {
-		activeHandlers?.onPointerUp?.(e);
+	/**
+	 * Pointer up:
+	 * - finish tool handling,
+	 * - if we actually drew something, merge draw canvas into active layer
+	 *   and save snapshot via Redux.
+	 */
+	const handlePointerUp = useCallback(
+		async (e: React.PointerEvent<HTMLCanvasElement>) => {
+			activeHandlers?.onPointerUp?.(e);
 
-		if (!didDrawRef.current || !activeLayer || !activeTool) return;
+			if (!didDrawRef.current || !activeLayer || !activeTool) return;
 
-		const target = getCanvas(activeLayer.id);
-		const drawCanvas = drawRef.current;
+			const target = getCanvas(activeLayer.id);
+			const drawCanvas = drawRef.current;
 
-		if (target && drawCanvas) {
-			const ctx = target.getContext('2d');
-			ctx?.drawImage(drawCanvas, 0, 0);
-			drawCanvas
-				.getContext('2d', { willReadFrequently: true, alpha: true })
-				?.clearRect(0, 0, width, height);
-			const snapshotPng = target.toDataURL('image/png');
+			if (target && drawCanvas) {
+				const ctx = target.getContext('2d');
+				ctx?.drawImage(drawCanvas, 0, 0);
 
-			await dispatch(
-				updateLayer({
-					id: activeLayer.id,
-					changes: { snapshot: snapshotPng },
-				}),
-			).unwrap();
-		}
-	};
+				// Clear draw canvas after applying stroke
+				drawCanvas
+					.getContext('2d', { willReadFrequently: true, alpha: true })
+					?.clearRect(0, 0, width, height);
 
+				const snapshotPng = target.toDataURL('image/png');
+
+				await dispatch(
+					updateLayer({
+						id: activeLayer.id,
+						changes: { snapshot: snapshotPng },
+					}),
+				).unwrap();
+			}
+		},
+		[activeHandlers, activeLayer, activeTool, dispatch, getCanvas, width, height],
+	);
+
+	// -------------------- Render --------------------
 	return (
 		<div
 			data-testid="viewport-container"
-			ref={containerRef}
+			className="relative w-full h-full bg-gray-100 dark:bg-gray-900
+                       flex items-center justify-center select-none overflow-hidden"
 			onMouseDown={onMouseDown}
 			onMouseMove={onMouseMove}
 			onMouseUp={onMouseUp}
-			className="relative w-full h-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center select-none overflow-hidden transition-all duration-300"
+			onWheel={onWheel}
 		>
 			<div
+				ref={containerRef}
 				style={{
 					width,
 					height,
 					position: 'relative',
-					transform: `translate(${offsetX}px, ${offsetY}px) scale(${viewportScale})`,
-					transformOrigin: 'center',
 					border: '1px solid rgba(0,0,0,0.2)',
 					background: '#ffffff',
 				}}
 			>
-				<GridCanvas
-					width={width}
-					height={height}
-					showGrid={showGrid}
-					background={'#ffffff'}
-				/>
+				<GridCanvas width={width} height={height} showGrid={showGrid} />
+
 				<LayerStack
 					layers={layers}
 					width={width}
 					height={height}
 					bindCanvasRef={bindCanvasRef}
-					activeLayerId={activeLayer?.id}
+					activeLayerId={activeLayer?.id ?? null}
 				/>
+
 				<DrawCanvas
 					ref={drawRef}
 					width={width}
@@ -212,4 +261,4 @@ export const EditorViewport = ({
 			</ToolBar>
 		</div>
 	);
-};
+});

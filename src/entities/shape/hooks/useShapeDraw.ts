@@ -1,18 +1,18 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { toCanvasPoint } from '@/shared/lib/utils';
 
 export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const { type, fill, stroke, thickness } = useAppSelector((s) => s.shape);
-	const [start, setStart] = useState<{ x: number; y: number } | null>(null);
+	const startRef = useRef<{ x: number; y: number } | null>(null);
 	const snapshot = useRef<ImageData | null>(null);
 	const dpr = 1;
 
 	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			const canvas = canvasRef.current!;
-			const p = toCanvasPoint(e, canvas, { dpr });
-			setStart(p);
+
+			startRef.current = toCanvasPoint(e, canvas, { dpr });
 
 			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (ctx)
@@ -28,6 +28,7 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			const start = startRef.current;
 			if (!start || !canvasRef.current || !snapshot.current) return;
 			const canvas = canvasRef.current;
 			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
@@ -58,12 +59,12 @@ export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 				ctx.globalAlpha = 1;
 			}
 		},
-		[start, fill, stroke, thickness, type, canvasRef, dpr],
+		[fill, stroke, thickness, type, canvasRef, dpr],
 	);
 
 	const onPointerUp = useCallback(() => {
 		snapshot.current = null;
-		setStart(null);
+		startRef.current = null;
 	}, []);
 
 	return { onPointerDown, onPointerMove, onPointerUp };

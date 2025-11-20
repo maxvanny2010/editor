@@ -1,7 +1,8 @@
 import { LayerVisibilityToggle } from './LayerVisibilityToggle.tsx';
 import { LayerNameEditor } from './LayerNameEditor.tsx';
-import { LayerMenu } from './LayerMenu';
 import type { Layer } from '@/shared/types';
+import { LayerMenu } from './LayerMenu';
+import React from 'react';
 
 interface LayerItemProps {
 	layer: Layer;
@@ -17,7 +18,7 @@ interface LayerItemProps {
 	disabled?: boolean;
 }
 
-export function LayerItem({
+export const LayerItem = React.memo(function LayerItem({
 	layer,
 	isActive,
 	isEditing,
@@ -77,4 +78,4 @@ export function LayerItem({
 			/>
 		</div>
 	);
-}
+});

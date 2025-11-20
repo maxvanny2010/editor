@@ -9,7 +9,7 @@ const initialState: HistoryState = {
 };
 
 const slice = createSlice({
-	name: `${NAMES.HISTORY}`,
+	name: NAMES.HISTORY,
 	initialState,
 	reducers: {
 		pushState(state, action: PayloadAction<HistoryEntry>) {

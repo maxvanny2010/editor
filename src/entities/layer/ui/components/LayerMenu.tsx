@@ -14,7 +14,7 @@ interface LayerMenuProps {
 	onDeleteClick: () => void;
 }
 
-export function LayerMenu({
+export const LayerMenu = React.memo(function LayerMenu({
 	layerId,
 	isMenuOpen,
 	setOpenMenuId,
@@ -87,4 +87,4 @@ export function LayerMenu({
 			</AnimatePresence>
 		</div>
 	);
-}
+});

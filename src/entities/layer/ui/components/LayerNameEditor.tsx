@@ -7,7 +7,7 @@ interface LayerNameEditorProps {
 	onRenameSubmit: (id: string, name: string) => Promise<void>;
 }
 
-export function LayerNameEditor({
+export const LayerNameEditor = React.memo(function LayerNameEditor({
 	layerId,
 	layerName,
 	isEditing,
@@ -51,4 +51,4 @@ export function LayerNameEditor({
 			)}
 		</div>
 	);
-}
+});

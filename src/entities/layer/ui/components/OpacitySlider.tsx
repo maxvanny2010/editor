@@ -1,11 +1,15 @@
 import type { Layer } from '@/shared/types';
+import React from 'react';
 
 interface OpacitySliderProps {
 	activeLayer: Layer | null;
 	onOpacityChange: (id: string, value: number) => void;
 }
 
-export function OpacitySlider({ activeLayer, onOpacityChange }: OpacitySliderProps) {
+export const OpacitySlider = React.memo(function OpacitySlider({
+	activeLayer,
+	onOpacityChange,
+}: OpacitySliderProps) {
 	const active = activeLayer ?? undefined;
 	const opacityValue = active?.opacity ?? 1;
 
@@ -60,4 +64,4 @@ export function OpacitySlider({ activeLayer, onOpacityChange }: OpacitySliderPro
 			</span>
 		</div>
 	);
-}
+});

@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { TOOLS } from '@/shared/constants';
 
 export interface LineState {
 	active: boolean;
@@ -13,7 +14,7 @@ const initialState: LineState = {
 };
 
 const lineSlice = createSlice({
-	name: 'line',
+	name: TOOLS.LINE,
 	initialState,
 	reducers: {
 		setLineColor(state, action: PayloadAction<string>) {

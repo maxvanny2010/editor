@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { normalizeLine } from '@/entities/line/lib/geometry';
 import { useAppSelector } from '@/store/hooks';
-import { strokeWidth, toCanvasPoint } from '@/shared/lib/utils';
-import { selectViewport } from '@/entities/editor/model/selectors';
+import { toCanvasPoint } from '@/shared/lib/utils';
 
 export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const { color, thickness } = useAppSelector((s) => s.line);
-	const { scale: viewportScale } = useAppSelector(selectViewport);
-	const [start, setStart] = useState<{ x: number; y: number } | null>(null);
+	const startRef = useRef<{ x: number; y: number } | null>(null);
 	const shiftRef = useRef(false);
 	const snapshot = useRef<ImageData | null>(null);
 	const dpr = 1;
@@ -33,8 +31,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
 			const canvas = canvasRef.current!;
-			const p = toCanvasPoint(e, canvas, { dpr });
-			setStart(p);
+			startRef.current = toCanvasPoint(e, canvas, { dpr });
 			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 			if (ctx)
 				snapshot.current = ctx.getImageData(
@@ -49,6 +46,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			const start = startRef.current;
 			if (!start || !canvasRef.current) return;
 			const canvas = canvasRef.current;
 			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
@@ -60,7 +58,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 			const { x1, y1, x2, y2 } = normalizeLine(start, end, shiftRef.current);
 
 			ctx.strokeStyle = blendPreview(color);
-			ctx.lineWidth = strokeWidth(thickness, viewportScale, 'screen');
+			ctx.lineWidth = thickness;
 			ctx.lineCap = 'round';
 			ctx.setLineDash([4, 4]);
 			ctx.beginPath();
@@ -69,11 +67,12 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 			ctx.stroke();
 			ctx.setLineDash([]);
 		},
-		[start, color, thickness, canvasRef, blendPreview, viewportScale],
+		[color, thickness, canvasRef, blendPreview],
 	);
 
 	const onPointerUp = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			const start = startRef.current;
 			if (!start || !canvasRef.current) return;
 			const canvas = canvasRef.current;
 			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
@@ -83,7 +82,7 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 			const { x1, y1, x2, y2 } = normalizeLine(start, end, shiftRef.current);
 
 			ctx.strokeStyle = color;
-			ctx.lineWidth = strokeWidth(thickness, viewportScale, 'screen');
+			ctx.lineWidth = thickness;
 			ctx.lineCap = 'round';
 			ctx.beginPath();
 			ctx.moveTo(x1, y1);
@@ -91,9 +90,9 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 			ctx.stroke();
 
 			snapshot.current = null;
-			setStart(null);
+			startRef.current = null;
 		},
-		[start, color, thickness, canvasRef, viewportScale],
+		[color, thickness, canvasRef],
 	);
 
 	return { onPointerDown, onPointerMove, onPointerUp };

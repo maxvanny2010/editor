@@ -21,20 +21,24 @@ export const DrawCanvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>(
 			onPointerDown,
 			onPointerMove,
 			onPointerUp,
-			isPanning = false,
+			isPanning,
 			'data-testid': testId = 'draw-canvas',
 		},
 		ref,
 	) => {
+		// НЕ передаём isPanning в canvas!
+		const cursor = isPanning ? 'grabbing' : 'crosshair';
+
 		return (
 			<canvas
 				ref={ref}
 				role="presentation"
 				width={width}
 				height={height}
-				className={`absolute inset-0 ${isPanning ? 'cursor-grabbing' : 'cursor-crosshair'}`}
+				className="absolute inset-0"
 				style={{
-					zIndex: 1000,
+					zIndex: 10,
+					cursor,
 				}}
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
