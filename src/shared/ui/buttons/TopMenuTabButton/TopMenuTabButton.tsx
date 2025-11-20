@@ -1,10 +1,16 @@
+import React from 'react';
+
 interface TopMenuTabButtonProps {
 	label: string;
 	onClick: () => void;
 	isActive: boolean;
 }
 
-export function TopMenuTabButton({ label, onClick, isActive }: TopMenuTabButtonProps) {
+export const TopMenuTabButton = React.memo(function TopMenuTabButton({
+	label,
+	onClick,
+	isActive,
+}: TopMenuTabButtonProps) {
 	return (
 		<button
 			onClick={onClick}
@@ -17,4 +23,4 @@ export function TopMenuTabButton({ label, onClick, isActive }: TopMenuTabButtonP
 			{label}
 		</button>
 	);
-}
+});

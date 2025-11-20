@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import React from 'react';
 
 interface Props {
 	label: string;
@@ -8,7 +9,7 @@ interface Props {
 	colorClass?: string;
 }
 
-export function TopMenuItemButton({
+export const TopMenuItemButton = React.memo(function TopMenuItemButton({
 	label,
 	IconComponent,
 	onClick,
@@ -36,4 +37,4 @@ export function TopMenuItemButton({
 			{label}
 		</button>
 	);
-}
+});

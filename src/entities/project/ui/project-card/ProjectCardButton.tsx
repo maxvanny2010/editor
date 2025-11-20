@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import type { ReactNode } from 'react';
-import { useState } from 'react';
+import React, { type ReactNode, useState } from 'react';
 
 interface ProjectCardButtonProps {
 	label: string;
@@ -10,7 +9,7 @@ interface ProjectCardButtonProps {
 	testId: string;
 }
 
-export function ProjectCardButton({
+export const ProjectCardButton = React.memo(function ProjectCardButton({
 	label,
 	icon,
 	color,
@@ -53,4 +52,4 @@ export function ProjectCardButton({
 			/>
 		</motion.button>
 	);
-}
+});

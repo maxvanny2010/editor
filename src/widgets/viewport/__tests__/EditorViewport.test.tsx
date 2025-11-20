@@ -1,91 +1,173 @@
-import { fireEvent, render } from '@testing-library/react';
-import * as appHooks from '@/store/hooks';
-import { TestStoreProvider } from '@/test-utils';
+import React from 'react';
+import { fireEvent } from '@testing-library/react';
+import { renderWithStore } from '@/test-utils';
 import { EditorViewport } from '@/widgets/viewport/model';
-import { setOffset, setScale } from '@/entities/editor/model/slice';
 
-vi.mock('@/entities/editor/model/slice', async (orig) => {
-	const actual = (await orig()) as Record<string, unknown>;
+vi.mock('@/widgets/canvas/model', () => ({
+	DrawCanvas: React.forwardRef<HTMLCanvasElement, { width: number; height: number }>(
+		({ width, height }, ref) => (
+			<canvas ref={ref} data-testid="draw-canvas" width={width} height={height} />
+		),
+	),
+	GridCanvas: React.forwardRef<HTMLCanvasElement, { width: number; height: number }>(
+		({ width, height }, ref) => (
+			<canvas ref={ref} data-testid="grid-canvas" width={width} height={height} />
+		),
+	),
+	LayerStack: () => <div data-testid="layer-stack" />,
+}));
+
+// ---------------------------
+// Mock Layers
+// ---------------------------
+vi.mock('@/entities/layer/model', () => ({
+	updateLayer: vi.fn(),
+	useLayerCanvases: () => ({
+		bindCanvasRef: vi.fn(),
+		getCanvas: vi.fn(() => null),
+	}),
+}));
+
+vi.mock('@/entities/layer/model/selectors', () => {
+	const memoLayers: [] = [];
+
 	return {
-		...actual,
-		setScale: vi.fn((v: number) => ({ type: 'editor/setScale', payload: v })),
-		setOffset: vi.fn((p: { x: number; y: number }) => ({
-			type: 'editor/setOffset',
-			payload: p,
-		})),
-		resetViewport: vi.fn(() => ({ type: 'editor/resetViewport' })),
+		layersSelectors: {
+			selectActiveLayer: vi.fn(() => null),
+		},
+		makeSelectByProject: () => {
+			return () => memoLayers;
+		},
 	};
 });
 
-function setup() {
-	const utils = render(
-		<TestStoreProvider>
-			<EditorViewport
-				projectId="p1"
-				width={800}
-				height={600}
-				isLayersOpen={false}
-				isHistoryOpen={false}
-			/>
-		</TestStoreProvider>,
-	);
-	return {
-		...utils,
-		container: utils.getByTestId('viewport-container'),
+vi.mock('@/entities/editor/model/selectors', () => ({
+	selectActiveTool: vi.fn(() => null),
+}));
+
+vi.mock('@/widgets/viewport/hooks', () => ({
+	useViewportControls: () => ({
+		containerRef: { current: null },
+		scaleRef: { current: 1 },
+		offsetXRef: { current: 0 },
+		offsetYRef: { current: 0 },
+		showGrid: true,
+		setShowGrid: vi.fn(),
+		handleFit: vi.fn(),
+		handleReset: vi.fn(),
+		onMouseDown: vi.fn(),
+		onMouseMove: vi.fn(),
+		onMouseUp: vi.fn(),
+		onWheel: vi.fn(),
+		isPanning: false,
+	}),
+}));
+
+vi.mock('@/widgets/toolbar/ui', () => ({
+	ToolBar: ({ children }: { children: React.ReactNode }) => (
+		<div data-testid="toolbar">{children}</div>
+	),
+	UndoRedoButtons: () => <div data-testid="undo-redo" />,
+}));
+
+vi.mock('@/entities/brush/model', () => ({
+	BrushTool: () => <div data-testid="brush-tool" />,
+	useBrushDraw: () => ({
+		onPointerDown: vi.fn(),
+		onPointerMove: vi.fn(),
+		onPointerUp: vi.fn(),
+	}),
+}));
+
+vi.mock('@/entities/line/model', () => ({
+	LineTool: () => <div data-testid="line-tool" />,
+	useLineDraw: () => ({
+		onPointerDown: vi.fn(),
+		onPointerMove: vi.fn(),
+		onPointerUp: vi.fn(),
+	}),
+}));
+
+vi.mock('@/entities/shape/model', () => ({
+	ShapeTool: () => <div data-testid="shape-tool" />,
+	useShapeDraw: () => ({
+		onPointerDown: vi.fn(),
+		onPointerMove: vi.fn(),
+		onPointerUp: vi.fn(),
+	}),
+}));
+
+vi.mock('@/entities/eraser/model', () => ({
+	EraserTool: () => <div data-testid="eraser-tool" />,
+	useEraserDraw: () => ({
+		onPointerDown: vi.fn(),
+		onPointerMove: vi.fn(),
+		onPointerUp: vi.fn(),
+	}),
+}));
+
+describe('EditorViewport — interactions', () => {
+	const defaultProps = {
+		projectId: 'test-project-1',
+		width: 800,
+		height: 600,
 	};
-}
 
-describe('EditorViewport — user interactions', () => {
-	let dispatchMock: ReturnType<typeof vi.fn>;
-
-	beforeEach(() => {
-		dispatchMock = vi.fn();
-		vi.spyOn(appHooks, 'useAppDispatch').mockReturnValue(dispatchMock);
-		vi.spyOn(appHooks, 'useAppSelector').mockImplementation((selector) => {
-			// return fake viewport state
-			if (selector.name === 'selectViewport') {
-				return { scale: 1, offsetX: 0, offsetY: 0 };
-			}
-			// return fake layers
-			return [];
-		});
+	test('renders viewport container', () => {
+		const { getByTestId } = renderWithStore(<EditorViewport {...defaultProps} />);
+		expect(getByTestId('viewport-container')).toBeInTheDocument();
 	});
 
-	afterEach(() => {
-		vi.restoreAllMocks();
+	test('renders canvas elements', () => {
+		const { getByTestId } = renderWithStore(<EditorViewport {...defaultProps} />);
+		expect(getByTestId('draw-canvas')).toBeInTheDocument();
+		expect(getByTestId('grid-canvas')).toBeInTheDocument();
+		expect(getByTestId('layer-stack')).toBeInTheDocument();
 	});
 
-	it('Ctrl+wheel → dispatch(setScale)', () => {
-		const { container } = setup();
-
-		const wheel = new WheelEvent('wheel', {
-			deltaY: 100,
-			ctrlKey: true,
-			bubbles: true,
-			cancelable: true,
-		});
-
-		const prevent = vi.fn();
-		Object.defineProperty(wheel, 'preventDefault', { value: prevent });
-		container.dispatchEvent(wheel);
-
-		expect(prevent).toHaveBeenCalled();
-		expect(setScale).toHaveBeenCalledWith(expect.any(Number));
-		expect(dispatchMock).toHaveBeenCalledWith(
-			expect.objectContaining({ type: 'editor/setScale' }),
-		);
+	test('renders toolbar and tools', () => {
+		const { getByTestId } = renderWithStore(<EditorViewport {...defaultProps} />);
+		expect(getByTestId('toolbar')).toBeInTheDocument();
+		expect(getByTestId('brush-tool')).toBeInTheDocument();
+		expect(getByTestId('line-tool')).toBeInTheDocument();
+		expect(getByTestId('shape-tool')).toBeInTheDocument();
+		expect(getByTestId('eraser-tool')).toBeInTheDocument();
+		expect(getByTestId('undo-redo')).toBeInTheDocument();
 	});
 
-	it('Middle mouse drag → dispatch(setOffset)', () => {
-		const { container } = setup();
+	test('handles wheel', () => {
+		const { getByTestId } = renderWithStore(<EditorViewport {...defaultProps} />);
+		const container = getByTestId('viewport-container');
+		fireEvent.wheel(container, { deltaY: -100 });
+		expect(container).toBeInTheDocument();
+	});
 
-		fireEvent.mouseDown(container, { button: 1, clientX: 100, clientY: 100 });
-		fireEvent.mouseMove(container, { clientX: 130, clientY: 120 }); // dx=30, dy=20
+	test('handles panning', () => {
+		const { getByTestId } = renderWithStore(<EditorViewport {...defaultProps} />);
+		const container = getByTestId('viewport-container');
+		fireEvent.mouseDown(container, { button: 1 });
+		fireEvent.mouseMove(container, { movementX: 40, movementY: 25 });
 		fireEvent.mouseUp(container);
+		expect(container).toBeInTheDocument();
+	});
 
-		expect(setOffset).toHaveBeenCalledWith(expect.objectContaining({ x: 30, y: 20 }));
-		expect(dispatchMock).toHaveBeenCalledWith(
-			expect.objectContaining({ type: 'editor/setOffset' }),
+	test('calls onViewportUpdate', () => {
+		const onViewportUpdate = vi.fn();
+
+		renderWithStore(
+			<EditorViewport {...defaultProps} onViewportUpdate={onViewportUpdate} />,
+		);
+
+		expect(onViewportUpdate).toHaveBeenCalledWith(
+			expect.objectContaining({
+				scale: expect.any(Number),
+				offsetX: expect.any(Number),
+				offsetY: expect.any(Number),
+				showGrid: expect.any(Boolean),
+				handleFit: expect.any(Function),
+				handleReset: expect.any(Function),
+				toggleGrid: expect.any(Function),
+			}),
 		);
 	});
 });

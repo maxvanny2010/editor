@@ -1,3 +1,4 @@
+import React from 'react';
 import { Brush } from 'lucide-react';
 import { TOOLS } from '@/shared/constants';
 import { ToolButton } from '@/widgets/toolbar/ui';
@@ -6,7 +7,7 @@ import { setActiveTool } from '@/entities/editor/model/slice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { selectActiveTool, selectPaletteOpen } from '@/entities/editor/model/selectors';
 
-export function BrushTool() {
+export const BrushTool = React.memo(function BrushTool() {
 	const dispatch = useAppDispatch();
 	const activeTool = useAppSelector(selectActiveTool);
 	const paletteOpen = useAppSelector(selectPaletteOpen);
@@ -28,4 +29,4 @@ export function BrushTool() {
 			{isActive && paletteOpen && <BrushFloatingPalette />}
 		</>
 	);
-}
+});

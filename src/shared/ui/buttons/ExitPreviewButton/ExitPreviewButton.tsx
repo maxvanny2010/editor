@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { useAppDispatch } from '@/store/hooks';
 import { setPreview } from '@/entities/history/model/slice';
+import React from 'react';
 
-export function ExitPreviewButton() {
+export const ExitPreviewButton = React.memo(function ExitPreviewButton() {
 	const dispatch = useAppDispatch();
 
 	return (
@@ -15,4 +16,4 @@ export function ExitPreviewButton() {
 			Exit preview
 		</motion.button>
 	);
-}
+});

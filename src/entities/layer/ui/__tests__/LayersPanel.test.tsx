@@ -246,7 +246,7 @@ describe('LayersPanel (controlled)', () => {
 			layers: { entities: {} },
 			history: { isPreview: false },
 		};
-		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		render(<LayersPanel projectId="project-123" open={true} />);
 		expect(fetchLayersByProject).toHaveBeenCalledWith('project-123');
 		expect(mockDispatch).toHaveBeenCalledWith({
 			type: 'layers/fetchLayersByProject',
@@ -255,26 +255,16 @@ describe('LayersPanel (controlled)', () => {
 	});
 
 	it('renders panel only when open=true', () => {
-		const { rerender } = render(
-			<LayersPanel projectId="project-123" open={false} onClose={() => {}} />,
-		);
+		const { rerender } = render(<LayersPanel projectId="project-123" open={false} />);
 		expect(screen.queryByText('Layers')).not.toBeInTheDocument();
 
-		rerender(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		rerender(<LayersPanel projectId="project-123" open={true} />);
 		expect(screen.getByText('Layers')).toBeInTheDocument();
-	});
-
-	it('calls onClose when Close button clicked', async () => {
-		const mockOnClose = vi.fn();
-		render(<LayersPanel projectId="project-123" open={true} onClose={mockOnClose} />);
-		const btn = screen.getByRole('button', { name: /close panel/i });
-		fireEvent.click(btn);
-		expect(mockOnClose).toHaveBeenCalledTimes(1);
 	});
 
 	it('dispatches createLayer when Add Layer clicked', async () => {
 		const { createLayer } = await import('@/entities/layer/model/slice');
-		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		render(<LayersPanel projectId="project-123" open={true} />);
 		const addBtn = await screen.findByTestId('mock-add-layer-btn');
 		fireEvent.click(addBtn);
 		expect(createLayer).toHaveBeenCalledWith({ projectId: 'project-123' });
@@ -285,20 +275,20 @@ describe('LayersPanel (controlled)', () => {
 	});
 
 	it('renders all layers sorted by zIndex desc', async () => {
-		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		render(<LayersPanel projectId="project-123" open={true} />);
 		const items = await screen.findAllByTestId('mock-layer-item');
 		expect(items[0]).toHaveAttribute('data-layer-id', 'layer-2');
 		expect(items[1]).toHaveAttribute('data-layer-id', 'layer-1');
 	});
 
 	it('renders active layer with (active) label', async () => {
-		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		render(<LayersPanel projectId="project-123" open={true} />);
 		const active = await screen.findByText(/background.*\(active\)/i);
 		expect(active).toBeInTheDocument();
 	});
 
 	it('renders opacity slider with active layer opacity', async () => {
-		render(<LayersPanel projectId="project-123" open={true} onClose={() => {}} />);
+		render(<LayersPanel projectId="project-123" open={true} />);
 		const opacitySlider = await screen.findByTestId('mock-opacity-slider');
 		expect(opacitySlider).toHaveTextContent('Opacity: 1');
 	});

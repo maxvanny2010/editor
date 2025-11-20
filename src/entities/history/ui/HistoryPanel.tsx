@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { UI_LABELS } from '@/shared/constants';
 import type { HistoryEntry } from '@/shared/types';
-import { Hand, X as CloseIcon } from 'lucide-react';
+import { Hand } from 'lucide-react';
 import { ToolIcon } from './ToolIcon';
 import { selectHistory } from '@/entities/history/model/selectors';
 import { jumpTo } from '@/entities/history/model/slice';
@@ -12,10 +12,10 @@ import {
 	HistoryApplySnapshotButton,
 	HistoryExitPreviewButton,
 } from '@/shared/ui/buttons';
+import React from 'react';
 
 interface HistoryPanelProps {
 	open: boolean;
-	onClose: () => void;
 }
 
 type AnyHistoryEntry = (HistoryEntry & Partial<HistoryEntryExt>) & {
@@ -23,8 +23,9 @@ type AnyHistoryEntry = (HistoryEntry & Partial<HistoryEntryExt>) & {
 	toolType?: HistoryEntry['toolType'];
 	shapeType?: HistoryEntry['shapeType'];
 };
-
-export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
+export const HistoryPanel = React.memo(function HistoryPanel({
+	open,
+}: HistoryPanelProps) {
 	const dispatch = useAppDispatch();
 	const history = useAppSelector(selectHistory);
 	const isPreview = useAppSelector((s) => s.history.isPreview);
@@ -48,14 +49,6 @@ export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
 					History{' '}
 					{isPreview && <span className="text-amber-600 ml-1">(Preview)</span>}
 				</h3>
-
-				<button
-					onClick={onClose}
-					className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
-					aria-label="Close panel"
-				>
-					<CloseIcon className="w-4 h-4" />
-				</button>
 			</header>
 
 			{/* Undo / Redo */}
@@ -122,4 +115,4 @@ export function HistoryPanel({ open, onClose }: HistoryPanelProps) {
 			</ul>
 		</motion.aside>
 	);
-}
+});

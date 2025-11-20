@@ -1,11 +1,15 @@
 import { ClockIcon } from './ClockIcon';
+import React from 'react';
 
 interface ProjectCardDatesProps {
 	createdAt: number | string;
 	updatedAt: number | string;
 }
 
-export function ProjectCardDates({ createdAt, updatedAt }: ProjectCardDatesProps) {
+export const ProjectCardDates = React.memo(function ProjectCardDates({
+	createdAt,
+	updatedAt,
+}: ProjectCardDatesProps) {
 	const formatDate = (value: number | string) => {
 		const date = new Date(value);
 		return {
@@ -44,4 +48,4 @@ export function ProjectCardDates({ createdAt, updatedAt }: ProjectCardDatesProps
 			</div>
 		</div>
 	);
-}
+});

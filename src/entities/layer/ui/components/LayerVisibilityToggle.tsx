@@ -1,4 +1,5 @@
 import { Eye as EyeIcon, EyeOff as EyeOffIcon } from 'lucide-react';
+import React from 'react';
 
 interface LayerVisibilityToggleProps {
 	layerId: string;
@@ -6,7 +7,7 @@ interface LayerVisibilityToggleProps {
 	onToggle: (id: string, visible: boolean) => void;
 }
 
-export function LayerVisibilityToggle({
+export const LayerVisibilityToggle = React.memo(function LayerVisibilityToggle({
 	layerId,
 	isVisible,
 	onToggle,
@@ -27,4 +28,4 @@ export function LayerVisibilityToggle({
 			)}
 		</button>
 	);
-}
+});

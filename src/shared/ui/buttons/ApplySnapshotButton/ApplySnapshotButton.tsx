@@ -1,8 +1,9 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useAppDispatch } from '@/store/hooks';
 import { applyCurrentSnapshot } from '@/entities/history/model';
 
-export function ApplySnapshotButton() {
+export const ApplySnapshotButton = React.memo(function ApplySnapshotButton() {
 	const dispatch = useAppDispatch();
 
 	return (
@@ -15,4 +16,4 @@ export function ApplySnapshotButton() {
 			Apply snapshot
 		</motion.button>
 	);
-}
+});
