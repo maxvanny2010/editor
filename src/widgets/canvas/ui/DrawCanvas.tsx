@@ -26,7 +26,6 @@ export const DrawCanvas = forwardRef<HTMLCanvasElement, DrawCanvasProps>(
 		},
 		ref,
 	) => {
-		// НЕ передаём isPanning в canvas!
 		const cursor = isPanning ? 'grabbing' : 'crosshair';
 
 		return (

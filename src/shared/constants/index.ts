@@ -12,3 +12,4 @@ export * from './layerMessages';
 export * from './editor';
 export * from './icon';
 export * from './menu';
+export * from './metric';

@@ -1,51 +1,33 @@
 import React, { useCallback, useRef, useState } from 'react';
 
-type Writeable<T> = {
-	-readonly [P in keyof T]: T[P];
-};
+interface ViewportChange {
+	scale: number;
+	offsetX: number;
+	offsetY: number;
+}
 
-type ViewportControlsResult = {
-	containerRef: Writeable<React.RefObject<HTMLDivElement | null>>;
-	scaleRef: Writeable<React.RefObject<number>>;
-	offsetXRef: Writeable<React.RefObject<number>>;
-	offsetYRef: Writeable<React.RefObject<number>>;
-	isPanningRef: Writeable<React.RefObject<boolean>>;
-
-	isPanning: boolean;
-
-	showGrid: boolean;
-	setShowGrid: React.Dispatch<React.SetStateAction<boolean>>;
-
-	onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
-	onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
-	onMouseUp: () => void;
-	onWheel: (e: React.WheelEvent<HTMLDivElement>) => void;
-
-	handleFit: () => void;
-	handleReset: () => void;
-};
-
-/**
- * Viewport controls in "Figma mode":
- * Direct DOM transforms for panning/zooming, no React re-renders on movement.
- */
 export function useViewportControls(
 	width: number,
 	height: number,
-): ViewportControlsResult {
-	// container (writeable ref)
-	const containerRef = useRef<HTMLDivElement | null>(null) as Writeable<
-		React.RefObject<HTMLDivElement | null>
-	>;
+	onChange?: (data: ViewportChange) => void,
+) {
+	const containerRef = useRef<HTMLDivElement | null>(null);
 
-	// transform state (writeable refs, TS-safe)
-	const scaleRef = useRef(1) as Writeable<React.RefObject<number>>;
-	const offsetXRef = useRef(0) as Writeable<React.RefObject<number>>;
-	const offsetYRef = useRef(0) as Writeable<React.RefObject<number>>;
-	const isPanningRef = useRef(false) as Writeable<React.RefObject<boolean>>;
+	// внутренние рефы
+	const scaleRef = useRef(1);
+	const offsetXRef = useRef(0);
+	const offsetYRef = useRef(0);
 
 	const [isPanning, setIsPanning] = useState(false);
 	const [showGrid, setShowGrid] = useState(true);
+
+	const emit = useCallback(() => {
+		onChange?.({
+			scale: scaleRef.current,
+			offsetX: offsetXRef.current,
+			offsetY: offsetYRef.current,
+		});
+	}, [onChange]);
 
 	const applyTransform = useCallback(() => {
 		const el = containerRef.current;
@@ -53,34 +35,34 @@ export function useViewportControls(
 
 		el.style.transform = `translate(${offsetXRef.current}px, ${offsetYRef.current}px) scale(${scaleRef.current})`;
 		el.style.transformOrigin = 'center';
-	}, []);
+
+		emit();
+	}, [emit]);
 
 	const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		if (e.button !== 1) return;
 		e.preventDefault();
-		isPanningRef.current = true;
 		setIsPanning(true);
 	}, []);
 
 	const onMouseMove = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
-			if (!isPanningRef.current) return;
+			if (!isPanning) return;
 			offsetXRef.current += e.movementX;
 			offsetYRef.current += e.movementY;
 			applyTransform();
 		},
-		[applyTransform],
+		[applyTransform, isPanning],
 	);
 
 	const onMouseUp = useCallback(() => {
-		isPanningRef.current = false;
 		setIsPanning(false);
 	}, []);
 
 	const onWheel = useCallback(
 		(e: React.WheelEvent<HTMLDivElement>) => {
 			if (!e.ctrlKey) return;
-			e.preventDefault();
+			if (e.cancelable) e.preventDefault();
 
 			const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
 			scaleRef.current *= zoomFactor;
@@ -122,17 +104,16 @@ export function useViewportControls(
 
 	return {
 		containerRef,
-		scaleRef,
-		offsetXRef,
-		offsetYRef,
-		isPanningRef,
+
 		isPanning,
 		showGrid,
 		setShowGrid,
+
 		onMouseDown,
 		onMouseMove,
 		onMouseUp,
 		onWheel,
+
 		handleFit,
 		handleReset,
 	};

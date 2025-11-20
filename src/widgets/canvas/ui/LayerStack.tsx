@@ -10,8 +10,7 @@ interface LayerStackProps {
 
 /**
  * Renders all project layers as static canvases.
- * These canvases are now non-interactive (pointer-events: none),
- * so pointer input passes through to the DrawCanvas above.
+ * Pointer events pass through to DrawCanvas above.
  */
 export const LayerStack = ({
 	layers,

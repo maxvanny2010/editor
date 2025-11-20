@@ -1,71 +1,91 @@
 import React, { useCallback, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { toCanvasPoint } from '@/shared/lib/utils';
+import { SHAPES } from '@/shared/constants';
 
 export function useShapeDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const { type, fill, stroke, thickness } = useAppSelector((s) => s.shape);
+
 	const startRef = useRef<{ x: number; y: number } | null>(null);
 	const snapshot = useRef<ImageData | null>(null);
 	const dpr = 1;
 
 	const onPointerDown = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const canvas = canvasRef.current!;
+			const canvas = canvasRef.current;
+			if (!canvas) return;
+
+			const ctx = canvas.getContext('2d', { willReadFrequently: true });
+			if (!ctx) return;
 
 			startRef.current = toCanvasPoint(e, canvas, { dpr });
 
-			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-			if (ctx)
-				snapshot.current = ctx.getImageData(
-					0,
-					0,
-					ctx.canvas.width,
-					ctx.canvas.height,
-				);
+			snapshot.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		},
-		[canvasRef, dpr],
+		[canvasRef],
 	);
 
 	const onPointerMove = useCallback(
 		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const start = startRef.current;
-			if (!start || !canvasRef.current || !snapshot.current) return;
+			if (!canvasRef.current || !snapshot.current || !startRef.current) return;
 			const canvas = canvasRef.current;
-			const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+			if (!canvas || !snapshot.current || !startRef.current) return;
+
+			const ctx = canvas.getContext('2d', { willReadFrequently: true });
 			if (!ctx) return;
 
 			ctx.putImageData(snapshot.current, 0, 0);
 
-			const p = toCanvasPoint(e, canvas, { dpr });
-			const w = p.x - start.x;
-			const h = p.y - start.y;
+			const start = startRef.current;
+			const end = toCanvasPoint(e, canvas, { dpr });
 
-			ctx.lineWidth = thickness;
-			ctx.strokeStyle = stroke;
+			const x = Math.min(start.x, end.x);
+			const y = Math.min(start.y, end.y);
+			const w = Math.abs(start.x - end.x);
+			const h = Math.abs(start.y - end.y);
+
 			ctx.fillStyle = fill;
+			ctx.strokeStyle = stroke;
+			ctx.lineWidth = thickness;
 
-			if (type === 'rect') {
-				ctx.strokeRect(start.x, start.y, w, h);
-				ctx.globalAlpha = 0.3;
-				ctx.fillRect(start.x, start.y, w, h);
-				ctx.globalAlpha = 1;
-			} else if (type === 'circle') {
-				const r = Math.sqrt(w * w + h * h);
-				ctx.beginPath();
-				ctx.arc(start.x, start.y, r, 0, Math.PI * 2);
-				ctx.stroke();
-				ctx.globalAlpha = 0.3;
+			ctx.beginPath();
+
+			if (type === SHAPES.RECT) {
+				ctx.rect(x, y, w, h);
+			} else if (type === SHAPES.CIRCLE) {
+				const radius = Math.sqrt(w * w + h * h) / 2;
+				const cx = (start.x + end.x) / 2;
+				const cy = (start.y + end.y) / 2;
+				ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+			}
+
+			if (fill) {
 				ctx.fill();
-				ctx.globalAlpha = 1;
+			}
+			if (stroke && thickness > 0) {
+				ctx.stroke();
 			}
 		},
-		[fill, stroke, thickness, type, canvasRef, dpr],
+		[canvasRef, fill, stroke, thickness, type],
 	);
 
-	const onPointerUp = useCallback(() => {
-		snapshot.current = null;
-		startRef.current = null;
-	}, []);
+	const onPointerUp = useCallback(
+		(e: React.PointerEvent<HTMLCanvasElement>) => {
+			if (!canvasRef.current || !startRef.current) return;
+
+			const canvas = canvasRef.current;
+			if (!canvas || !startRef.current) return;
+
+			const ctx = canvas.getContext('2d', { willReadFrequently: true });
+			if (!ctx) return;
+
+			onPointerMove(e);
+
+			snapshot.current = null;
+			startRef.current = null;
+		},
+		[canvasRef, onPointerMove],
+	);
 
 	return { onPointerDown, onPointerMove, onPointerUp };
 }
