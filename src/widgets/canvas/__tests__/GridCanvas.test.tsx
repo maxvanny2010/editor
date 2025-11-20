@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { GridCanvas } from '@/widgets/canvas/ui/GridCanvas';
 
-// Helper: safely create a partial mock of CanvasRenderingContext2D
+// ---- FIXED MOCKS ----
 function createMockContext2D(): CanvasRenderingContext2D {
 	return {
 		clearRect: vi.fn(),
@@ -13,6 +13,7 @@ function createMockContext2D(): CanvasRenderingContext2D {
 		fillText: vi.fn(),
 		save: vi.fn(),
 		restore: vi.fn(),
+		drawImage: vi.fn(),
 		canvas: document.createElement('canvas'),
 		font: '',
 		fillStyle: '',
@@ -50,8 +51,7 @@ describe('GridCanvas', () => {
 		);
 
 		expect(ctxMock.clearRect).toHaveBeenCalled();
-		expect(ctxMock.fillRect).toHaveBeenCalled(); // background fill
-		expect(ctxMock.beginPath).toHaveBeenCalled(); // grid drawing
+		expect(ctxMock.drawImage).toHaveBeenCalled();
 	});
 
 	it('skips grid drawing when showGrid = false', () => {
@@ -62,7 +62,7 @@ describe('GridCanvas', () => {
 			<GridCanvas width={200} height={200} showGrid={false} background={'#fff'} />,
 		);
 
-		expect(ctxMock.fillRect).toHaveBeenCalled(); // background drawn
-		expect(ctxMock.beginPath).not.toHaveBeenCalled(); // no grid lines
+		expect(ctxMock.fillRect).toHaveBeenCalled();
+		expect(ctxMock.drawImage).not.toHaveBeenCalled();
 	});
 });

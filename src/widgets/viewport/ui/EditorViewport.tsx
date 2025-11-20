@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 
 import { layersSelectors, makeSelectByProject } from '@/entities/layer/model/selectors';
 import { updateLayer, useLayerCanvases } from '@/entities/layer/model';
-
 import { selectActiveTool } from '@/entities/editor/model/selectors';
 
 import { BrushTool, useBrushDraw } from '@/entities/brush/model';
@@ -23,15 +22,6 @@ interface ToolHandlers {
 	onPointerUp?: (e: React.PointerEvent<HTMLCanvasElement>) => void;
 }
 
-/**
- * Main drawing viewport of the editor.
- *
- * Responsibilities:
- * - Manages project layers and connects them to DOM canvases.
- * - Delegates all drawing to "tool hooks" (brush/line/shape/eraser).
- * - Uses "Figma-like" viewport controls: panning/zoom via refs + CSS transforms.
- * - Avoids React re-renders during pointer movement and drawing.
- */
 interface EditorViewportProps {
 	projectId: string;
 	width: number;
@@ -71,45 +61,44 @@ export const EditorViewport = React.memo(function EditorViewport({
 
 	const activeLayer = useAppSelector(layersSelectors.selectActiveLayer);
 
+	const [viewportBase, setViewportBase] = useState({
+		scale: 1,
+		offsetX: 0,
+		offsetY: 0,
+	});
+
 	const {
 		containerRef,
-		scaleRef,
-		offsetXRef,
-		offsetYRef,
+		isPanning,
 		showGrid,
 		setShowGrid,
-		handleFit,
-		handleReset,
 		onMouseDown,
 		onMouseMove,
 		onMouseUp,
 		onWheel,
-		isPanning,
-	} = useViewportControls(width, height);
+		handleFit,
+		handleReset,
+	} = useViewportControls(width, height, (data) => {
+		setViewportBase(data);
+	});
 
-	const toggleGrid = useCallback(() => setShowGrid((prev) => !prev), [setShowGrid]);
+	const toggleGrid = useCallback(() => {
+		setShowGrid((prev) => !prev);
+	}, [setShowGrid]);
 
 	useEffect(() => {
 		if (!onViewportUpdate) return;
+
 		onViewportUpdate({
-			scale: scaleRef.current,
-			offsetX: offsetXRef.current,
-			offsetY: offsetYRef.current,
+			scale: viewportBase.scale,
+			offsetX: viewportBase.offsetX,
+			offsetY: viewportBase.offsetY,
 			showGrid,
 			handleFit,
 			handleReset,
 			toggleGrid,
 		});
-	}, [
-		onViewportUpdate,
-		scaleRef,
-		offsetXRef,
-		offsetYRef,
-		showGrid,
-		handleFit,
-		handleReset,
-		toggleGrid,
-	]);
+	}, [onViewportUpdate, viewportBase, showGrid, handleFit, handleReset, toggleGrid]);
 
 	// Canvas refs and drawing logic
 	const { bindCanvasRef, getCanvas } = useLayerCanvases(
@@ -119,10 +108,8 @@ export const EditorViewport = React.memo(function EditorViewport({
 		height,
 	);
 
-	// Draw canvas sits above all layer canvases and collects pointer input.
 	const drawRef = useRef<HTMLCanvasElement | null>(null);
 
-	// Tool hooks — they contain all drawing logic and are independent of React state during pointer move.
 	const brushHandlers = useBrushDraw(drawRef);
 	const lineHandlers = useLineDraw(drawRef);
 	const shapeHandlers = useShapeDraw(drawRef);
@@ -197,12 +184,12 @@ export const EditorViewport = React.memo(function EditorViewport({
 					.getContext('2d', { willReadFrequently: true, alpha: true })
 					?.clearRect(0, 0, width, height);
 
-				const snapshotPng = target.toDataURL('image/png');
+				const snapshot = target.toDataURL('image/png');
 
 				await dispatch(
 					updateLayer({
 						id: activeLayer.id,
-						changes: { snapshot: snapshotPng },
+						changes: { snapshot },
 					}),
 				).unwrap();
 			}
@@ -210,12 +197,10 @@ export const EditorViewport = React.memo(function EditorViewport({
 		[activeHandlers, activeLayer, activeTool, dispatch, getCanvas, width, height],
 	);
 
-	// -------------------- Render --------------------
 	return (
 		<div
 			data-testid="viewport-container"
-			className="relative w-full h-full bg-gray-100 dark:bg-gray-900
-                       flex items-center justify-center select-none overflow-hidden"
+			className="relative w-full h-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center select-none overflow-hidden"
 			onMouseDown={onMouseDown}
 			onMouseMove={onMouseMove}
 			onMouseUp={onMouseUp}
@@ -227,7 +212,7 @@ export const EditorViewport = React.memo(function EditorViewport({
 					width,
 					height,
 					position: 'relative',
-					border: '1px solid rgba(0,0,0,0.2)',
+					border: '1px solid rgba(0, 0, 0, 0.2)',
 					background: '#ffffff',
 				}}
 			>

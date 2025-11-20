@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
@@ -13,6 +13,7 @@ import { projectsSelectors } from '@/entities/project/model';
 import { redo, undo } from '@/entities/history/model/slice';
 import { EditorViewport } from '@/widgets/viewport/model';
 import { EditorSkeleton } from '@/entities/editor/ui';
+import { startPerfHUD } from '@/shared/lib/debug';
 import { LayersPanel } from '@/entities/layer/ui';
 import { TopMenu } from '@/widgets/top-menu';
 import { NAMES } from '@/shared/constants';
@@ -43,6 +44,10 @@ export const EditorPage = () => {
 	const [showCreateModal, setShowCreateModal] = useState(false);
 
 	const [showSavedBanner, setShowSavedBanner] = useState(false);
+
+	useEffect(() => {
+		startPerfHUD();
+	}, []);
 
 	if (loading) return <EditorSkeleton />;
 	if (!activeProject) return null;
