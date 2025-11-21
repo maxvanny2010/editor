@@ -12,66 +12,36 @@ permissions:
     id-token: write
 
 jobs:
+
     lint-build-test:
         runs-on: ubuntu-latest
-
         steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v4
+            -   uses: actions/checkout@v4
 
-            -   name: Setup Node.js 22
-                uses: actions/setup-node@v4
-                with:
-                    node-version: 22
-                    cache: npm
+            -   uses: actions/setup-node@v4
+                with: { node-version: 22, cache: npm }
 
-            -   name: Clear old caches
-                run: |
-                    echo "Cleaning old caches..."
-                    rm -rf node_modules/.vitest node_modules/.vite coverage
-
-            -   name: Install dependencies
-                run: npm ci
-
-            -   name: Run ESLint
-                run: npm run lint
-
-            -   name: TypeScript type check
-                run: npx tsc --noEmit
-
-            -   name: Build project
-                run: npm run build
-
-            -   name: Run Vitest with coverage
-                env:
-                    VITE_ENV: test
+            -   run: rm -rf node_modules/.vite node_modules/.vitest coverage
+            -   run: npm ci
+            -   run: npm run lint
+            -   run: npx tsc --noEmit
+            -   run: npm run build
+            -   env: { VITE_ENV: test }
                 run: npm run test:ci
 
-            -   name: Set safe artifact name
-                id: artifact_name
-                run: |
-                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
-                    echo "safe_ref_name=$SAFE_REF_NAME" >> $GITHUB_OUTPUT
+            -   id: ref
+                run: echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
 
-            -   name: Upload coverage artifact
-                uses: actions/upload-artifact@v4
+            -   uses: actions/upload-artifact@v4
                 with:
-                    name: coverage-report-${{ steps.artifact_name.outputs.safe_ref_name }}-${{ github.run_id }}
+                    name: coverage-${{ steps.ref.outputs.value }}-${{ github.run_id }}
                     path: coverage/
-                    retention-days: 7
-
-    all-checks-passed:
-        runs-on: ubuntu-latest
-        needs: lint-build-test
-        if: success()
-        steps:
-            -   name: ✅ Report success
-                run: echo "All checks passed successfully!"
 
     deploy-coverage:
         runs-on: ubuntu-latest
         needs: lint-build-test
         if: success()
+        environment: { name: github-pages }
         permissions:
             contents: write
             pages: write
@@ -79,84 +49,59 @@ jobs:
             pull-requests: write
 
         steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v4
+            -   uses: actions/checkout@v4
 
-            -   name: 🏷 Set safe artifact name
-                id: artifact_name
-                run: |
-                    SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
-                    echo "safe_ref_name=$SAFE_REF_NAME" >> $GITHUB_OUTPUT
+            -   id: ref
+                run: echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
 
-            -   name: Download coverage artifact
-                uses: actions/download-artifact@v4
+            -   uses: actions/download-artifact@v4
                 with:
-                    name: coverage-report-${{ steps.artifact_name.outputs.safe_ref_name }}-${{ github.run_id }}
+                    name: coverage-${{ steps.ref.outputs.value }}-${{ github.run_id }}
                     path: coverage/
 
-            -   name: Determine publish folder
-                id: publish
+            -   id: folder
                 run: |
-                    if [[ "${GITHUB_REF}" == refs/pull/* ]]; then
-                      PR_NUMBER=$(echo "${GITHUB_REF}" | cut -d'/' -f3)
-                      SAFE_BRANCH_NAME="pr-${PR_NUMBER}"
+                    if [[ "$GITHUB_REF" == refs/pull/* ]]; then
+                      num=$(echo "$GITHUB_REF" | cut -d'/' -f3)
+                      echo "value=pr-$num" >> $GITHUB_OUTPUT
                     else
-                      SAFE_BRANCH_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
+                      echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
                     fi
-                    echo "safe_branch_name=$SAFE_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-            -   name: Prepare branch-specific folder
-                run: |
-                    mkdir -p "publish/${{ steps.publish.outputs.safe_branch_name }}"
-                    mv coverage/lcov-report/* "publish/${{ steps.publish.outputs.safe_branch_name }}/"
-                    echo "Report will be published at /${{ steps.publish.outputs.safe_branch_name }}/"
+            -   run: |
+                    mkdir -p publish/${{ steps.folder.outputs.value }}
+                    mv coverage/lcov-report/* publish/${{ steps.folder.outputs.value }}/
 
-            -   name: Upload Coverage Pages artifact
-                uses: actions/upload-pages-artifact@v3
+            -   uses: actions/upload-pages-artifact@v3
                 with:
                     path: publish/
-                    name: coverage-pages-${{ github.run_id }}-${{ steps.publish.outputs.safe_branch_name }}
+                    name: cov-${{ github.run_id }}-${{ steps.folder.outputs.value }}
 
-            -   name: Deploy Coverage to GitHub Pages
-                id: deployment
-                uses: actions/deploy-pages@v4
+            -   uses: actions/deploy-pages@v4
                 with:
-                    artifact_name: coverage-pages-${{ github.run_id }}-${{ steps.publish.outputs.safe_branch_name }}
+                    artifact_name: cov-${{ github.run_id }}-${{ steps.folder.outputs.value }}
 
     deploy-app:
         runs-on: ubuntu-latest
         needs: lint-build-test
         if: github.ref == 'refs/heads/main' && success()
+        environment: { name: github-pages }
         permissions:
             contents: write
             pages: write
             id-token: write
 
         steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v4
+            -   uses: actions/checkout@v4
 
-            -   name: Setup Node.js
-                uses: actions/setup-node@v4
-                with:
-                    node-version: 22
-                    cache: npm
+            -   uses: actions/setup-node@v4
+                with: { node-version: 22, cache: npm }
 
-            -   name: Install dependencies
-                run: npm ci
+            -   run: npm ci
+            -   run: npm run build
 
-            -   name: Build Vite app
-                run: npm run build
+            -   uses: actions/upload-pages-artifact@v3
+                with: { path: dist/, name: app-${ { github.run_id } } }
 
-            -   name: Upload Pages artifact
-                id: upload
-                uses: actions/upload-pages-artifact@v3
-                with:
-                    path: dist/
-                    name: github-pages-${{ github.run_id }}-${{ github.ref_name }}
-
-            -   name: Deploy to GitHub Pages
-                id: deployment
-                uses: actions/deploy-pages@v4
-                with:
-                    artifact_name: github-pages-${{ github.run_id }}-${{ github.ref_name }}
+            -   uses: actions/deploy-pages@v4
+                with: { artifact_name: app-${ { github.run_id } } }
