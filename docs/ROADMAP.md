@@ -1,6 +1,5 @@
-### 📌 Roadmap: Graphic Editor (with branches and commit style)
-
-#### 📦 M0 — Initial Setup
+📌 Roadmap: Graphic Editor (with branches and commit style)
+📦 M0 — Initial Setup
 
 Goal: Initialize the repository,
 set up the foundational project structure,
@@ -9,710 +8,592 @@ for further development stages.
 
 📅 Development period: September → October 2025
 
-🔖 Final version: v0.1.0 (Alpha)
+🔖 Final version: v0.1.0-alpha.5
 
 📄 Documentation & Project Setup
 
-#### Create and add ROADMAP.md
+Create and add ROADMAP.md
 
 🔀 Branch: chore/init-setup
-
 📝 Commit: chore(roadmap): add initial ROADMAP.md
-
 🧩 Version: 0.1.0-alpha.1
 
 📄 Create and add a ROADMAP.md file containing the initial roadmap for the project.
 
-#### Add GitHub Issue templates
+Add GitHub Issue templates
 
 🔀 Branch: chore/init-setup
-
 📝 Commit: chore(templates): add issue templates
-
 🧩 Version: 0.1.0-alpha.2
 
 📄 Add standardized GitHub Issue templates for feature, bug, fix, and chore, along with a pull_request_template.md.
 
-#### Set up GitHub Project board (Kanban)
+Set up GitHub Project board (Kanban)
 
 🔀 Branch: chore/init-setup
-
 📝 Commit: docs(project): document GitHub Kanban board setup
-
 🧩 Version: 0.1.0-alpha.3
 
 📄 Create a GitHub Project Kanban board with columns: Backlog, In Progress, In Review, Done. Link repository issues to
 the board.
 
-#### Mark completed tasks in README.md
+Mark completed tasks in README.md
 
 🔀 Branch: chore/init-setup
-
 📝 Commit: chore(readme): mark completed tasks
-
 🧩 Version: 0.1.0-alpha.4
 
 📄 Update the checklist in README.md by marking already completed setup items with checkmarks.
 
-#### Add manual CHANGELOG.md template
+Add manual CHANGELOG.md template
 
 🔀 Branch: chore/init-setup
-
 📝 Commit: chore(docs): add manual CHANGELOG.md template
-
 🧩 Version: 0.1.0-alpha.5
 
-📄 Add a manual CHANGELOG.md file and describe the
-changelog automation process using standard-version.
+📄 Add a manual CHANGELOG.md file and describe the changelog process.
 
-#### 🏁 Epic Summary
+🏁 Epic Summary
 
 📦 Epic: M0 — Initial Setup
-
 🧩 Version: v0.1.0 (Alpha)
 
----
+✅ MVP (Minimum Viable Product)
+📦 M1 — Project Initialization
 
-#### ✅ MVP (Minimum Viable Product)
-
-#### 📦 M1 — Project Initialization
-
-Goal: establish the technical foundation of
-the project — build setup, linting, formatting,
-styling, state management, and CI/CD pipelines.
+Goal: establish the technical foundation of the project —
+build setup, linting, formatting, styling, state management,
+and CI/CD pipelines.
 
 📅 Development period: October 2025
 
 🔖 Final version: v0.3.6 (Pre-Release)
 
-#### ⚙️ Core Setup
-
-#### Set up Vite + React + TypeScript
+⚙️ Core Setup
+Set up Vite + React + TypeScript
 
 🔀 Branch: setup/feature/init-vite-ts
-
 📝 Commit: feat(init): add vite + react + typescript
-
 🧩 Version: 0.2.0
 
 📄 Initialize the project using Vite with React and TypeScript configuration.
 
-#### Set up ESLint, Prettier, and Husky
+Set up ESLint, Prettier, and Husky
 
 🔀 Branch: setup/chore/linting
-
 📝 Commit: chore(lint): add eslint + prettier + husky
-
 🧩 Version: 0.2.1
 
 📄 Configure code linting, formatting, and pre-commit hooks to maintain consistent code quality.
 
-#### Run Prettier across the codebase
+Run Prettier across the codebase
 
 🔀 Branch: setup/chore/format-code
-
 📝 Commit: chore(format): reformat codebase with prettier
-
 🧩 Version: 0.3.2
 
 📄 Apply consistent code formatting across all files using Prettier.
 
 🧱 State & Styling
-
-#### Set up Redux Toolkit
+Set up Redux Toolkit
 
 🔀 Branch: feature/state-manager
-
 📝 Commit: feat(state): add redux toolkit setup
-
 🧩 Version: 0.3.0
 
 📄 Integrate Redux Toolkit for state management and create the initial store structure.
 
-#### Set up Tailwind CSS
+Set up Tailwind CSS
 
 🔀 Branch: chore/setup-tailwind
-
-📝 Commit: chore(styles): add tailwind css set up
-
+📝 Commit: chore(styles): add tailwind css setup
 🧩 Version: 0.3.1
 
 📄 Configure Tailwind CSS for styling components with a utility-first approach.
 
-#### ⚙️ Continuous Integration
-
-#### Set up GitHub Actions (lint, type-check, build)
+⚙️ Continuous Integration
+Set up GitHub Actions (lint, type-check, build)
 
 🔀 Branch: setup/ci/github-actions
-
 📝 Commit: ci(actions): add lint + type-check + build
-
 🧩 Version: 0.2.2
 
 📄 Add CI workflow to run linting, type checking, and build verification on every push and pull request.
 
-#### Update CI job all-check-passed
+Update CI job all-check-passed
 
-🔀 Branch: setup/ci/github-action
-
+🔀 Branch: setup/ci/github-actions
 📝 Commit: ci(actions): update ci.yml job all-check-passed
-
 🧩 Version: 0.3.3
 
 📄 Improve CI pipeline to include an aggregate job verifying that all prior jobs have passed.
 
 🧾 Documentation
-
-#### Add BRANCH_RULES.md
+Add BRANCH_RULES.md
 
 🔀 Branch: setup/ci/github-actions
-
-📝 Commit: chore(docs): BRANCH_RULES.md
-
+📝 Commit: chore(actions): BRANCH_RULES.md
 🧩 Version: 0.3.4
 
 📄 Document branching and naming conventions for features, fixes, and chore branches.
 
-#### Update roadmap and mark completed tasks
+Update roadmap and mark completed tasks
 
 🔀 Branch: setup/chore/update-roadmap
-
 📝 Commit: chore(docs): update a roadmap
-
 🧩 Version: 0.3.5
 
 📄 Update the project roadmap and mark all setup-related tasks as completed.
 
-#### 🏁 Epic Summary
+🏁 Epic Summary
 
 📦 Epic: M1 — Project Initialization
-
 🧩 Version: v0.3.6 (Pre-Release)
 
----
+📦 M1.5 — Local Database Infrastructure (Dexie + Redux Integration)
 
-#### M1.5 - DB Setup
-
-#### 📦 M1.5 — Local Database Infrastructure (Dexie + Redux Integration)
-
-Goal: set up a local IndexedDB storage layer
-using Dexie and integrate it seamlessly with
-Redux Toolkit to enable offline project management.
+Goal: set up a local IndexedDB storage layer using Dexie
+and integrate it with Redux Toolkit to enable offline project management.
 
 📅 Development period: October 2025
 
 🔖 Final version: v0.5.5 (Pre-Release)
 
 🧩 Database Setup
-
-#### Install Dexie and configure IndexedDB schema
+Install Dexie and configure IndexedDB schema
 
 🔀 Branch: db/chore/db-setup
-
 📝 Commit: chore(db): setup dexie with indexeddb schema
-
 🧩 Version: 0.5.0-alpha
 
 📄 Install Dexie and configure the IndexedDB instance for managing local project data.
 
-#### Define Project table and schema types
+Define Project table and schema types
 
 🔀 Branch: db/chore/db-schema
-
 📝 Commit: chore(db): define table for projects and resolve alias @ ./src
-
 🧩 Version: 0.5.1
 
 📄 Define and type the projects table with fields: id, name, createdAt, updatedAt.
 
-#### Add migration notes for future schema upgrades.
-
 🔗 Integration with Redux Toolkit
-
-#### Connect Dexie to Redux via repository, service, and thunks
+Connect Dexie to Redux via repository, service, and thunks
 
 🔀 Branch: db/feature/db-redux-integration
-
 📝 Commit: feat(db): connect dexie to redux thunks/slice/service/repository
-
 🧩 Version: 0.5.3
 
-#### 📄 Implement layered integration:
-
-Repository → direct IndexedDB CRUD
-
-Service → business logic (validation, duplication check, id generation)
-
-Thunks → async logic for CRUD operations
-
+📄 Implement layered integration: Repository → Service → Thunks.
 Ensure real-time sync between UI and IndexedDB state.
 
-#### ⚙️ Store Provider
-
-#### Add StoreProvider component and typed hooks
+⚙️ Store Provider
+Add StoreProvider component and typed hooks
 
 🔀 Branch: db/chore/store-provider
-
 📝 Commit: chore(store): add store provider wrapper
-
 🧩 Version: 0.5.4
 
 📄 Create a global StoreProvider that wraps the entire app with the Redux store.
+Export typed hooks useAppDispatch and useAppSelector.
 
-Export typed hooks useAppDispatch and useAppSelector for consistent store access across all modules.
+🏁 Epic Summary
 
-#### 🏁 Epic Summary
-
-📦 Epic: M1.5 — Local Database Infrastructure (Dexie + Redux Integration)
-
+📦 Epic: M1.5 — Local DB Infrastructure
 🧩 Version: v0.5.5 (Pre-Release)
 
----
+📦 M1.6 — Tests & Local DB Integration Coverage
 
-#### M1.6 - Tests: Local DB Infrastructure (Dexie + Redux)
-
-#### 📦 M1.6 — Tests & Local DB Integration Coverage
-
-Goal: implement full test coverage for the
-local Dexie + Redux integration, ensuring repository,
-service, slice, thunk, and UI layers behave correctly and remain in sync.
+Goal: implement full test coverage for Dexie + Redux integration
+(repository, service, slice, thunks, UI).
 
 📅 Development period: October 2025
 
 🔖 Final version: v0.7.0 (Pre-Release)
 
 🧩 Repository Layer
-
-#### Unit tests for project.repository
+Unit tests for project.repository
 
 🔀 Branch: test/project-repository
-
 📝 Commit: test(repo): add unit tests for project.repository
-
 🧩 Version: 0.6.0
 
-📄 Added unit tests for repository methods using fake-indexeddb to simulate Dexie operations. Validated record creation,
-retrieval, updates, sorting, and deletion.
+📄 Added unit tests for repository methods using fake-indexeddb.
 
 🔗 Thunks & Async Logic
-
-#### Test async thunks integration
+Test async thunks integration
 
 🔀 Branch: test/project-thunks
-
 📝 Commit: test(thunks): verify async thunk calls for project.service
-
 🧩 Version: 0.6.1
 
-📄 Verified that Redux async thunks correctly call service methods with the expected parameters and payloads using
-vi.mock.
+📄 Verified that async thunks call service methods with expected parameters.
 
 ⚙️ Service Layer
-
-#### Service validation and CRUD tests
+Service validation and CRUD tests
 
 🔀 Branch: test/project-service
-
 📝 Commit: test(service): add validation and update tests for project.service
-
 🧩 Version: 0.6.2
 
-📄 Added tests for validation, duplication checks, and timestamp updates in createProject and updateProject service
-methods.
+📄 Tests for validation, duplication checks, and timestamps in create/update methods.
 
 🧱 Redux Slice Layer
-
-#### Reducers and selectors tests
+Reducers and selectors tests
 
 🔀 Branch: test/project-slice
-
-📝 Commit: test(slice): add CRUD and selector tests for projects.slices
-
+📝 Commit: test(slice): add CRUD and selector tests for project.slices
 🧩 Version: 0.6.3
 
-📄 Tested reducers, state transitions, CRUD flows, and custom selectors to ensure correct Redux state management
-behavior.
+📄 Tested reducers, state transitions, CRUD flows, and selectors.
 
 🧩 Integration & Store Layer
-
-#### StoreProvider integration test
+StoreProvider integration test
 
 🔀 Branch: test/store-provider
-
 📝 Commit: test(integration): add StoreProvider integration test for UI updates
-
 🧩 Version: 0.6.4
 
-📄 Added an integration test verifying UI reactivity through Redux store updates and DOM synchronization.
+📄 Integration test verifying UI reactivity through store updates.
 
-#### Dexie + Redux integration tests
+Dexie + Redux integration tests
 
 🔀 Branch: test/db-integration
-
 📝 Commit: test(db): verify dexie + redux integration
-
 🧩 Version: 0.6.6
 
-📄 Verified real-world interaction between Dexie’s repository layer and Redux thunks, ensuring persistence consistency
-across UI and state.
+📄 Verified real-world interaction between Dexie repositories and Redux thunks.
 
 🧾 Coverage & CI
-
-#### Enable coverage reporting in CI
+Enable coverage reporting in CI
 
 🔀 Branch: ci/test-coverage
-
 📝 Commit: ci(vitest): enable coverage reporting in GitHub Actions
-
 🧩 Version: 0.6.5
 
-📄 Integrated Vitest coverage reports into GitHub Actions, including repository, service, slice, and UI test metrics.
+📄 Integrated Vitest coverage reports into GitHub Actions.
 
-#### 🏁 Epic Summary
+🏁 Epic Summary
 
-📦 Epic: M1.6 — Tests & Local DB Integration Coverage
-
+📦 Epic: M1.6 — Tests & DB Coverage
 🧩 Version: v0.7.0 (Pre-Release)
 
----
+📦 M2 — Home Page (CRUD Projects)
 
-#### M2 — Home Page
+Goal: deliver a complete Home page with
+CRUD for projects, validations, and navigation to editor.
 
-#### ⚙️ Infrastructure & Setup
+📅 Development period: October → November 2025
 
-#### Update store structure
+🔖 Final version: v1.0.0 (Stable)
+
+⚙️ Infrastructure & Setup
+Update store structure
 
 🔀 Branch: home/chore/update-structure
-
-📝 Commit: chore(project): update structure store
-
+📝 Commit: chore(project): update structure
 🧩 Version: 0.8.0
 
-📄 Move hooks.ts and store.ts into store/, rename store.ts to index.ts.
+📄 Move store and hooks into store/ and clean up structure.
 
-#### Refactor tests and utilities
+Refactor tests and utilities
 
 🔀 Branch: home/test/update-test
-
 📝 Commit: chore(test): update test structure
-
 🧩 Version: 0.8.1
 
-📄 Refactor test utils, add index.ts barrels and typed test hooks (useTestDispatch, useTestSelector).
+📄 Refactor test utilities, add barrels and typed test hooks.
 
 🧱 Core Features
-
-#### Display project list
+Display project list
 
 🔀 Branch: home/feature/projects-list
-
 📝 Commit: feat(projects): show projects list
-
 🧩 Version: 0.9.0-beta.0
 
-📄 Render list of saved projects from IndexedDB with empty state “No projects yet”.
+📄 Render list of saved projects from IndexedDB with empty state.
 
-#### Create Project modal
+Create Project modal
 
 🔀 Branch: home/feature/new-project-modal
-
 📝 Commit: feat(projects): add new project modal
-
 🧩 Version: 0.9.0-beta.1
 
-📄 Modal for creating projects with custom name and preset canvas size.
+📄 Modal for creating projects with name and canvas size.
 
-#### Update Project modal
+Update Project modal
 
 🔀 Branch: home/feature/update-project
-
 📝 Commit: feat(projects): update project
-
 🧩 Version: 0.9.0-beta.2
 
-📄 Add edit button with confirmation dialog and instant update.
+📄 Add edit flow with confirmation and instant update.
 
-#### Add “+” button for creating new project
+Add “+” button for creating new project
 
 🔀 Branch: home/feature/button-add
-
-📝 Commit: feat(projects): add + to button add a new project
-
+📝 Commit: feat(projects): add "+" to button add a new project
 🧩 Version: 0.9.0-beta.3
 
-📄 Add UI button for quick project creation.
+📄 Quick-create UI via top-level plus button.
 
-#### Delete Project
+Delete Project
 
 🔀 Branch: home/feature/delete-project
-
 📝 Commit: feat(projects): delete project
-
 🧩 Version: 0.9.0-beta.4
 
-📄 Add delete button with confirmation and Dexie removal.
+📄 Delete with confirmation and Dexie removal.
 
-#### Open Project → navigate to editor
+Open Project → navigate to editor
 
 🔀 Branch: home/feature/open-project
-
 📝 Commit: feat(projects): open project editor
-
 🧩 Version: 0.9.5-rc.3
 
-📄 Navigate to /editor/:id; if project not found → flip card and show “Project not found”.
+📄 Navigate to /editor/:id, show “Project not found” on missing ID.
 
 🧩 Fixes & Enhancements
-
-#### Add validation (Zod)
+Add validation (Zod)
 
 🔀 Branch: home/fix/project-modal-input-length
-
 📝 Commit: fix(projects): set length of input create/update modal to 25 symbols / zod
-
 🧩 Version: 0.9.1-beta
 
-📄 Limit input length to 25 symbols and add Zod validation.
+📄 Limit input length and validate via Zod schema.
 
-#### Add canvas size inputs
+Add canvas size inputs
 
 🔀 Branch: home/fix/create-project-modal-input-canvas
-
-📝 Commit: fix(projects): add two inputs in a create modal for size of canvas
-
+📝 Commit: fix(projects): add two inputs for size of canvas
 🧩 Version: 0.9.2-beta
 
-📄 Add width and height fields to create modal.
+📄 Width/height inputs in create modal.
 
-#### Separate base modal
+Separate base modal
 
 🔀 Branch: home/fix/modal-base-separate
-
 📝 Commit: fix(projects): separate a base modal to individual components
-
 🧩 Version: 0.9.3-rc.1
 
-📄 Extract Base Modal as independent component.
+📄 Extract BaseModal as independent component.
 
-#### Separate Project Card
+Separate Project Card
 
 🔀 Branch: home/fix/project-card-separate
-
 📝 Commit: fix(project): separate a project card component to individual components
-
 🧩 Version: 0.9.4-rc.2
 
-📄 Split ProjectCard for cleaner architecture and testing.
+📄 Split ProjectCard for clean architecture/testing.
 
-#### 🏁 Epic Summary
+CI / Release Preparation (inside M2, no separate milestone)
+Add semantic-release workflow and changelog v1.0.0
+
+🔀 Branch: ci/release/semantic
+📝 Commit: docs(ci): add semantic-release workflow and changelog v1.0.0
+🧩 Version: 0.9.6-rc.4
+
+📄 Add semantic-release pipeline and initial generated changelog.
+
+Prevent failure when tag already exists
+
+🔀 Branch: ci/release/semantic
+📝 Commit: fix(ci): prevent failure when tag already exists
+🧩 Version: 0.9.7-rc.5
+
+📄 Guard semantic-release and CI flows from duplicate tag errors.
+
+🏁 Epic Summary
 
 📦 Epic: M2 — CRUD Projects Page Done
-🧩 Версия: v1.0.0 (Stable)
+🧩 Version: v1.0.0 (Stable)
 
----
+📦 M3 — Editor (Basic Functionality)
 
-#### M3 — Editor (Basic Functionality)
+Goal: build the first working editor canvas
+with viewport, tools palette, and core drawing tools.
 
-- [ ] Display canvas (`<canvas>`)
+📅 Development period: November 2025
 
-  🔀 Branch: `feature/editor-canvas`
+🔖 Final version: v1.1.0
 
-  📝 Commit: `feat(editor): add base canvas`
+Display canvas (<canvas>)
 
-- [ ] Display canvas + viewport
+🔀 Branch: feature/editor-canvas
+📝 Commit: feat(editor): add base canvas
+🧩 Version: v1.0.0-beta.0
 
-  🔀 Branch: `feature/editor-canvas-viewport`
+Display canvas + viewport
 
-  📝 Commit: `feat(editor): add base canvas viewport`
+🔀 Branch: feature/editor-canvas-viewport
+📝 Commit: feat(editor): add base canvas viewport
+🧩 Version: v1.0.0-beta.1
 
-- [ ] Brush tool (color + 6 thickness options)
+Refactor viewport into model/ui
 
-  🔀 Branch: `feature/tool-brush`
+🔀 Branch: refactor/editor-viewport
+📝 Commit: refactor(viewport): split EditorViewport into model/ui structure
+🧩 Version: v1.0.0-beta.2
 
-  📝 Commit: `feat(tools): implement brush tool`
+Grid toggle via viewport
 
-- [ ] Eraser tool (6 thickness options)
+🔀 Branch: feature/editor-grid
+📝 Commit: feat(editor): viewport implement button hide/show a grid
+🧩 Version: v1.0.0-beta.3
 
-  🔀 Branch: `feature/tool-eraser`
+Tools palette UI
 
-  📝 Commit: `feat(tools): implement eraser tool`
+🔀 Branch: feature/tools-palette
+📝 Commit: feat(tools): implement a tools palette
+🧩 Version: v1.0.0-beta.4
 
-- [ ] Line tool (color + 6 thickness options)
+Brush tool (color + thickness)
 
-  🔀 Branch: `feature/tool-line`
+🔀 Branch: feature/tool-brush
+📝 Commit: feat(tools): implement brush tool
+🧩 Version: v1.0.0-beta.5
 
-  📝 Commit: `feat(tools): implement line tool`
+Line tool (color + thickness)
 
-- [ ] Shapes tool (square/circle) with fill & stroke colors
+🔀 Branch: feature/tool-line
+📝 Commit: feat(tools): implement line tool
+🧩 Version: v1.0.0-beta.6
 
-  🔀 Branch: `feature/tool-shapes`
+Canvas refactor: draw/grid canvases
 
-  📝 Commit: `feat(tools): implement shapes tool`
+🔀 Branch: refactor/editor-canvas
+📝 Commit: fix(editor): refactor canvas - create draw/grid canvases
+🧩 Version: v1.0.0-beta.7
 
-- [ ] Change cursor when selecting tool
+Palette open/close fix
 
-  🔀 Branch: `feature/tool-cursor`
+🔀 Branch: fix/tools-palette-toggle
+📝 Commit: fix(tools): palette open/close
+🧩 Version: v1.0.0-beta.8
 
-  📝 Commit: `feat(tools): change cursor by tool`
+Brush/line decomposition
 
-- [ ] Export canvas as PNG
+🔀 Branch: fix/tools-decomposition
+📝 Commit: fix(tools): brush/line decomposition
+🧩 Version: v1.0.0-beta.9
 
-  🔀 Branch: `feature/export-png`
+Shapes tool (square/circle)
 
-  📝 Commit: `feat(editor): export canvas as PNG`
+🔀 Branch: feature/tool-shapes
+📝 Commit: feat(tools): implement shapes tool
+🧩 Version: v1.0.0-beta.10
 
-- [ ] Save project to IndexedDB
+Eraser tool (thickness options)
 
-  🔀 Branch: `feature/save-project`
+🔀 Branch: feature/tool-eraser
+📝 Commit: feat(tools): implement eraser tool
+🧩 Version: v1.0.0-beta.11
 
-  📝 Commit: `feat(projects): save project to indexeddb`
+Tools performance / polish
 
-- [ ] Load project from IndexedDB
+🔀 Branch: fix/tools-perf
+📝 Commit: fix(tools): performer tools
+🧩 Version: v1.1.0
 
-  🔀 Branch: `feature/load-project`
+🏁 Epic Summary
 
-  📝 Commit: `feat(projects): load project from indexeddb`
+📦 Epic: M3 — Editor (Basic Functionality)
+🧩 Version: v1.1.0
 
----
+📦 M4 — Layers
 
-#### M4 — Tests for MVP
+Goal: implement full layer management system
+with persistence in Dexie and visibility/order controls.
 
-- [ ] Unit tests for reducers (Jest)
+📅 Development period: November 2025
 
-  🔀 Branch: `test/reducers`
+🔖 Final version: v1.2.0
 
-  📝 Commit: `test(reducers): add unit tests`
+Add full layer management (initial)
 
-- [ ] Integration tests for components (Testing Library)
+🔀 Branch: feature/layers-management
+📝 Commit: feat(layers): add full layer management
+🧩 Version: v1.1.0-beta.1
 
-  🔀 Branch: `test/components`
+Add full layer management with Dexie
 
-  📝 Commit: `test(components): add integration tests`
+🔀 Branch: feature/layers-dexie
+📝 Commit: feat(layers): add full layer management with Dexie
+🧩 Version: v1.2.0
 
-- [ ] E2E test: create project → draw brush → export PNG
+🏁 Epic Summary
 
-  🔀 Branch: `test/e2e-draw-export`
+📦 Epic: M4 — Layers
+🧩 Version: v1.2.0
 
-  📝 Commit: `test(e2e): create project, draw brush, export png`
+📦 M5 — History
 
----
+Goal: deliver full editor history snapshots
+with undo/redo base and consistent reload protection.
 
-### ✨ Nice-to-have (after MVP)
+📅 Development period: November 2025
 
-#### M5 — Layers
+🔖 Final version: v1.3.0
 
-- [ ] Add / delete layers
+Implement full action history (snapshots)
 
-  🔀 Branch: `feature/layers-crud`
+🔀 Branch: feature/history-core
+📝 Commit: feat(editor): implement full action history
+🧩 Version: v1.3.0
 
-  📝 Commit: `feat(layers): add create and delete layers`
+Protect active project from reload (settings)
 
-- [ ] Reorder layers (drag & drop)
+🔀 Branch: feature/history-reload-guard
+📝 Commit: feat(editor): implement setting component for defence active project from reload
+🧩 Version: v1.3.0-beta.1
 
-  🔀 Branch: `feature/layers-reorder`
+🏁 Epic Summary
 
-  📝 Commit: `feat(layers): allow reordering layers`
+📦 Epic: M5 — History
+🧩 Version: v1.3.0
 
-- [ ] Hide / Show layers
+📦 M6 — Top Menu / App Shell
 
-  🔀 Branch: `feature/layers-visibility`
+Goal: add Figma-like top menu and navigation shell.
+File / Edit / View / Projects / About.
 
-  📝 Commit: `feat(layers): add hide/show functionality`
+📅 Development period: November 2025
 
-- [ ] Change layer opacity
+🔖 Final version: v1.4.0
 
-  🔀 Branch: `feature/layers-opacity`
+Implement top menu
 
-  📝 Commit: `feat(layers): add opacity control`
+🔀 Branch: feature/menu
+📝 Commit: feat(editor): menu
+🧩 Version: v1.4.0
 
-- [ ] Rename layer
+🏁 Epic Summary
 
-  🔀 Branch: `feature/layers-rename`
+📦 Epic: M6 — Menu / App Shell
+🧩 Version: v1.4.0
 
-  📝 Commit: `feat(layers): add rename layer functionality`
+📦 M7 — Performance
 
-#### M7 — History
+Goal: optimize core editor performance
+and introduce smooth drawing with FPS monitoring.
 
-- [ ] Undo / Redo
+📅 Development period: November 2025
 
-  🔀 Branch: `feature/history-undo-redo`
+🔖 Final version: v1.5.0-beta.2
 
-  📝 Commit: `feat(history): add undo/redo support`
+Performance optimizations
 
-#### M8 — Performance
+🔀 Branch: perf/project-optimization
+📝 Commit: perf(project): optimization
+🧩 Version: v1.5.0-beta.1
 
-- [ ] Use `requestAnimationFrame` for smooth drawing
+requestAnimationFrame drawing + FPS display
 
-  🔀 Branch: `perf/draw-raf`
+🔀 Branch: perf/draw-raf
+📝 Commit: feat(project): requestAnimationFrame for smooth drawing / FPS display
+🧩 Version: v1.5.0-beta.2
 
-  📝 Commit: `perf(canvas): use requestAnimationFrame for drawing`
+🏁 Epic Summary
 
-#### M10 — Infrastructure
-
-- [ ] Dockerfile / Vercel deployment
-
-  🔀 Branch: `chore/deploy`
-
-  📝 Commit: `chore(deploy): add dockerfile and vercel config`
-
----
-
-#### 🐞 Bug Fixes
-
-- [ ] Fix critical bugs from QA
-
-  🔀 Branch: `fix/...`
-
-  📝 Commit: `fix(scope): ...`
-
-- [ ] Regression tests for fixed bugs
-
-  🔀 Branch: `test/fix-regression`
-
-  📝 Commit: `test(fix): add regression tests`
-
----
-
-#### 🚀 CI/CD Roadmap
-
-- [x] Linting, TypeScript check, build in GitHub Actions
-
-  🔀 Branch: `ci/github-actions`
-
-  📝 Commit: `ci(actions): add lint + type-check + build`
-
-- [ ] Add unit tests to CI (Vitest / Jest)
-
-  🔀 Branch: `ci/github-actions`
-
-  📝 Commit: `ci(actions): run unit tests`
-
-- [ ] Add coverage reporting (Codecov / Coveralls)
-
-  🔀 Branch: `ci/github-actions`
-
-  📝 Commit: `ci(actions): add coverage reporting`
-
-- [ ] Deploy preview builds (Vercel / Netlify)
-
-  🔀 Branch: `chore/deploy`
-
-  📝 Commit: `chore(deploy): setup vercel preview`
-
-### 🔑 Branch Naming Rules
-
-- [ ] `feature/...` → new feature
-- [ ] `fix/...` → bug fix
-- [ ] `chore/...` → maintenance / config / docs
-- [ ] `test/...` → tests
-- [ ] `perf/...` → performance optimization
-- [ ] `ci/...` → CI/CD tasks
-
-### 📝 Commit Style (Conventional Commits)
-
-- [ ] `feat(scope): ...` — new feature
-- [ ] `fix(scope): ...` — bug fix
-- [ ] `chore(scope): ...` — maintenance
-- [ ] `test(scope): ...` — tests
-- [ ] `perf(scope): ...` — performance improvement
-- [ ] `ci(scope): ...` — CI/CD
+📦 Epic: M7 — Performance
+🧩 Version: v1.5.0-beta.2
+---------------------------------------
