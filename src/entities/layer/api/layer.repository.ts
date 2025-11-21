@@ -23,7 +23,7 @@ export const layerRepository = {
 	},
 
 	async add(layer: Layer): Promise<void> {
-		await layerTable.add(layer);
+		await layerTable.put(layer);
 	},
 
 	async update(id: string, changes: Partial<Layer>): Promise<void> {
