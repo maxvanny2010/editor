@@ -24,7 +24,7 @@ export const projectRepository = {
 	},
 
 	async add(project: Project): Promise<void> {
-		await projectTable.add(project);
+		await projectTable.put(project);
 	},
 
 	async update(id: string, changes: Partial<Project>): Promise<void> {

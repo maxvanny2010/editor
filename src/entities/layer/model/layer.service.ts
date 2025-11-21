@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import type { EditorSnapshot, Layer } from '@/shared/types';
 import { layerRepository } from '@/entities/layer/api';
 import { LAYER, LAYER_DEFAULTS, LAYER_ERROR_MESSAGES } from '@/shared/constants';
+import Dexie from 'dexie';
 
 export const layerService = {
 	async getLayers(projectId: string): Promise<Layer[]> {
@@ -68,7 +69,7 @@ export const layerService = {
 	async replaceAll(projectId: string, layers: EditorSnapshot['layers']) {
 		// remove all layers from project
 		await layerRepository.removeByProject(projectId);
-
+		await Dexie.waitFor(Promise.resolve());
 		// add layers from a snapshot
 		for (const l of layers) {
 			await layerRepository.add({
