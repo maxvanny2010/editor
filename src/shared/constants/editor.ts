@@ -22,6 +22,7 @@ export const SHAPES = {
 
 export const REPOSITORY_FIELDS = {
 	PROJECT_ID: 'projectId',
+	ID: 'id',
 	STATE_PROJECT_ID: 'state.projectId',
 	TIMESTAMP: 'timestamp',
 	Z_INDEX: 'zIndex',

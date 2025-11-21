@@ -14,7 +14,7 @@ export const historyRepository = {
 			.sortBy(`${REPOSITORY_FIELDS.TIMESTAMP}`);
 	},
 	async deleteById(id: string): Promise<void> {
-		await historyTable.where('id').equals(id).delete();
+		await historyTable.where(REPOSITORY_FIELDS.ID).equals(id).delete();
 	},
 
 	async deleteAfterIndex(projectId: string, index: number): Promise<void> {
