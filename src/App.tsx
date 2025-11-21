@@ -4,7 +4,7 @@ import { EditorPage } from '@/pages/model';
 import HomePage from '@/pages/home';
 
 export const App = () => (
-	<BrowserRouter>
+	<BrowserRouter basename="/editor">
 		<Routes>
 			<Route path={PROJECT_PATHS.HOME} element={<HomePage />} />
 			<Route path={`${PROJECT_PATHS.EDITOR}/:id`} element={<EditorPage />} />

@@ -1,5 +1,5 @@
 export const PROJECT_PATHS = {
 	HOME: '/',
-	EDITOR: '/editor',
-	EDITOR_BY_ID: (id: string) => `/editor/${id}`,
+	EDITOR: '/project',
+	EDITOR_BY_ID: (id: string) => `/project/${id}`,
 };
