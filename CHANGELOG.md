@@ -286,3 +286,5 @@ Included:
 | M5   | History             | 1.3.0      | Stable      |
 | M6   | App Menu            | 1.4.0      | Stable      |
 | M7   | Performance         | 1.5.0-beta | Beta        |
+
+----------------------------------------------------------

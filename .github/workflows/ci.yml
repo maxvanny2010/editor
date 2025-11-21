@@ -27,7 +27,7 @@ jobs:
 
             -   name: Clear old caches
                 run: |
-                    echo "🧹 Cleaning old caches..."
+                    echo "Cleaning old caches..."
                     rm -rf node_modules/.vitest node_modules/.vite coverage
 
             -   name: Install dependencies

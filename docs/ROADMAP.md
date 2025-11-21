@@ -596,3 +596,4 @@ requestAnimationFrame drawing + FPS display
 
 📦 Epic: M7 — Performance
 🧩 Version: v1.5.0-beta.2
+---------------------------------------
