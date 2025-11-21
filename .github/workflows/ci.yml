@@ -104,7 +104,6 @@ jobs:
                       SAFE_BRANCH_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/:' '-')
                     fi
                     echo "safe_branch_name=$SAFE_BRANCH_NAME" >> $GITHUB_OUTPUT
-                    echo "Publishing as: $SAFE_BRANCH_NAME"
 
             -   name: Prepare branch-specific folder
                 run: |
@@ -112,24 +111,17 @@ jobs:
                     mv coverage/lcov-report/* "publish/${{ steps.publish.outputs.safe_branch_name }}/"
                     echo "Report will be published at /${{ steps.publish.outputs.safe_branch_name }}/"
 
-            -   name: Upload Pages artifact
+            -   name: Upload Coverage Pages artifact
                 uses: actions/upload-pages-artifact@v3
                 with:
                     path: publish/
+                    name: coverage-pages-${{ github.run_id }}-${{ steps.publish.outputs.safe_branch_name }}
 
-            -   name: Deploy to GitHub Pages
+            -   name: Deploy Coverage to GitHub Pages
                 id: deployment
                 uses: actions/deploy-pages@v4
-
-            -   name: Comment coverage link on PR
-                if: github.event_name == 'pull_request'
-                uses: marocchino/sticky-pull-request-comment@v2
                 with:
-                    header: "Test Coverage Report"
-                    message: |
-                        ✅ Coverage report successfully generated!
-                        🔗 **View it here:**
-                        👉 [${{ github.repository }} — coverage report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ steps.publish.outputs.safe_branch_name }}/index.html)
+                    artifact_name: coverage-pages-${{ github.run_id }}-${{ steps.publish.outputs.safe_branch_name }}
 
     deploy-app:
         runs-on: ubuntu-latest
