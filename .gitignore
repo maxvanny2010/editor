@@ -24,3 +24,5 @@ coverage
 *.sln
 *.sw?
 /tsconfig.test.tsbuildinfo
+/tsconfig.app.tsbuildinfo
+/tsconfig.node.tsbuildinfo
