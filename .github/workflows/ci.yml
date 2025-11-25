@@ -78,10 +78,10 @@ jobs:
 
             -   name: Prepare publish folder
                 run: |
-                    mkdir -p publish/editor
-                    mkdir -p publish/editor/coverage
-                    cp -r dist/* publish/editor/
-                    cp -r coverage/lcov-report/* publish/editor/coverage/
+                    mkdir -p publish
+                    cp -r dist/* publish/
+                    mkdir -p publish/coverage
+                    cp -r coverage/lcov-report/* publish/coverage/
 
             -   name: Upload
                 uses: actions/upload-pages-artifact@v3
