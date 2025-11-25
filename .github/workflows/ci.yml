@@ -15,6 +15,7 @@ jobs:
 
     lint-build-test:
         runs-on: ubuntu-latest
+
         steps:
             -   uses: actions/checkout@v4
 
@@ -42,52 +43,16 @@ jobs:
                     retention-days: 7
 
 
-    deploy-coverage:
-        runs-on: ubuntu-latest
-        needs: lint-build-test
-        if: success()
-        permissions:
-            contents: write
-            pull-requests: write
-
-        steps:
-            -   uses: actions/checkout@v4
-
-            -   id: ref
-                run: echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
-
-            -   uses: actions/download-artifact@v4
-                with:
-                    name: coverage-${{ steps.ref.outputs.value }}-${{ github.run_id }}
-                    path: coverage/
-
-            -   id: folder
-                run: |
-                    if [[ "$GITHUB_REF" == refs/pull/* ]]; then
-                      echo "value=pr-$(echo "$GITHUB_REF" | cut -d'/' -f3)" >> $GITHUB_OUTPUT
-                    else
-                      echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
-                    fi
-
-            -   run: |
-                    mkdir -p publish/${{ steps.folder.outputs.value }}
-                    mv coverage/lcov-report/* publish/${{ steps.folder.outputs.value }}/
-
-            -   uses: actions/upload-artifact@v4
-                with:
-                    name: coverage-report-${{ github.run_id }}
-                    path: publish/
-
-
-    deploy-app:
+    deploy-pages:
         runs-on: ubuntu-latest
         needs: lint-build-test
         if: github.ref == 'refs/heads/main' && success()
+
         environment:
             name: github-pages
             url: https://maxvanny2010.github.io/editor/
+
         permissions:
-            contents: write
             pages: write
             id-token: write
 
@@ -102,11 +67,26 @@ jobs:
             -   run: npm ci
             -   run: npm run build
 
-            -   uses: actions/upload-pages-artifact@v3
-                with:
-                    path: dist/
-                    name: app-pages-${{ github.run_id }}-main
+            -   id: clean_ref
+                run: echo "value=${GITHUB_REF_NAME//[\/:]/-}" >> $GITHUB_OUTPUT
 
-            -   uses: actions/deploy-pages@v4
+            -   name: Download coverage artifact
+                uses: actions/download-artifact@v4
                 with:
-                    artifact_name: app-pages-${{ github.run_id }}-main
+                    name: coverage-${{ steps.clean_ref.outputs.value }}-${{ github.run_id }}
+                    path: coverage/
+
+            -   name: Prepare publish folder
+                run: |
+                    mkdir -p publish/editor
+                    mkdir -p publish/editor/coverage
+                    cp -r dist/* publish/editor/
+                    cp -r coverage/lcov-report/* publish/editor/coverage/
+
+            -   name: Upload
+                uses: actions/upload-pages-artifact@v3
+                with:
+                    path: publish/
+
+            -   name: Deploy
+                uses: actions/deploy-pages@v4
