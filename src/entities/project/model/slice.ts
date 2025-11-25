@@ -70,7 +70,7 @@ export const setActiveProjectId = createAction<string | null>(
 	PROJECT_SLICE_ACTIONS.PROJECT_SET_ACTIVE_ID,
 );
 
-// Добавляем экшен для прямой вставки проекта в entities
+// add an action for direct insert a project to entities
 export const upsertProject = createAction<Project>(PROJECT_SLICE_ACTIONS.PROJECT_UPSET);
 
 // ───────────────────────────────────────────────
