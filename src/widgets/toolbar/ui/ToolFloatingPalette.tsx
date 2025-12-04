@@ -1,5 +1,5 @@
-import { ColorSelector, ValueSelector } from '@/widgets/toolbar/ui';
 import type { ReactNode } from 'react';
+import { ColorSelector, ValueSelector } from '@/widgets/toolbar/ui';
 
 interface ToolFloatingPaletteProps {
 	title: string;
@@ -23,10 +23,11 @@ export function ToolFloatingPalette({
 	selectedColor = '#6B7280',
 	onValueChange,
 	onColorChange,
-	position = 'top-24',
+	position = 'bottom-44',
 	children,
 }: ToolFloatingPaletteProps) {
 	const hasColors = Array.isArray(colors) && colors.length > 0;
+
 	return (
 		<div
 			className={`fixed left-20 ${position} z-40 w-[320px] rounded-2xl border border-gray-200 bg-white shadow-xl p-3 backdrop-blur-sm`}
@@ -48,7 +49,7 @@ export function ToolFloatingPalette({
 				<>
 					<hr className="my-3 h-px bg-gray-100" />
 					<ColorSelector
-						colors={colors!}
+						colors={colors}
 						selectedColor={selectedColor}
 						onChange={onColorChange!}
 						dataPrefix={title.toLowerCase()}
