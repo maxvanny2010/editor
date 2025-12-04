@@ -18,7 +18,7 @@ export const LineFloatingPalette = React.memo(function LineFloatingPalette() {
 			selectedColor={color}
 			onValueChange={(v) => dispatch(setLineThickness(v))}
 			onColorChange={(c) => dispatch(setLineColor(c))}
-			position="top-52"
+			position="bottom-19"
 		/>
 	);
 });

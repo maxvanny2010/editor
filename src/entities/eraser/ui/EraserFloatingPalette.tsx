@@ -14,7 +14,7 @@ export function EraserFloatingPalette() {
 			values={TOOL_SIZES}
 			selectedValue={size}
 			onValueChange={(v) => dispatch(setEraserSize(v))}
-			position="top-72"
+			position="bottom-43"
 			data-testid-prefix="eraser"
 		/>
 	);
