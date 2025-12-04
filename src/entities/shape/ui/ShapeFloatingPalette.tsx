@@ -60,7 +60,7 @@ export const ShapeFloatingPalette = React.memo(function ShapeFloatingPalette() {
 			selectedColor={stroke}
 			onValueChange={handleThicknessChange}
 			onColorChange={handleStrokeChange}
-			position="top-72"
+			position="bottom-8"
 		>
 			<div className="flex items-center justify-between gap-3">
 				{/* ───────── Shape Type Buttons ───────── */}

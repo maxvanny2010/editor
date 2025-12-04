@@ -18,7 +18,7 @@ export const BrushFloatingPalette = React.memo(function BrushFloatingPalette() {
 			selectedColor={color}
 			onValueChange={(v) => dispatch(setBrushSize(v))}
 			onColorChange={(c) => dispatch(setBrushColor(c))}
-			position="top-24"
+			position="bottom-19"
 		/>
 	);
 });
