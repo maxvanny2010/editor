@@ -4,7 +4,7 @@ import { UI_LABELS } from '@/shared/constants';
 import type { HistoryEntry } from '@/shared/types';
 import { Hand } from 'lucide-react';
 import { ToolIcon } from './ToolIcon';
-import { selectHistory } from '@/entities/history/model/selectors';
+import { selectHistory, selectHistoryIsPreview } from '@/entities/history/model';
 import { jumpTo } from '@/entities/history/model/slice';
 import { RedoButton, UndoButton } from '@/widgets/toolbar/ui';
 import type { HistoryEntryExt } from '@/entities/layer/model';
@@ -28,7 +28,7 @@ export const HistoryPanel = React.memo(function HistoryPanel({
 }: HistoryPanelProps) {
 	const dispatch = useAppDispatch();
 	const history = useAppSelector(selectHistory);
-	const isPreview = useAppSelector((s) => s.history.isPreview);
+	const isPreview = useAppSelector(selectHistoryIsPreview);
 
 	if (!open) return null;
 	if (!history || !Array.isArray(history.stack)) {

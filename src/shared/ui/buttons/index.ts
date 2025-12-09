@@ -5,3 +5,5 @@ export * from './HistoryExitPreviewButton/HistoryExitPreviewButton';
 export * from './HistoryApplySnapshotButton/HistoryApplySnapshotButton';
 export * from './TopMenuItemButton/TopMenuItemButton';
 export * from './TopMenuTabButton/TopMenuTabButton';
+export * from './ShapeTypeButton/ShapeTypeButton';
+export * from './SelectorButton/SelectorButton';

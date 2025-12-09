@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CanvasPoint } from '@/shared/types';
+import type { Point } from '@/shared/types';
 
 /**
  * Returns coordinates in CANVAS SPACE (its internal width/height),
@@ -9,7 +9,7 @@ export function toCanvasPoint(
 	e: React.PointerEvent<HTMLCanvasElement>,
 	canvas: HTMLCanvasElement,
 	opts?: { dpr?: number },
-): CanvasPoint {
+): Point {
 	const rect = canvas.getBoundingClientRect();
 
 	// Normalize to [0..1] inside visible rect

@@ -1,3 +1,5 @@
+import type { Point } from '@/shared/types';
+
 export function snapAngle45(dx: number, dy: number) {
 	const angle = Math.atan2(dy, dx);
 	const step = Math.PI / 4;
@@ -6,11 +8,7 @@ export function snapAngle45(dx: number, dy: number) {
 	return { dx: Math.cos(snapped) * len, dy: Math.sin(snapped) * len };
 }
 
-export function normalizeLine(
-	p0: { x: number; y: number },
-	p1: { x: number; y: number },
-	shift: boolean,
-) {
+export function normalizeLine(p0: Point, p1: Point, shift: boolean) {
 	let dx = p1.x - p0.x;
 	let dy = p1.y - p0.y;
 	if (shift && (dx !== 0 || dy !== 0)) ({ dx, dy } = snapAngle45(dx, dy));

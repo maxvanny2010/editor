@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { BottomFooterSkeleton } from '@/entities/editor/ui';
+import { BottomFooterSkeleton } from '@/widgets/widgets/editor/ui';
 
 describe('BottomFooterSkeleton', () => {
 	it('renders skeleton with correct structure', () => {

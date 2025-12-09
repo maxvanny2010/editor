@@ -8,6 +8,7 @@ import {
 	ModalForm,
 	ModalInputs,
 } from '@/entities/project/ui/modal';
+import type { ErrorMessage } from '@/shared/types';
 
 interface ProjectModalBaseProps<TArgs extends Record<string, unknown>> {
 	title: string;
@@ -47,7 +48,7 @@ export function ProjectModalBase<TArgs extends Record<string, unknown>>({
 	const [width, setWidth] = useState(800);
 	const [height, setHeight] = useState(600);
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<ErrorMessage>(null);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();

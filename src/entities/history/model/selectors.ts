@@ -14,3 +14,4 @@ export const selectCanRedo = (s: RootState) => {
 	const { stack, currentIndex } = s.history;
 	return currentIndex < stack.length - 1;
 };
+export const selectHistoryIsPreview = (state: RootState) => state.history.isPreview;

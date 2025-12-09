@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { CanvasSkeleton } from '@/entities/editor/ui';
+import { CanvasSkeleton } from '@/widgets/widgets/editor/ui';
 
 describe('CanvasSkeleton', () => {
 	it('renders with animation wrapper', () => {

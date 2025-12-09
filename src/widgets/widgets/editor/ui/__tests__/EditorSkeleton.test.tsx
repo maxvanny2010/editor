@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { EditorSkeleton } from '@/entities/editor/ui';
+import { EditorSkeleton } from '@/widgets/widgets/editor/ui';
 
 describe('EditorSkeleton', () => {
 	it('renders full editor skeleton layout', () => {

@@ -12,17 +12,19 @@ import { useRestoreProject } from '@/entities/project/hooks';
 import { projectsSelectors } from '@/entities/project/model';
 import { redo, undo } from '@/entities/history/model/slice';
 import { EditorViewport } from '@/widgets/viewport/model';
-import { EditorSkeleton } from '@/entities/editor/ui';
 import { startPerfHUD } from '@/shared/lib/debug';
 import { LayersPanel } from '@/entities/layer/ui';
 import { TopMenu } from '@/widgets/top-menu';
 import { NAMES } from '@/shared/constants';
+import { EditorSkeleton } from '@/widgets/widgets/editor/ui';
 
 export type PanelKey = typeof NAMES.LAYERS | typeof NAMES.HISTORY | null;
-
+export type EditorPageParams = {
+	id: string;
+};
 export const EditorPage = () => {
 	const dispatch = useAppDispatch();
-	const params = useParams<{ id: string }>();
+	const params = useParams<EditorPageParams>();
 
 	const activeProject = useAppSelector(projectsSelectors.selectActiveProject);
 	const loading = useRestoreProject(dispatch, params.id);

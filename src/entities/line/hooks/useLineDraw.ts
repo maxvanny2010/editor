@@ -2,21 +2,23 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { normalizeLine } from '@/entities/line/lib/geometry';
 import { useAppSelector } from '@/store/hooks';
 import { toCanvasPoint } from '@/shared/lib/utils';
+import type { MaybeFrame, MaybePoint } from '@/shared/types';
+import { selectLineState } from '@/entities/line/model';
 
 export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
-	const { color, thickness } = useAppSelector((s) => s.line);
+	const { color, thickness } = useAppSelector(selectLineState);
 
-	const start = useRef<{ x: number; y: number } | null>(null);
-	const current = useRef<{ x: number; y: number } | null>(null);
+	const start = useRef<MaybePoint>(null);
+	const current = useRef<MaybePoint>(null);
 	const shift = useRef(false);
 	const snapshot = useRef<ImageData | null>(null);
-	const frameReq = useRef<number | null>(null);
+	const frameReq = useRef<MaybeFrame>(null);
 
 	const dpr = 1;
 
 	useEffect(() => {
-		const handle = (e: KeyboardEvent) => {
-			shift.current = e.shiftKey;
+		const handle = (keyboardEvent: KeyboardEvent) => {
+			shift.current = keyboardEvent.shiftKey;
 		};
 
 		window.addEventListener('keydown', handle);
@@ -79,67 +81,58 @@ export function useLineDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>
 		frameReq.current = window.requestAnimationFrame(drawLoop);
 	}, [canvasRef, color, thickness, blendPreview]);
 
-	const onPointerDown = useCallback(
-		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const canvas = canvasRef.current;
-			if (!canvas) return;
+	const onPointerDown = (pointerEvent: React.PointerEvent<HTMLCanvasElement>) => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
 
-			const ctx = canvas.getContext('2d', { willReadFrequently: true });
-			if (!ctx) return;
+		const ctx = canvas.getContext('2d', { willReadFrequently: true });
+		if (!ctx) return;
 
-			start.current = toCanvasPoint(e, canvas, { dpr });
-			current.current = null;
+		start.current = toCanvasPoint(pointerEvent, canvas, { dpr });
+		current.current = null;
 
-			snapshot.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		snapshot.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-			if (!frameReq.current) {
-				frameReq.current = window.requestAnimationFrame(drawLoop);
-			}
-		},
-		[canvasRef, drawLoop],
-	);
+		if (!frameReq.current) {
+			frameReq.current = window.requestAnimationFrame(drawLoop);
+		}
+	};
 
-	const onPointerMove = useCallback(
-		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const canvas = canvasRef.current;
-			if (!canvas || !start.current) return;
-			current.current = toCanvasPoint(e, canvas, { dpr });
-		},
-		[canvasRef],
-	);
+	const onPointerMove = (pointerEvent: React.PointerEvent<HTMLCanvasElement>) => {
+		const canvas = canvasRef.current;
+		if (!canvas || !start.current) return;
+		current.current = toCanvasPoint(pointerEvent, canvas, { dpr });
+	};
 
-	const onPointerUp = useCallback(
-		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			const canvas = canvasRef.current;
-			if (!canvas || !start.current) return;
+	const onPointerUp = (pointerEvent: React.PointerEvent<HTMLCanvasElement>) => {
+		const canvas = canvasRef.current;
+		if (!canvas || !start.current) return;
 
-			const ctx = canvas.getContext('2d', { willReadFrequently: true });
-			if (!ctx) return;
+		const ctx = canvas.getContext('2d', { willReadFrequently: true });
+		if (!ctx) return;
 
-			const end = toCanvasPoint(e, canvas, { dpr });
-			const { x1, y1, x2, y2 } = normalizeLine(start.current, end, shift.current);
+		const end = toCanvasPoint(pointerEvent, canvas, { dpr });
+		const { x1, y1, x2, y2 } = normalizeLine(start.current, end, shift.current);
 
-			// final stroke
-			ctx.strokeStyle = color;
-			ctx.lineWidth = thickness;
-			ctx.lineCap = 'round';
+		// final stroke
+		ctx.strokeStyle = color;
+		ctx.lineWidth = thickness;
+		ctx.lineCap = 'round';
 
-			ctx.beginPath();
-			ctx.moveTo(x1, y1);
-			ctx.lineTo(x2, y2);
-			ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(x1, y1);
+		ctx.lineTo(x2, y2);
+		ctx.stroke();
 
-			start.current = null;
-			current.current = null;
-			snapshot.current = null;
+		start.current = null;
+		current.current = null;
+		snapshot.current = null;
 
-			if (frameReq.current !== null) {
-				window.cancelAnimationFrame(frameReq.current);
-				frameReq.current = null;
-			}
-		},
-		[canvasRef, color, thickness],
-	);
+		if (frameReq.current !== null) {
+			window.cancelAnimationFrame(frameReq.current);
+			frameReq.current = null;
+		}
+	};
 
 	useEffect(() => {
 		return () => {

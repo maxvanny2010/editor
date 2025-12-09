@@ -1,5 +1,6 @@
 import { updateProject } from '@/entities/project/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
+import { UI_LABELS } from '@/shared/constants';
 
 interface Props {
 	projectId: string;
@@ -10,8 +11,8 @@ interface Props {
 export const UpdateProjectModal = ({ projectId, initialName, onClose }: Props) => (
 	<ProjectModalBase
 		data-testid="update-modal"
-		title="Update project name"
-		buttonLabel="Update"
+		title={UI_LABELS.MODAL_UPDATE}
+		buttonLabel={UI_LABELS.MODAL_UPDATE_BUTTON}
 		onClose={onClose}
 		initialValue={initialName}
 		buildArgs={(name) => ({ id: projectId, changes: { name } })}

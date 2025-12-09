@@ -1,118 +1,209 @@
-### 🎨 React Editor — Creative Canvas
+# React Editor — Creative Canvas
 
 [![Coverage Report](https://img.shields.io/badge/coverage-report-blue?logo=githubpages&logoColor=white)](https://maxvanny2010.github.io/editor/coverage/)
 [![Live Demo](https://img.shields.io/badge/live-demo-green?logo=githubpages&logoColor=white)](https://maxvanny2010.github.io/editor/)
+---
 
-# 🎨 Features
+# Overview
 
-## 🖍️ Canvas & Drawing Tools
+React Editor is a browser-based drawing application designed to demonstrate:
 
-- **Brush** — freehand drawing
-- **Line** — straight lines
-- **Shapes** — rectangles and circles
-- **Eraser** — removing drawn pixels
-
-Each tool renders only to the active layer, improving FPS.
+The editor allows users to create multi-layer drawings, save them locally, reopen them later, and restore previous
+states through a snapshot-based history system. All data persists across page reloads and works entirely offline.
 
 ---
 
-## 🗺️ Canvas Navigation
+# Target Audience
 
-### 🔎 Zoom
-- **Mouse Wheel + Ctrl** — zoom in/out
-- Smooth scaling with matrix-based viewport
-
-### ✋ Pan (Move Canvas)
-- **Middle Mouse Button (MMB)** — hold + move
-- **Right Mouse Button (RMB)** — hold + move
-
-### 🎯 Fit / Reset Viewport
-Done only via the UI button (no double-click magic)
+- Frontend developers exploring Canvas and React
+- Students looking for a structured architecture example
+- Users who need a simple offline drawing tool
+- UX/UI researchers working with canvas-based editors
 
 ---
 
-## 📚 Layers System
+# Use Cases
 
-### ✅ Layer Features
-- Add / delete layers
+- Sketching and rapid ideation
+- Prototyping and diagram drafting
+- Demonstrating undo/redo mechanics
+- Teaching IndexedDB, Redux, and FSD architecture
+
+---
+
+# Features
+
+## Drawing Tools
+
+- Brush
+- Line
+- Rectangle and Circle shapes
+- Eraser
+
+Each tool operates only on the active layer, improving performance.
+
+---
+
+## Canvas Navigation
+
+### Zoom
+
+- Ctrl + mouse wheel
+- Smooth matrix-based scaling
+
+### Pan
+
+- Middle mouse button
+- Right mouse button
+
+### Reset View
+
+Viewport reset is handled through a dedicated UI button.
+
+---
+
+## Layer System
+
+- Create and delete layers
 - Rename layers
-- Change z-order (move up/down)
+- Reorder layers (z-index)
 - Toggle visibility
-- Each layer = separate `<canvas>` element
+- Each layer is drawn on a separate canvas, allowing high FPS
 
 ---
 
-## ⏮️ History System (Snapshots)
+## History System
 
-Full snapshot of project state:
-- Layers
-- Active tool
-- Viewport
+The application stores complete snapshots of the editor state, including:
 
-Each action pushes a new snapshot into the history stack.
+- layers
+- active tool
+- viewport settings
+- pixel data
 
-**Undo / Redo** restores the app to an earlier snapshot.
-
-History panel displays actions with icons.
-
-**Snapshots saved into IndexedDB** → history persists after reload.
+Undo and Redo operations fully restore previous states.
+Snapshots are stored in IndexedDB, so history persists after reloads.
 
 ---
 
-## 💿 Persistence: Saving Projects
+## Offline Persistence (Dexie + IndexedDB)
 
-### 🗄️ Dexie (IndexedDB)
+Stored locally:
 
-Project structure stored locally:
-- Project metadata (name, createdAt, updatedAt)
-- Layers (pixel data)
-- History snapshots
-- Viewport info
-- Active tool state
+- project metadata
+- layers and raster content
+- history snapshots
+- viewport and tool state
 
-**Nothing is stored on a server** — the editor is fully offline-capable.
+The editor works completely offline and does not use any backend.
 
 ---
 
-## 📋 Top Menu
+## Top Menu
 
-### 📁 File
-- Create project
-- Save project
-- Export as PNG
+### File
 
-### 📂 Projects
-- Open projects list (Home)
+- Create Project
+- Save Project
+- Export PNG
 
----
+### Projects
 
-## ✔️ Validation
-
-All project creation/edit modals use **Zod + framer-motion** for animated validation.
-
-Prevents:
-- Invalid names
-- Empty fields
-- Wrong sizes
+- Navigate to the list of existing projects
 
 ---
 
-## 🛠️ Tech Stack
+## Validation
 
-### 💻 Frontend
+Project creation and editing forms use Zod and Framer Motion for animated validation and error messages. Invalid input
+is prevented at the UI level.
+
+---
+
+# Architecture
+
+The project is structured according to the Feature-Sliced Design methodology.
+
+### shared
+
+Reusable utilities, constants, types, and UI primitives.
+
+### entities
+
+Business domains such as project, layer, editor, brush, line, shape, eraser, and history.
+Each entity includes its state management slice, selectors, and logic.
+
+### features
+
+User actions and business logic modules: tool selection, project operations, layer manipulation.
+
+### widgets
+
+Composite UI components such as toolbars, menus, and side panels.
+
+### pages
+
+High-level application pages: Home and Editor.
+
+---
+
+# Technology Stack
+
+### Frontend
+
 - React 19
 - TypeScript
 - Redux Toolkit
-- Dexie (IndexedDB)
 - Vite
 - TailwindCSS
-- Framer Motion (modals + animations)
+- Dexie (IndexedDB)
+- Framer Motion
 
-### 🧪 Testing
+### Testing
+
 - Vitest
 - React Testing Library
 
-### 🚀 DevOps
+### DevOps
+
 - GitHub Actions
-- GitHub Pages
-- Coverage reports (`/editor/coverage/`)
+- GitHub Pages deployment
+- Automatic coverage publishing
+
+---
+
+# Limitations and Known Issues
+
+- Snapshot history stores full project states, which is simple but uses more storage than delta-based history.
+- Very large layers may reduce performance on weaker devices.
+- Minor flickering may occur when reordering canvas layers.
+- Mobile support is limited; the interface is optimized for desktop use.
+
+---
+
+# Roadmap
+
+- Delta-based history system
+- Layer grouping
+- Additional shape tools (polygons, curves)
+- Selection and transformation tools
+- Pressure sensitivity for stylus devices
+- Improved mobile layout and PWA support
+- SVG export for vector shapes
+- Drag-and-drop layer reordering
+
+---
+
+# Testing
+
+- Unit tests with Vitest
+- Component-level testing with React Testing Library
+- Coverage reports available in GitHub Pages
+
+---
+
+# CI/CD
+
+- Automated testing and build pipelines via GitHub Actions
+- Deployment to GitHub Pages
+- Automatic coverage updates on each commit

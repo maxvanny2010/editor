@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { toCanvasPoint } from '@/shared/lib/utils';
+import { selectBrushState } from '@/entities/brush/model';
+import type { MaybeFrame, MaybePoint } from '@/shared/types';
 
 export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
-	const { color, size } = useAppSelector((s) => s.brush);
+	const { color, size } = useAppSelector(selectBrushState);
 
 	// Refs for logic
 	const isDrawingRef = useRef(false);
-	const last = useRef<{ x: number; y: number } | null>(null);
-	const nextPoint = useRef<{ x: number; y: number } | null>(null);
-	const frameReq = useRef<number | null>(null);
+	const last = useRef<MaybePoint>(null);
+	const nextPoint = useRef<MaybePoint>(null);
+	const frameReq = useRef<MaybeFrame>(null);
 
 	const dpr = 1;
 
@@ -34,25 +36,25 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 			return;
 		}
 
-		const ctx = canvas.getContext('2d', { willReadFrequently: true });
-		if (!ctx || !last.current || !nextPoint.current) {
+		const context = canvas.getContext('2d', { willReadFrequently: true });
+		if (!context || !last.current || !nextPoint.current) {
 			frameReq.current = window.requestAnimationFrame(drawLoop);
 			return;
 		}
 
 		// Drawing
-		ctx.strokeStyle = color;
-		ctx.lineWidth = size;
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
+		context.strokeStyle = color;
+		context.lineWidth = size;
+		context.lineCap = 'round';
+		context.lineJoin = 'round';
 
 		const p1 = last.current;
 		const p2 = nextPoint.current;
 
-		ctx.beginPath();
-		ctx.moveTo(p1.x, p1.y);
-		ctx.lineTo(p2.x, p2.y);
-		ctx.stroke();
+		context.beginPath();
+		context.moveTo(p1.x, p1.y);
+		context.lineTo(p2.x, p2.y);
+		context.stroke();
 
 		// last point becomes current
 		last.current = p2;
@@ -62,26 +64,23 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 	}, [canvasRef, color, size]);
 
 	/** Pointer down — prepare stroke */
-	const onPointerDown = useCallback(
-		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			if (!canvasRef.current) return;
+	const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+		if (!canvasRef.current) return;
 
-			const canvas = canvasRef.current;
-			if (!canvas) return;
+		const canvas = canvasRef.current;
+		if (!canvas) return;
 
-			last.current = getPos(e);
+		last.current = getPos(e);
 
-			isDrawingRef.current = true;
+		isDrawingRef.current = true;
 
-			canvas.setPointerCapture(e.pointerId);
+		canvas.setPointerCapture(e.pointerId);
 
-			// Start loop only once
-			if (!frameReq.current) {
-				frameReq.current = window.requestAnimationFrame(drawLoop);
-			}
-		},
-		[canvasRef, getPos, drawLoop],
-	);
+		// Start loop only once
+		if (!frameReq.current) {
+			frameReq.current = window.requestAnimationFrame(drawLoop);
+		}
+	};
 
 	/** Pointer move — only update coordinates */
 	const onPointerMove = useCallback(
@@ -93,19 +92,16 @@ export function useBrushDraw(canvasRef: React.RefObject<HTMLCanvasElement | null
 	);
 
 	/** Pointer up — finish stroke */
-	const onPointerUp = useCallback(
-		(e: React.PointerEvent<HTMLCanvasElement>) => {
-			isDrawingRef.current = false;
-			last.current = null;
-			nextPoint.current = null;
+	const onPointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+		isDrawingRef.current = false;
+		last.current = null;
+		nextPoint.current = null;
 
-			const canvas = canvasRef.current;
-			if (canvas && canvas.hasPointerCapture(e.pointerId)) {
-				canvas.releasePointerCapture(e.pointerId);
-			}
-		},
-		[canvasRef],
-	);
+		const canvas = canvasRef.current;
+		if (canvas && canvas.hasPointerCapture(e.pointerId)) {
+			canvas.releasePointerCapture(e.pointerId);
+		}
+	};
 
 	// Cleanup rAF on unmount
 	useEffect(() => {

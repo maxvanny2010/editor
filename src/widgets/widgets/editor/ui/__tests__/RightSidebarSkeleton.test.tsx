@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { RightSidebarSkeleton } from '@/entities/editor/ui';
+import { RightSidebarSkeleton } from '@/widgets/widgets/editor/ui';
 
 describe('RightSidebarSkeleton', () => {
 	it('renders sidebar in correct position', () => {

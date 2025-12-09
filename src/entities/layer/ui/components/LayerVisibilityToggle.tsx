@@ -1,5 +1,6 @@
 import { Eye as EyeIcon, EyeOff as EyeOffIcon } from 'lucide-react';
 import React from 'react';
+import { UI_LABELS } from '@/shared/constants';
 
 interface LayerVisibilityToggleProps {
 	layerId: string;
@@ -14,12 +15,12 @@ export const LayerVisibilityToggle = React.memo(function LayerVisibilityToggle({
 }: LayerVisibilityToggleProps) {
 	return (
 		<button
-			onClick={(e) => {
-				e.stopPropagation();
+			onClick={(mouseEvent) => {
+				mouseEvent.stopPropagation();
 				onToggle(layerId, isVisible);
 			}}
 			className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
-			aria-label={isVisible ? 'Hide layer' : 'Show layer'}
+			aria-label={isVisible ? UI_LABELS.LAYER_HIDE : UI_LABELS.LAYER_SHOW}
 		>
 			{isVisible ? (
 				<EyeIcon className="w-4 h-4" />
