@@ -1,3 +1,5 @@
+import { SelectorButton } from '@/shared/ui/buttons';
+
 interface ValueSelectorProps {
 	values: number[];
 	selectedValue: number;
@@ -15,23 +17,22 @@ export const ValueSelector = ({
 }: ValueSelectorProps) => {
 	return (
 		<div className="flex items-center gap-2 overflow-x-auto py-2 min-h-[64px] pl-3 pr-2 scroll-px-2">
-			{values.map((v) => (
-				<button
-					key={v}
-					data-testid={`${dataPrefix}-value-${v}`}
-					onClick={() => onChange(v)}
-					className={`relative grid place-items-center rounded-full border border-gray-200 bg-white p-1 hover:bg-gray-50 transition shrink-0
-            ${selectedValue === v ? 'ring-2 ring-offset-1 ring-indigo-400' : ''}`}
+			{values.map((value) => (
+				<SelectorButton
+					key={value}
+					testId={`${dataPrefix}-value-${value}`}
+					selected={value === selectedValue}
+					onClick={() => onChange(value)}
 				>
 					<span
 						className="block rounded-full"
 						style={{
-							width: v * 2 + 4,
-							height: v * 2 + 4,
+							width: value * 2 + 4,
+							height: value * 2 + 4,
 							background: selectedColor,
 						}}
 					/>
-				</button>
+				</SelectorButton>
 			))}
 		</div>
 	);

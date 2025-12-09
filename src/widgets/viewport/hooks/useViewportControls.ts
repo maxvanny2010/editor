@@ -39,17 +39,17 @@ export function useViewportControls(
 		emit();
 	}, [emit]);
 
-	const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-		if (e.button !== 1) return;
-		e.preventDefault();
+	const onMouseDown = useCallback((mouseEvent: React.MouseEvent<HTMLDivElement>) => {
+		if (mouseEvent.button !== 1) return;
+		mouseEvent.preventDefault();
 		setIsPanning(true);
 	}, []);
 
 	const onMouseMove = useCallback(
-		(e: React.MouseEvent<HTMLDivElement>) => {
+		(mouseEvent: React.MouseEvent<HTMLDivElement>) => {
 			if (!isPanning) return;
-			offsetXRef.current += e.movementX;
-			offsetYRef.current += e.movementY;
+			offsetXRef.current += mouseEvent.movementX;
+			offsetYRef.current += mouseEvent.movementY;
 			applyTransform();
 		},
 		[applyTransform, isPanning],
@@ -60,11 +60,11 @@ export function useViewportControls(
 	}, []);
 
 	const onWheel = useCallback(
-		(e: React.WheelEvent<HTMLDivElement>) => {
-			if (!e.ctrlKey) return;
-			if (e.cancelable) e.preventDefault();
+		(wheelEvent: React.WheelEvent<HTMLDivElement>) => {
+			if (!wheelEvent.ctrlKey) return;
+			if (wheelEvent.cancelable) wheelEvent.preventDefault();
 
-			const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+			const zoomFactor = wheelEvent.deltaY > 0 ? 0.9 : 1.1;
 			scaleRef.current *= zoomFactor;
 
 			applyTransform();

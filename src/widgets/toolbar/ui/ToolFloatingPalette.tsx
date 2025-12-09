@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import { ColorSelector, ValueSelector } from '@/widgets/toolbar/ui';
 
 interface ToolFloatingPaletteProps {
@@ -14,7 +14,7 @@ interface ToolFloatingPaletteProps {
 	children?: ReactNode;
 }
 
-export function ToolFloatingPalette({
+export const ToolFloatingPalette = memo(function ToolFloatingPalette({
 	title,
 	subtitle,
 	values,
@@ -60,4 +60,4 @@ export function ToolFloatingPalette({
 			{children && <div className="mt-3">{children}</div>}
 		</div>
 	);
-}
+});

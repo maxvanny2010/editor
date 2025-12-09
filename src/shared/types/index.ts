@@ -84,7 +84,16 @@ export interface ActiveProject {
 	id: 'active';
 	projectId: string;
 }
-export interface CanvasPoint {
+export interface Point {
 	x: number;
 	y: number;
 }
+
+export type MaybePoint = Point | null;
+export type MaybeFrame = number | null;
+export type ErrorMessage = string | null;
+
+export type LayerId = string;
+
+export type CanvasMap = Map<LayerId, HTMLCanvasElement>;
+export type SnapshotMap = Map<LayerId, string>;

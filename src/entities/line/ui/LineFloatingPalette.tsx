@@ -3,15 +3,17 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setLineColor, setLineThickness } from '@/entities/line/model/slice';
 import { TOOL_COLORS, TOOL_SIZES } from '@/shared/constants/toolPresets';
 import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
+import { selectLineState } from '@/entities/line/model';
+import { UI_LABELS } from '@/shared/constants';
 
 export const LineFloatingPalette = React.memo(function LineFloatingPalette() {
 	const dispatch = useAppDispatch();
-	const { color, thickness } = useAppSelector((s) => s.line);
+	const { color, thickness } = useAppSelector(selectLineState);
 
 	return (
 		<ToolFloatingPalette
-			title="Line"
-			subtitle="Thickness & Color"
+			title={UI_LABELS.LINE_TOOL}
+			subtitle={UI_LABELS.LINE_TOOL_SUB}
 			values={TOOL_SIZES}
 			colors={TOOL_COLORS}
 			selectedValue={thickness}

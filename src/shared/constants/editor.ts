@@ -39,6 +39,21 @@ export const UI_LABELS = {
 	NAME: (i: number) => `Action ${i}`,
 	LAYERS: 'Layers',
 	HISTORY: 'History',
+	SHAPE_TOOL: 'Shape',
+	LINE_TOOL: 'Line',
+	LINE_TOOL_SUB: 'Thickness & Color',
+	ERASER_TOOL: 'Eraser',
+	ERASER_TOOL_SIZE: 'Size',
+	BRUSH_TOOL: 'Brush',
+	BRUSH_TOOL_SUB: 'Size & Color',
+	MODAL_CREATE: 'Create new project',
+	MODAL_CREATE_BUTTON: 'Create',
+	MODAL_DELETE_BUTTON: 'Delete',
+	MODAL_DELETE: 'Delete project',
+	MODAL_UPDATE: 'Update project name',
+	MODAL_UPDATE_BUTTON: 'Update',
+	LAYER_SHOW: 'Show layer',
+	LAYER_HIDE: 'Hide layer',
 };
 
 export const TOOL_LABELS: Record<Exclude<EditorTool, null>, string> = {

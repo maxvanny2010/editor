@@ -1,9 +1,10 @@
 import React from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { ApplySnapshotButton, ExitPreviewButton } from '@/shared/ui/buttons';
+import { selectHistoryIsPreview } from '@/entities/history/model';
 
 export const PreviewOverlay = React.memo(function PreviewOverlay() {
-	const isPreview = useAppSelector((s) => s.history.isPreview);
+	const isPreview = useAppSelector(selectHistoryIsPreview);
 
 	if (!isPreview) return null;
 

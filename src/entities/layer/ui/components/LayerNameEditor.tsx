@@ -14,21 +14,22 @@ export const LayerNameEditor = React.memo(function LayerNameEditor({
 	onRenameSubmit,
 }: LayerNameEditorProps) {
 	// Prevents the click from activating the layer selection when interacting with the input field.
-	const handleInputClick = (e: React.MouseEvent) => e.stopPropagation();
+	const handleInputClick = (mouseEvent: React.MouseEvent) =>
+		mouseEvent.stopPropagation();
 
 	// Handles form submission (Enter key) to save the new layer name.
-	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	const handleFormSubmit = (formEvent: React.FormEvent<HTMLFormElement>) => {
+		formEvent.preventDefault();
 
-		const form = e.target as HTMLFormElement;
+		const form = formEvent.target as HTMLFormElement;
 		const input = form.elements.namedItem('name') as HTMLInputElement;
 
 		onRenameSubmit(layerId, input.value).then((r) => r);
 	};
 
 	// Handles loss of focus (click outside input) to save the new layer name.
-	const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-		onRenameSubmit(layerId, e.currentTarget.value).then((r) => r);
+	const handleInputBlur = (focusEvent: React.FocusEvent<HTMLInputElement>) => {
+		onRenameSubmit(layerId, focusEvent.currentTarget.value).then((r) => r);
 	};
 
 	return (

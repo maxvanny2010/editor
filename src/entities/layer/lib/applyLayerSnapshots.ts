@@ -7,16 +7,16 @@ export async function applyLayerSnapshots(
 	for (const layer of layers) {
 		const canvas = getCanvas(layer.id);
 		if (!canvas) continue;
-		const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-		if (!ctx) continue;
+		const context2D = canvas.getContext('2d', { willReadFrequently: true })!;
+		if (!context2D) continue;
 
-		ctx.clearRect(0, 0, width, height);
+		context2D.clearRect(0, 0, width, height);
 
 		if (layer.snapshot) {
 			const img = new Image();
 			img.src = layer.snapshot;
 			await new Promise((res) => (img.onload = res));
-			ctx.drawImage(img, 0, 0);
+			context2D.drawImage(img, 0, 0);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { LeftToolbarSkeleton } from '@/entities/editor/ui';
+import { LeftToolbarSkeleton } from '@/widgets/widgets/editor/ui';
 
 describe('LeftToolbarSkeleton', () => {
 	it('renders toolbar in correct position', () => {

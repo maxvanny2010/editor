@@ -46,7 +46,7 @@ export function ModalInputs({
 					value={name}
 					data-testid="project-input"
 					placeholder="Enter project name"
-					onChange={(e) => setName(e.target.value)}
+					onChange={(event) => setName(event.target.value)}
 					className="border border-gray-300 rounded-lg px-4 py-2.5 w-full text-gray-800 bg-white/80
 							   focus:ring-2 focus:ring-indigo-500 focus:shadow-[0_0_8px_rgba(99,102,241,0.25)]
 							   outline-none transition"
@@ -64,7 +64,7 @@ export function ModalInputs({
 							type="number"
 							value={width}
 							onKeyDown={preventEnterSubmit}
-							onChange={(e) => setWidth(Number(e.target.value))}
+							onChange={(event) => setWidth(Number(event.target.value))}
 							data-testid="canvas-width"
 							className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
 						/>
@@ -77,7 +77,7 @@ export function ModalInputs({
 							type="number"
 							onKeyDown={preventEnterSubmit}
 							value={height}
-							onChange={(e) => setHeight(Number(e.target.value))}
+							onChange={(event) => setHeight(Number(event.target.value))}
 							data-testid="canvas-height"
 							className="border border-gray-300 rounded-lg px-3 py-2 w-full text-gray-800 bg-white/80 focus:ring-2 focus:ring-indigo-500 outline-none transition"
 						/>
