@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import type { Layer } from '@/shared/types';
+import type { CanvasMap, Layer, SnapshotMap } from '@/shared/types';
 import { layerService } from '@/entities/layer/model';
 
 /**
@@ -14,10 +14,10 @@ export function useLayerCanvases(
 	width: number,
 	height: number,
 ) {
-	const canvases = useRef<Map<string, HTMLCanvasElement>>(new Map());
+	const canvases = useRef<CanvasMap>(new Map());
 
 	// Stores the most recent snapshot for each layer id to detect real changes
-	const lastSnapshots = useRef<Map<string, string>>(new Map());
+	const lastSnapshots = useRef<SnapshotMap>(new Map());
 
 	// Binds DOM <canvas> to layer id
 	const bindCanvasRef = useMemo(

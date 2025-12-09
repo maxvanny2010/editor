@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
+	selectShapeState,
 	setShapeFill,
 	setShapeStroke,
 	setShapeThickness,
@@ -11,6 +11,7 @@ import {
 import { TOOL_COLORS, TOOL_SIZES } from '@/shared/constants';
 import { ToolFloatingPalette } from '@/widgets/toolbar/ui';
 import { Circle, Square } from 'lucide-react';
+import { ShapeTypeButton } from '@/shared/ui/buttons';
 
 // ─── Shape type icons ───────────────────────────────────────────
 const SHAPE_TYPES: { type: ShapeType; icon: React.ReactNode; label: string }[] = [
@@ -20,7 +21,7 @@ const SHAPE_TYPES: { type: ShapeType; icon: React.ReactNode; label: string }[] =
 
 export const ShapeFloatingPalette = React.memo(function ShapeFloatingPalette() {
 	const dispatch = useAppDispatch();
-	const { type, fill, stroke, thickness } = useAppSelector((s) => s.shape);
+	const { type, fill, stroke, thickness } = useAppSelector(selectShapeState);
 
 	const handleTypeChange = useCallback(
 		(newType: ShapeType) => {
@@ -29,26 +30,17 @@ export const ShapeFloatingPalette = React.memo(function ShapeFloatingPalette() {
 		[dispatch],
 	);
 
-	const handleFillChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			dispatch(setShapeFill(e.target.value));
-		},
-		[dispatch],
-	);
+	const handleFillChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		dispatch(setShapeFill(e.target.value));
+	};
 
-	const handleStrokeChange = useCallback(
-		(color: string) => {
-			dispatch(setShapeStroke(color));
-		},
-		[dispatch],
-	);
+	const handleStrokeChange = (color: string) => {
+		dispatch(setShapeStroke(color));
+	};
 
-	const handleThicknessChange = useCallback(
-		(value: number) => {
-			dispatch(setShapeThickness(value));
-		},
-		[dispatch],
-	);
+	const handleThicknessChange = (value: number) => {
+		dispatch(setShapeThickness(value));
+	};
 
 	return (
 		<ToolFloatingPalette
@@ -65,25 +57,18 @@ export const ShapeFloatingPalette = React.memo(function ShapeFloatingPalette() {
 			<div className="flex items-center justify-between gap-3">
 				{/* ───────── Shape Type Buttons ───────── */}
 				<div className="flex items-center gap-2">
-					{SHAPE_TYPES.map(({ type: t, icon, label }) => (
-						<motion.button
-							key={t}
-							type="button"
-							onClick={() => handleTypeChange(t)}
-							whileHover={{ scale: 1.1 }}
-							whileTap={{ scale: 0.95 }}
-							className={`flex items-center justify-center w-8 h-8 rounded-md border transition-all
-								${
-									type === t
-										? 'border-indigo-500 bg-indigo-50 text-indigo-600 shadow-sm'
-										: 'border-gray-200 text-gray-500 hover:bg-gray-100'
-								}`.trim()}
-							aria-label={label}
-							data-testid={`shape-type-${t}`}
-						>
-							{icon}
-						</motion.button>
-					))}
+					{SHAPE_TYPES.map(
+						({ type: shapeType, icon: shapeIcon, label: shapeLabel }) => (
+							<ShapeTypeButton
+								key={shapeType}
+								type={shapeType}
+								icon={shapeIcon}
+								label={shapeLabel}
+								selected={type === shapeType}
+								onSelect={handleTypeChange}
+							/>
+						),
+					)}
 				</div>
 
 				{/* ───────── Fill Color Picker ───────── */}

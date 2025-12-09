@@ -11,7 +11,7 @@ import {
 
 export const ProjectList = () => {
 	const projects = useAppSelector(projectsSelectors.selectAll);
-	const loading = useAppSelector((s) => s.projects.loading);
+	const loading = useAppSelector(projectsSelectors.selectLoading);
 
 	useFetchProjectsOnMount(projects.length);
 

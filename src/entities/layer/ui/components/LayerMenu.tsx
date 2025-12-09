@@ -27,9 +27,9 @@ export const LayerMenu = React.memo(function LayerMenu({
 	useEffect(() => {
 		if (!isMenuOpen) return;
 
-		const handleOutsideClick = (e: MouseEvent) => {
+		const handleOutsideClick = (mouseEvent: MouseEvent) => {
 			if (!menuRef.current) return;
-			if (!menuRef.current.contains(e.target as Node)) {
+			if (!menuRef.current.contains(mouseEvent.target as Node)) {
 				setOpenMenuId(null);
 			}
 		};
@@ -39,8 +39,8 @@ export const LayerMenu = React.memo(function LayerMenu({
 	}, [isMenuOpen, setOpenMenuId]);
 
 	// Toggle menu
-	const handleMenuClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
+	const handleMenuClick = (mouseEvent: React.MouseEvent) => {
+		mouseEvent.stopPropagation();
 		setOpenMenuId(isMenuOpen ? null : layerId);
 	};
 

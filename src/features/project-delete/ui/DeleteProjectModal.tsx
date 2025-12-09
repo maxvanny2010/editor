@@ -1,5 +1,6 @@
 import { deleteProject } from '@/entities/project/model';
 import { ProjectModalBase } from '@/entities/project/ui/_shared';
+import { UI_LABELS } from '@/shared/constants';
 
 interface Props {
 	projectId: string;
@@ -10,8 +11,8 @@ interface Props {
 export const DeleteProjectModal = ({ projectId, projectName, onClose }: Props) => (
 	<ProjectModalBase
 		data-testid="delete-modal"
-		title="Delete project"
-		buttonLabel="Delete"
+		title={UI_LABELS.MODAL_DELETE}
+		buttonLabel={UI_LABELS.MODAL_DELETE_BUTTON}
 		onClose={onClose}
 		showInput={false}
 		customContent={

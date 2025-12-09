@@ -12,6 +12,7 @@ import { layersSelectors, makeSelectByProject } from '@/entities/layer/model/sel
 import { AddLayerButton, LayerItem, OpacitySlider } from '@/entities/layer/ui/components';
 import { LAYER_DEFAULTS } from '@/shared/constants';
 import { store } from '@/store';
+import { selectHistoryIsPreview } from '@/entities/history/model';
 
 interface LayersPanelProps {
 	projectId: string;
@@ -31,7 +32,7 @@ export const LayersPanel = React.memo(function LayersPanel({
 		.sort((a, b) => b.zIndex - a.zIndex);
 
 	const activeLayer = useAppSelector(layersSelectors.selectActiveLayer);
-	const isPreview = useAppSelector((s) => s.history.isPreview);
+	const isPreview = useAppSelector(selectHistoryIsPreview);
 
 	const [localNameId, setLocalNameId] = useState<string | null>(null);
 	const [openMenuId, setOpenMenuId] = useState<string | null>(null);

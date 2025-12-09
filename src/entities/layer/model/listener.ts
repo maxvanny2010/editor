@@ -6,16 +6,9 @@ import { createLayer, deleteLayer, updateLayer } from './slice';
 import { pushState } from '@/entities/history/model/slice';
 import { historyService } from '@/entities/history/model';
 import type { EditorSnapshot } from '@/shared/types';
-import {
-	LAYER,
-	SHAPE_LABELS,
-	SHAPES,
-	type SystemIconName,
-	TOOL_LABELS,
-	TOOLS,
-	UI_LABELS,
-} from '@/shared/constants';
+import { LAYER, type SystemIconName, TOOLS } from '@/shared/constants';
 import { layersSelectors } from '@/entities/layer/model/selectors';
+import { buildHistoryLabel } from '@/entities/layer/lib';
 
 export type HistoryIconName = SystemIconName;
 
@@ -123,14 +116,7 @@ export function setupLayerListeners(
 					const shapeType =
 						activeTool === TOOLS.SHAPE ? state.shape.type : undefined;
 
-					const label =
-						activeTool === TOOLS.SHAPE
-							? shapeType === SHAPES.CIRCLE
-								? SHAPE_LABELS.circle
-								: SHAPE_LABELS.rect
-							: activeTool
-								? TOOL_LABELS[activeTool]
-								: UI_LABELS.SNAPSHOT;
+					const label = buildHistoryLabel(activeTool, shapeType);
 
 					const entry: HistoryEntryExt = {
 						id: nanoid(),
